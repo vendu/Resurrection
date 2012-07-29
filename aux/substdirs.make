@@ -1,0 +1,25 @@
+substdirs = sed \
+	-e 's,@prefix\@,$(prefix),g' \
+	-e 's,@exec_prefix\@,$(exec_prefix),g' \
+	-e 's,@srcdir\@,$(srcdir),g' \
+	-e 's,@bindir\@,$(bindir),g' \
+	-e 's,@sbindir\@,$(sbindir),g' \
+	-e 's,@libexecdir\@,$(libexecdir),g' \
+	-e 's,@sysconfdir\@,$(sysconfdir),g' \
+	-e 's,@includedir\@,$(includedir),g' \
+	-e 's,@oldincludedir\@,$(oldincludedir),g' \
+	-e 's,@libdir\@,$(libdir),g' \
+	-e 's,@sharedstatedir\@,$(sharedstatedir),g' \
+	-e 's,@localstatedir\@,$(localstatedir),g' \
+	-e 's,@datadir\@,$(datadir),g' \
+	-e 's,@mandir\@,$(mandir),g' \
+	-e 's,@infodir\@,$(infodir),g' \
+	-e 's,@lispdir\@,$(lispdir),g' \
+	-e 's,@pkglibdir\@,$(pkglibdir),g' \
+	-e 's,@pkgincludedir\@,$(pkgincludedir),g' \
+	-e 's,@pkgdatadir\@,$(pkgdatadir),g' \
+	-e 's,@rshdir\@,$(rshdir),g' \
+	-e 's,@configauxdir\@,$(configauxdir),g' \
+	-e 's,@imagedir\@,$(imagedir),g' \
+	-e 's,@fontdir\@,$(fontdir),g'
+

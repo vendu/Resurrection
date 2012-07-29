@@ -1,0 +1,140 @@
+############################################################
+# Automatically created makefile for wmtest
+############################################################
+
+# Copying $CINTSYSDIR/MAKEINFO #############################
+
+############################################################
+# platform/linux_slackware9_gcc3
+#  Platform dependent information for LINUX Slackware9 or later
+#  using gcc-3.0/3.1/3.2
+############################################################
+
+# Tools
+RM	    = rm -f
+CP	    = cp
+AR	    = ar
+AROPT       = clq
+KRCC        = gcc -traditional
+CC          = gcc -fexceptions -Wall
+CPP         = g++ -Wall 
+LD          = g++
+CPREP       = gcc -E -C
+CPPPREP     = g++ -E -C
+
+# Compiler and linker option
+CCDLLOPT    = -fPIC
+LDDLLOPT    = -shared
+# gcc-3.00 has a bug in -O2. Use -O instead. -O2 may be OK for later version
+OPTIMIZE    = -O2
+LDOPT       = -lm -L/usr/lib/termcap -lncurses -ldl -rdynamic $(LIBS)
+SYSMACRO    = -DG__REGEXP -DG__SHAREDLIB -DG__OSFDLL -DG__ANSI -DG__ERRORCALLBACK -DG__NEWSTDHEADER
+OTHMACRO    = -DG__P2FCAST -DG__REDIRECTIO -DG__DETECT_NEWDEL -DG__POSIX -DG__STD_EXCEPTION 
+SYSIPATH    =
+
+# libraries
+MAINO	    = $(CINTSYSDIR)/main/G__cppmain.o
+CINTLIB     = $(CINTSYSDIR)/src/G__ci.a
+READLINEA   = /usr/lib/libreadline.a
+APIO	    = Api.o Class.o BaseCls.o Type.o DataMbr.o Method.o MethodAr.o CallFunc.o Typedf.o Apiif.o Token.o
+RANLIB	    = /usr/bin/ranlib
+STDLIBS     = gcc3strm.o v6_stdstrct.o
+PLATFORM    =
+
+# source code postfix
+CSRCPOST    = .c
+CHDRPOST    = .h
+CPPSRCPOST  = .C
+CPPHDRPOST  = .h
+OBJPOST     = .o
+DLLPOST     = .dl
+
+
+
+
+##########################################################
+# Control default behavior of cint command line input
+##########################################################
+#INPUTMODE = C++
+#INPUTMODE = root
+INPUTMODE = cint
+#INPUTMODELOCK = on
+INPUTMODELOCK = off
+
+# End of $CINTSYSDIR/MAKEINFO ##############################
+
+# Set variables ############################################
+IPATH      = $(SYSIPATH) \
+		-I../include/ 
+MACRO      = $(SYSMACRO)
+CINTSYSDIR = /usr/local/src/cint-5.16
+CINTIPATH  = -I$(CINTSYSDIR)
+OBJECT     = wmtest
+OPTION     =
+DLLSPEC    =
+LINKSPEC   =
+
+# Set File names ###########################################
+CIFC       =
+CIFH       =
+CIFO       =
+CPPIFC     =
+CPPIFH     =
+CPPIFO     =
+
+LIBS       = \
+		/usr/X11R6/lib/libX11.so \
+		/usr/local/lib/libImlib2.so \
+		../lib/Resurrection/libR_cint.dl \
+		../lib/Rwm/libRwm_cint.dl 
+
+CCOPT      = 
+
+CINTOPT      = 
+
+COFILES    = \
+		wmtest.o 
+
+RMCOFILES  = \
+		wmtest.o 
+
+CHEADER    = 
+CHEADERCINT = 
+
+CSTUB      = 
+CSTUBCINT  = 
+
+CPPOFILES  = 
+
+RMCPPOFILES = 
+
+CPPHEADER  = 
+CPPHEADERCINT  = 
+
+CPPSTUB    = 
+CPPSTUBCINT = 
+
+# Link Object #############################################
+$(OBJECT) : $(CINTLIB) $(READLINEA) G__setup.o $(COFILES) $(CPPOFILES) $(CIFO) $(CPPIFO) 
+	$(LD) $(OPTIMIZE) $(IPATH) $(MACRO) $(CCOPT) -o $(OBJECT) $(CIFO) $(CPPIFO) $(COFILES) $(CPPOFILES) $(CINTLIB) G__setup.o $(READLINEA) $(LIBS) $(LDOPT)
+
+# Compile User C source files ##############################
+wmtest.o : wmtest.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o wmtest.o -c wmtest.c
+
+
+# Compile User C++ source files ############################
+
+# Compile dictionary setup routine #######################
+G__setup.o : $(CINTSYSDIR)/main/G__setup.c $(CINTSYSDIR)/G__ci.h
+	$(CC) $(LINKSPEC) $(CINTIPATH) $(OPTIMIZE) $(OPTION) -o G__setup.o -c $(CINTSYSDIR)/main/G__setup.c
+
+
+# Clean up #################################################
+clean :
+	$(RM) $(OBJECT) core $(CIFO) $(CIFC) $(CIFH) $(CPPIFO) $(CPPIFC) $(CPPIFH) $(RMCOFILES) $(RMCPPOFILES) G__setup.o
+
+# re-makecint ##############################################
+makecint :
+	makecint -mk Makefile.cint -I../include/ -m -o wmtest -C wmtest.c -l /usr/X11R6/lib/libX11.so -l /usr/local/lib/libImlib2.so -l ../lib/Resurrection/libR_cint.dl -l ../lib/Rwm/libRwm_cint.dl 
+

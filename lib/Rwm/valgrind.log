@@ -1,0 +1,342 @@
+==1561== HEAP SUMMARY:                                                          
+==1561==     in use at exit: 56,221,406 bytes in 1,718 blocks                   
+==1561==   total heap usage: 44,320 allocs, 42,602 frees, 95,103,724 bytes alloc
+ated                                                                            
+==1561==                                                                        
+==1561== 72 bytes in 2 blocks are definitely lost in loss record 150 of 377     
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x40671EB: XGetWMHints (in /usr/lib/libX11.so.6.3.0)             
+==1561==    by 0x80508F7: Rwm_client_maprequest_handler (client.c:565)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 112 (8 direct, 104 indirect) bytes in 1 blocks are definitely lost in l
+oss record 176 of 377                                                           
+==1561==    at 0x402B102: realloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-l
+inux.so)                                                                        
+==1561==    by 0x40962A6: ??? (in /usr/lib/libX11.so.6.3.0)                     
+==1561==    by 0x40967A2: ??? (in /usr/lib/libX11.so.6.3.0)                     
+==1561==    by 0x409812F: ??? (in /usr/lib/libX11.so.6.3.0)                     
+==1561==    by 0x40989BA: _XlcCreateLC (in /usr/lib/libX11.so.6.3.0)            
+==1561==    by 0x40B77F9: _XlcDefaultLoader (in /usr/lib/libX11.so.6.3.0)       
+==1561==    by 0x40A0793: _XOpenLC (in /usr/lib/libX11.so.6.3.0)                
+==1561==    by 0x40A0A0A: _XrmInitParseInfo (in /usr/lib/libX11.so.6.3.0)       
+==1561==    by 0x65762F64: ???                                                  
+==1561==                                                                        
+==1561== 144 bytes in 2 blocks are definitely lost in loss record 199 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x4075BC2: XAllocSizeHints (in /usr/lib/libX11.so.6.3.0)         
+==1561==    by 0x80505C7: Rwm_client_propertynotify_handler (client.c:1013)     
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 184 bytes in 1 blocks are definitely lost in loss record 201 of 377    
+==1561==    at 0x402B018: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x4063F83: ??? (in /usr/lib/libX11.so.6.3.0)                     
+==1561==    by 0x4064578: XLoadQueryFont (in /usr/lib/libX11.so.6.3.0)          
+==1561==    by 0x8052A06: Rwm_init_clock_gc (clock.c:139)                       
+==1561==    by 0x8052B58: Rwm_init_clock (clock.c:229)                          
+==1561==    by 0x804E2DE: Rwm_init (init.c:235)                                 
+==1561==    by 0x804A596: main (main.c:18)                                     
+==1561==                                                                        
+==1561== 288 bytes in 2 blocks are definitely lost in loss record 237 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x80507B2: Rwm_init_client_events (client.c:37)                  
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 432 bytes in 12 blocks are definitely lost in loss record 249 of 377   
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x40671EB: XGetWMHints (in /usr/lib/libX11.so.6.3.0)             
+==1561==    by 0x80505BA: Rwm_client_propertynotify_handler (client.c:1005)     
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 576 bytes in 4 blocks are definitely lost in loss record 261 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804BA56: R_init_window (window.c:223)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804F28D: Rwm_create_desktop_window (desktop.c:187)             
+==1561==    by 0x804F319: Rwm_init_desktop (desktop.c:155)                      
+==1561==    by 0x804F526: Rwm_init_desktops (desktop.c:61)                      
+==1561==    by 0x804E214: Rwm_init (init.c:197)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 274 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x80515FA: Rwm_create_menu_window (menu.c:258)                   
+==1561==    by 0x8051AE7: Rwm_init_menu (menu.c:160)                            
+==1561==    by 0x804E271: Rwm_init (init.c:217)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 275 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804FC84: Rwm_create_frame (frame.c:547)                        
+==1561==    by 0x8050135: Rwm_frame_window (frame.c:508)                        
+==1561==    by 0x804DF58: Rwm_take_windows (init.c:347)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                       
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 276 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8051566: Rwm_create_menu_window (menu.c:235)                   
+==1561==    by 0x8051AE7: Rwm_init_menu (menu.c:160)                            
+==1561==    by 0x804E271: Rwm_init (init.c:217)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 277 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8051E5A: Rwm_create_pager_windows (pager.c:174)                
+==1561==    by 0x80524D7: Rwm_init_pager (pager.c:67)                           
+==1561==    by 0x804E2AE: Rwm_init (init.c:225)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 278 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8051F41: Rwm_create_pager_windows (pager.c:245)                
+==1561==    by 0x80524D7: Rwm_init_pager (pager.c:67)                           
+==1561==    by 0x804E2AE: Rwm_init (init.c:225)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 279 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8051FD2: Rwm_create_pager_windows (pager.c:268)                
+==1561==    by 0x80524D7: Rwm_init_pager (pager.c:67)                           
+==1561==    by 0x804E2AE: Rwm_init (init.c:225)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 960 bytes in 1 blocks are possibly lost in loss record 280 of 377      
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8052909: Rwm_create_clock_window (clock.c:74)                  
+==1561==    by 0x8052B2D: Rwm_init_clock (clock.c:221)                          
+==1561==    by 0x804E2DE: Rwm_init (init.c:235)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 1,024 bytes in 4 blocks are definitely lost in loss record 288 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                    
+==1561==    by 0x804F4F7: Rwm_init_desktops (desktop.c:50)                      
+==1561==    by 0x804E214: Rwm_init (init.c:197)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 1,024 bytes in 4 blocks are definitely lost in loss record 289 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x8052252: Rwm_create_pager_thumb (pager.c:357)                  
+==1561==    by 0x80524EB: Rwm_init_pager (pager.c:73)                           
+==1561==    by 0x804E2AE: Rwm_init (init.c:225)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 1,200 (768 direct, 432 indirect) bytes in 3 blocks are definitely lost 
+in loss record 295 of 377                                                       
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804E455: Rwm_root_createnotify_handler (root.c:176)            
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 1,920 bytes in 2 blocks are definitely lost in loss record 309 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804FC53: Rwm_create_frame (frame.c:536)                        
+==1561==    by 0x8050135: Rwm_frame_window (frame.c:508)                        
+==1561==    by 0x8050AAC: Rwm_client_maprequest_handler (client.c:607)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 2,048 bytes in 2 blocks are definitely lost in loss record 314 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F938: Rwm_init_frame_events (frame.c:393)                   
+==1561==    by 0x8050AB6: Rwm_client_maprequest_handler (client.c:608)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 2,048 bytes in 2 blocks are definitely lost in loss record 315 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F9A0: Rwm_init_frame_events (frame.c:408)                   
+==1561==    by 0x8050AB6: Rwm_client_maprequest_handler (client.c:608)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                    
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 2,048 bytes in 2 blocks are definitely lost in loss record 316 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F9FD: Rwm_init_frame_events (frame.c:424)                   
+==1561==    by 0x8050AB6: Rwm_client_maprequest_handler (client.c:608)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 2,048 bytes in 2 blocks are definitely lost in loss record 317 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804FA60: Rwm_init_frame_events (frame.c:439)                   
+==1561==    by 0x8050AB6: Rwm_client_maprequest_handler (client.c:608)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 3,072 bytes in 1 blocks are definitely lost in loss record 321 of 377  
+==1561==    at 0x402B018: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x4063FC5: ??? (in /usr/lib/libX11.so.6.3.0)                     
+==1561==    by 0x4064578: XLoadQueryFont (in /usr/lib/libX11.so.6.3.0)          
+==1561==    by 0x8052A06: Rwm_init_clock_gc (clock.c:139)                       
+==1561==    by 0x8052B58: Rwm_init_clock (clock.c:229)                          
+==1561==    by 0x804E2DE: Rwm_init (init.c:235)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 3,840 bytes in 4 blocks are possibly lost in loss record 326 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x805208B: Rwm_create_pager_windows (pager.c:297)                
+==1561==    by 0x80524D7: Rwm_init_pager (pager.c:67)                           
+==1561==    by 0x804E2AE: Rwm_init (init.c:225)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 6,720 bytes in 7 blocks are possibly lost in loss record 338 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x80516A3: Rwm_create_menu_window (menu.c:287)                   
+==1561==    by 0x8051AE7: Rwm_init_menu (menu.c:160)                            
+==1561==    by 0x804E271: Rwm_init (init.c:217)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 6,720 bytes in 7 blocks are possibly lost in loss record 339 of 377    
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x8051773: Rwm_create_menu_item (menu.c:333)                     
+==1561==    by 0x8051AFB: Rwm_init_menu (menu.c:166)                            
+==1561==    by 0x804E271: Rwm_init (init.c:217)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 6,720 bytes in 7 blocks are definitely lost in loss record 340 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804FC53: Rwm_create_frame (frame.c:536)                        
+==1561==    by 0x8050135: Rwm_frame_window (frame.c:508)                        
+==1561==    by 0x804DF58: Rwm_take_windows (init.c:347)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 7,168 bytes in 7 blocks are definitely lost in loss record 341 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F938: Rwm_init_frame_events (frame.c:393)                   
+==1561==    by 0x804DFAB: Rwm_take_windows (init.c:353)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 7,168 bytes in 7 blocks are definitely lost in loss record 342 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F9A0: Rwm_init_frame_events (frame.c:408)                   
+==1561==    by 0x804DFAB: Rwm_take_windows (init.c:353)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 7,168 bytes in 7 blocks are definitely lost in loss record 343 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804F9FD: Rwm_init_frame_events (frame.c:424)                   
+==1561==    by 0x804DFAB: Rwm_take_windows (init.c:353)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                     
+==1561==                                                                        
+==1561== 7,168 bytes in 7 blocks are definitely lost in loss record 344 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B3C3: R_add_binding (binding.c:20)                          
+==1561==    by 0x804FA60: Rwm_init_frame_events (frame.c:439)                   
+==1561==    by 0x804DFAB: Rwm_take_windows (init.c:353)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== 7,680 bytes in 8 blocks are definitely lost in loss record 345 of 377  
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804FC84: Rwm_create_frame (frame.c:547)                        
+==1561==    by 0x8050135: Rwm_frame_window (frame.c:508)                        
+==1561==    by 0x8050AAC: Rwm_client_maprequest_handler (client.c:607)          
+==1561==    by 0x804B1D0: R_handle_next_event (event.c:724)                     
+==1561==    by 0x804B31F: R_handle_events (event.c:666)                         
+==1561==    by 0x804A633: main (main.c:29)                                      
+==1561==                                                                        
+==1561== 68,160 bytes in 71 blocks are definitely lost in loss record 365 of 37 
+==1561==    at 0x4029796: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-li
+nux.so)                                                                         
+==1561==    by 0x804B8B0: R_init_window (window.c:204)                          
+==1561==    by 0x804BAC7: R_create_window (window.c:175)                        
+==1561==    by 0x804FC84: Rwm_create_frame (frame.c:547)                        
+==1561==    by 0x8050135: Rwm_frame_window (frame.c:508)                        
+==1561==    by 0x804DF58: Rwm_take_windows (init.c:347)                         
+==1561==    by 0x804E22C: Rwm_init (init.c:204)                                 
+==1561==    by 0x804A596: main (main.c:18)                                      
+==1561==                                                                        
+==1561== LEAK SUMMARY:                                                          
+==1561==    definitely lost: 128,936 bytes in 160 blocks                        
+==1561==    indirectly lost: 536 bytes in 7 blocks                              
+==1561==      possibly lost: 24,000 bytes in 25 blocks                          
+==1561==    still reachable: 56,067,934 bytes in 1,526 blocks                   
+==1561==         suppressed: 0 bytes in 0 blocks                                
+==1561== Reachable blocks (those to which a pointer was found) are not shown.   
+==1561== To see them, rerun with: --leak-check=full --show-reachable=yes        
+==1561==                                                                        
+==1561== For counts of detected and suppressed errors, rerun with: -v           
+==1561== ERROR SUMMARY: 35 errors from 35 contexts (suppressed: 0 from 0)       

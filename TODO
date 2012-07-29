@@ -1,0 +1,11 @@
+TODO
+----
+
+- make the allocator do a scan of malloc_hdrs for adjacent free chunks at top
+  of heap to return to the system by sbrk(-n);. done already, try to verify if
+  it actually works worth anything.
+- make the allocator thread-safe.
+- implement buffered I/O interface; fix lib/Resurrection/io.c.
+- clean it all up. really? :P
+- look into xine-lib to see how much hassle multimedia [playback] would be.
+

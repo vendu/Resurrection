@@ -1,0 +1,13 @@
+Tips for using Resurrection
+
+- check out the files in include/Resurrection/conf.h - they allow you to set a
+  few options for the applications.
+
+Rwm
+---
+- click on the title bar of a window to give the client input focus.
+- ctrl + left click on titlebar - shade/unshade
+- shift + left click on titlebar - kill window
+- ctrl + left click on titlebar - close window
+- left click on titlebar - raise
+- right click on titlebar - lower

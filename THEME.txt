@@ -1,0 +1,10 @@
+These icons would be best scalable to about 128x144-256x288.
+
+term.png
+editor.png
+email.png
+web.png
+msn.png
+irc.png
+news.png
+games.png

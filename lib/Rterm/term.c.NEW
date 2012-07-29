@@ -1,0 +1,887 @@
+/*
+ * term.c - terminal routines for Resurrection.
+ * Copyright (C) 2004 Tuomo Venäläinen
+ *
+ * See the file COPYING for information about using this software.
+ */
+
+#include <Resurrection/Resurrection.h>
+
+struct R_term *
+Rterm_alloc(void)
+{
+    return (calloc(1, sizeof(struct R_term)));
+}
+
+void Rterm_cleanup_draw_buffer(void)
+{
+    struct R_app *app;
+    struct R_term *term;
+    struct R_termscreen *screen;
+    int i;
+#if (USE_XSHM)
+    XShmSegmentInfo *shmseg;
+#endif
+
+    app = R_global.app;
+    term = app->client;
+#if (USE_XSHM)
+    for (i = 0 ; i < term->nscreens ; i++) {
+        screen = term->screens[i];
+        shmseg = &screen->bufshminfo;
+        if (shmseg->shmaddr) {
+            XShmDetach(app->display, shmseg);
+            shmdt(shmseg->shmaddr);
+            shmctl(shmseg->shmid, IPC_RMID, NULL);
+            shmseg->shmid = -1;
+            shmseg->shmaddr = NULL;
+        }
+    }
+#endif
+}
+
+#if 0
+void Rterm_cleanup_font_freetype(void)
+{
+    struct R_app *app;
+    struct R_term *term;
+    struct R_termscreen *screen;
+    int i, j;
+#if (USE_XSHM)
+    XShmSegmentInfo *shmseg;
+#endif
+
+    app = R_global.app;
+    term = app->term;
+#if (USE_XSHM)
+    for (i = 0 ; i < term->nscreens ; i++) {
+        screen = term->screens[i];
+        for (j = 0 ; j < 256 ; j++) {
+
+            shmseg = &screen->ftfont->shminfos[i];
+            if (shmseg->shmaddr) {
+                XShmDetach(app->display, shmseg);
+                shmdt(shmseg->shmaddr);
+                shmctl(shmseg->shmid, IPC_RMID, NULL);
+                shmseg->shmid = -1;
+                shmseg->shmaddr = NULL;
+            }
+        }
+    }
+#endif
+}
+#endif
+
+void
+Rterm_cleanup(void)
+{
+    Rterm_cleanup_draw_buffer();
+//    Rterm_cleanup_font_freetype();
+
+    return;
+}
+
+void
+Rterm_init_charsets(struct R_term *term)
+{
+    if (term == NULL) {
+
+	return;
+    }
+
+    term->charsets[RTERM_CHARSET_G0] = 'B'; /* ASCII. */
+    term->charsets[RTERM_CHARSET_G1] = 'B'; /* DEC line drawing. */
+    term->charsets[RTERM_CHARSET_G2] = 'B'; /* DEC supplemental. */
+    term->charsets[RTERM_CHARSET_G3] = 'B';
+
+    return;
+}
+
+void
+Rterm_init_cursor(struct R_term *term)
+{
+    struct R_app *app;
+    Cursor cursor;
+
+    app = R_global.app;
+    cursor = XCreateFontCursor(app->display, XC_xterm);
+    XDefineCursor(app->display, term->window->id, cursor);
+    XFreeCursor(app->display, cursor);
+
+    return;
+}
+
+struct R_term *
+Rterm_init(struct R_app *app, int argc, char *argv[])
+{
+    struct R_term *term;
+
+    if ((term = Rterm_alloc()) == NULL) {
+
+	return NULL;
+    }
+
+    R_global.app = app;
+    app->client = term;
+
+    fprintf(stderr, "#1\n");
+
+//    Rterm_parse_cmdline(term, argc, argv);
+
+    /* store user and group ids. */
+    user_init(&(term->user));
+
+    fprintf(stderr, "#2\n");
+
+    /* disable root privileges in case we're setuid root. */
+    user_disable_privileges(&term->user);
+
+    fprintf(stderr, "#3\n");
+
+    /*
+     * set input field separator for shell to TAB for old shells that don't
+     * reset it. This is for security reasons to prevent users from setting
+     * IFS to make system() execute a different program.
+     */
+
+    putenv("IFS= \t");
+
+    /*
+     * export terminal type.
+     */
+
+    putenv("TERM=xterm");
+
+    if ((term->path = calloc(1, PATH_MAX + 1)) == NULL) {
+
+        return NULL;
+    }
+
+    if (getcwd(term->path, PATH_MAX + 1) == NULL) {
+
+        return NULL;
+    }
+
+    fprintf(stderr, "#4\n");
+
+    term->flags |= RTERM_DEFAULT_FLAGS;
+    term->privmodes |= RTERM_DEFAULT_PRIVMODES;
+
+    Rterm_init_charsets(term);
+
+    term->fdscreens = calloc(open_max(), sizeof(struct R_termscreen *));
+    if (term->fdscreens == NULL) {
+
+	return NULL;
+    }
+
+#if 0
+    if (app_init(app, RTERM_NAME, argc, argv) < 0) {
+
+	return NULL;
+    }
+#endif
+
+#if 0
+    if (Rterm_register_options(term) < 0) {
+
+	return NULL;
+    }
+
+    if (Rterm_register_configs(term) < 0) {
+
+	return NULL;
+    }
+#endif
+
+    if (Rterm_register_escape_handlers() < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#5\n");
+
+    if (Rterm_register_csi_handlers() < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#6\n");
+
+    if (Rterm_register_private_mode_handlers() < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#7\n");
+
+    if (Rterm_register_sgr_handlers() < 0) {
+
+	return NULL;
+    }
+ 
+    fprintf(stderr, "#8\n");
+
+    if (Rterm_register_escape_handlers() < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#9\n");
+
+#if 0
+    if (eterm_register_ipc_handlers() < 0) {
+
+	return NULL;
+    }
+
+    if (eterm_register_winop_handlers() < 0) {
+
+	return NULL;
+    }
+#endif
+
+    term->xconnfd = ConnectionNumber(app->display);
+//    term->window = app->window;
+    term->window = R_create_window(app,
+                                   NULL,
+                                   0);
+    R_add_window(term->window);
+    app->window = term->window;
+
+    if (term->privmodes & RTERM_PRIVMODE_MENUBAR) {
+        term->privmodes &= ~RTERM_PRIVMODE_MENUBAR;
+    }
+
+    if (Rterm_init_screens(term, RTERM_SCREENS) < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#10\n");
+
+    atexit(Rterm_cleanup);
+
+    if (Rterm_init_windows(term) < 0) {
+
+	return NULL;
+    }
+
+    fprintf(stderr, "#11\n");
+
+    if (Rterm_init_selection_gc(term) < 0) {
+
+        return NULL;
+    }
+
+    fprintf(stderr, "#12\n");
+
+#if 0
+    if (term->privmodes & RTERM_PRIVMODE_MENUBAR) {
+	if (Rterm_init_menubar(term) < 0) {
+	    
+	    return NULL;
+	}
+    }
+#endif
+
+#if 0
+    if (Rterm_init_pop_menu(term) < 0) {
+
+        return NULL;
+    }
+#endif
+
+    if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+	if (Rterm_init_scrollbar(term) < 0) {
+	    
+	    return NULL;
+	}
+
+        fprintf(stderr, "#13\n");
+
+#if 0
+	if (term->flags & RTERM_TRANSPARENT) {
+	    term->scrollbar->window->images[R_WINDOW_BACKGROUND_IMAGE]->flags |= IMAGE_TRANSPARENT;
+        }
+#endif
+    }
+
+    Rterm_init_cursor(term);
+
+    Rterm_map_windows(term);
+
+    term->funcs.read_char = Rterm_read_char;
+    term->funcs.queue_input = Rterm_queue_input;
+    term->funcs.queue_output = Rterm_queue_output;
+    term->funcs.add_text = Rterm_add_text;
+
+    fprintf(stderr, "SCROLLBAR: ");
+    if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+        fprintf(stderr, "yes\n");
+    } else {
+        fprintf(stderr, "no\n");
+    }
+
+    return term;
+}
+
+int
+Rterm_loop(struct R_term *term)
+{
+    int ch;
+    struct R_termscreen *screen;
+#if (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)
+    struct timeval curtv;
+#endif
+    int (*read_char)(struct R_term *);
+    void (*add_text)(struct R_term *, struct R_termscreen *);
+    void (*refresh)(struct R_termscreen *, int);
+
+    read_char = term->funcs.read_char;
+    add_text = term->funcs.add_text;
+    do {
+        screen = term->screen;
+	refresh = screen->funcs.refresh;
+
+#if 0
+        if (!screen->refreshed) {
+            screen->refreshed = TRUE;
+            
+            refresh(screen, RTERM_SCREEN_DRAW_ALL);
+//        Rterm_update_scrollbar(term);
+        }
+#endif
+
+#if (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)
+
+	while ((ch = read_char(term)) == 0) {
+	    gettimeofday(&curtv, NULL);
+            
+	    if (TIMEVAL_CMP_USEC(&(term->blinktv), &curtv)
+		> 0) {
+		if (screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS) {
+                    if (term->blink) {
+                        refresh(screen, RTERM_SCREEN_DRAW_ALL);
+                        term->blink = FALSE;
+                    } else {
+                        refresh(screen, RTERM_SCREEN_DRAW_BLINKING_ONLY);
+                        term->blink = TRUE;
+                    }
+                }
+		if (screen->flags & RTERM_SCREEN_HAS_BLINKING_CURSOR) {
+		    if (term->blink) {
+                        Rterm_draw_screen_cursor(screen);
+                        term->blink = FALSE;
+		    } else {
+			Rterm_clear_screen_cursor(screen);
+                        term->blink = TRUE;
+		    }
+		}
+                TIMEVAL_ADD_CONST_2(&(term->blinktv), &curtv,
+				    RTERM_SELECT_BLINK_TIMEOUT_USEC);
+            }
+            if (screen->refreshcnt < 0) {
+                screen->refreshcnt = 0;
+                screen->refreshed = TRUE;
+                Rterm_touch_screen(screen);
+                refresh(screen, RTERM_SCREEN_DRAW_ALL);
+//        Rterm_update_scrollbar(term);
+            }
+        }
+
+#else /* !((SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)) */
+
+	while ((ch = read_char(term)) == 0) {
+	    ;
+	}
+
+#endif /* (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS) */
+
+	if (ch > 0) {
+	    add_text(term, screen);
+	}
+
+    } while (ch != -1);
+
+    return 0;
+}
+
+int
+Rterm_run_command(struct R_term *term,
+                  struct R_termscreen *screen,
+                  char *argv[])
+{
+    struct R_app *app;
+    int ptyfd;
+    pid_t pid;
+
+    ptyfd = Rterm_init_master_pty(term, screen);
+    if (ptyfd < 0) {
+        fprintf(stderr, "failed initializing master pty\n");
+
+	return -1;
+    }
+
+#if (USE_ATEXIT)
+    if (atexit(Rterm_exit) < 0) {
+
+	return -1;
+    }
+#elif ((USE_ON_EXIT) || defined(sun))
+    if (on_exit(Rterm_exit, NULL) < 0) {
+
+	return -1;
+    }
+#endif /* USE_ATEXIT */
+
+    PTY_INIT_MODE(ptyfd, &(screen->pty.mode));
+
+#if (CANNOT_IGNORE_SIGHUP)
+    SIGNAL(SIGHUP, SIG_DFL);
+#else
+    SIGNAL(SIGHUP, SIG_IGN);
+#endif
+
+#if (CHECK_FOR_JOB_CONTROL_SHELL)
+
+    if (getpid() == getpgrp()) {
+	/* we were spawned by a shell that supports job control. */
+
+    } else {
+	/* we were spawned by a shell that doesn't support job control and
+	 * must ignore keyboard signals.
+	 */
+    }
+
+#else
+
+#   if defined(IGNORE_PARENT_SIGINT)
+    SIGNAL(SIGINT, SIG_IGN);
+#   else
+    SIGNAL(SIGINT, Rterm_exit_signal);
+#   endif
+
+#   if defined(SIGQUIT)
+#       if (IGNORE_PARENT_SIGQUIT)
+    SIGNAL(SIGQUIT, SIG_IGN);
+#       else
+    SIGNAL(SIGQUIT, Rterm_quit_signal);
+#       endif
+#   endif
+
+#endif /* CHECK_FOR_JOB_CONTROL_SHELL */
+
+    SIGNAL(SIGILL, Rterm_quit_signal);
+#if 0 /* FIXME */
+    SIGNAL(SIGABRT, Rterm_quit_signal);
+#endif
+    SIGNAL(SIGABRT, SIG_DFL);
+
+#if defined(SIGBUS)
+    SIGNAL(SIGBUS, Rterm_quit_signal);
+#endif
+
+    SIGNAL(SIGFPE, Rterm_quit_signal);
+#if 0 /* FIXME */
+    SIGNAL(SIGSEGV, Rterm_quit_signal);
+#endif
+    SIGNAL(SIGSEGV, SIG_DFL);
+
+    SIGNAL(SIGTERM, Rterm_exit_signal);
+
+#if defined(SIGCHLD)
+    SIGNAL(SIGCHLD, Rterm_child_signal);
+#endif
+
+#if defined(SIGSYS)
+    SIGNAL(SIGSYS, Rterm_quit_signal);
+#endif
+
+    Rterm_set_winsize(term, term->screen->rows, term->screen->columns, ptyfd);
+
+    pid = fork();
+
+    if (pid < 0) {
+        app = R_global.app;
+	fprintf(stderr, "%s: Rterm_run_command(): fork() failed: %s\n",
+		app->name, strerror(errno));
+	
+	return -1;
+    }
+
+#if 0
+    term->args->commandpid = 0;
+#endif
+    
+    if (pid == 0) {
+	/* child process. */
+
+	Rterm_run_command_child(term, screen);
+    }
+    
+    /* parent process */
+
+    screen->cmdpid = pid;
+    
+    /* FIXME: glibc 2.1+ might not need root privileges for user logging. */
+    
+#if 0
+    user_enable_privileges(&(term->args->user));
+
+    userlog_init(&(term->args->userlog), ptyfd, term->args->masterpty,
+		 DisplayString(app->display));
+
+    userlog_add_log_entries(&(term->args->userlog));
+
+    user_disable_privileges(&(term->args->user));
+#endif
+
+    return ptyfd;
+}
+
+int
+Rterm_init_master_pty(struct R_term *term, struct R_termscreen *screen)
+{
+    struct R_termscreen *screen2;
+    int ptyfd;
+
+    if (term == NULL) {
+
+	return -1;
+    }
+
+    ptyfd = R_open_pty_master(&(screen->pty.mastername),
+                              &(screen->pty.slavename),
+                              TRUE);
+    if (ptyfd < 0) {
+
+	return -1;
+    }
+
+    screen->pty.masterfd = ptyfd;
+//    screen2 = term->screens[(term->curscreen + term->nscreens)];
+//    screen2->pty.slavefd = ptyfd;
+
+    term->fdscreens[ptyfd] = screen;
+
+    term->nfds = MAX(term->nfds, ptyfd);
+    term->nfds = MAX(term->nfds, term->xconnfd) + 1;
+
+    if (lstat(screen->pty.slavename, &(screen->pty.stat)) < 0) {
+        fprintf(stderr, "lstat failed\n");
+
+	return -1;
+    }
+
+    return ptyfd;
+}
+
+int
+Rterm_run_command_child(struct R_term *term, struct R_termscreen *screen)
+{
+    struct R_app *app;
+    int consolefd;
+    size_t len;
+    char *shellname, *shellbasename, *loginshellname;
+
+    app = R_global.app;
+	
+    SIGNAL(SIGHUP, Rterm_exit_signal);
+    SIGNAL(SIGINT, Rterm_exit_signal);
+
+    SIGNAL(SIGINT, SIG_DFL);
+    SIGNAL(SIGQUIT, SIG_DFL);
+    SIGNAL(SIGCHLD, SIG_DFL);
+    SIGNAL(SIGSEGV, SIG_DFL);
+    SIGNAL(SIGBUS, SIG_DFL);
+    SIGNAL(SIGABRT, SIG_DFL);
+    SIGNAL(SIGFPE, SIG_DFL);
+    SIGNAL(SIGILL, SIG_DFL);
+#if defined(SIGSYS)
+    SIGNAL(SIGSYS, SIG_DFL);
+#endif
+    SIGNAL(SIGALRM, SIG_DFL);
+    
+#if (USE_JOB_CONTROL)
+    SIGNAL(SIGTSTP, SIG_IGN);
+    SIGNAL(SIGTTIN, SIG_IGN);
+    SIGNAL(SIGTTOU, SIG_IGN);
+#endif
+
+    if (R_init_pty_slave(&(term->user), screen->pty.slavename, term->nfds)
+	< 0) {
+	fprintf(stderr, "%s: failed to initialize slave pty: %s\n",
+		app->name, strerror(errno));
+	
+	exit(EXIT_FAILURE);
+    }
+    
+    PTY_SET_MODE(STDIN_FILENO, &(screen->pty.mode));
+    
+    chdir(term->path);
+    
+    if (term->flags & RTERM_CONSOLE) {
+	user_enable_privileges(&(term->user));
+	
+#if defined(SRIOCSREDIR)
+	if ((consolefd = open(RTERM_CONSOLE_DEVICE, O_WRONLY)) < 0
+	    || PTY_IOCTL(consolefd, SRIOCSREDIR, 0) < 0) {
+	    if (consolefd >= 0) {
+		close(consolefd);
+	    }
+	}
+#elif defined(TIOCCONS)
+	PTY_IOCTL(0, TIOCCONS, &consolefd);
+#endif /* SRIOCSREDIR */
+	
+    }
+    
+    user_disable_privileges(&(term->user));
+
+    Rterm_set_winsize(term, screen->rows,
+		     screen->columns, STDIN_FILENO);
+    
+    if ((shellname = getenv("SHELL")) == NULL || shellname[0] == '\0') {
+	shellname = "/bin/sh";
+    }
+    
+    if ((shellbasename = strrchr(shellname, '/')) == NULL) {
+	shellbasename = shellname;
+    } else {
+	shellbasename++;
+    }
+    
+    if (term->flags & RTERM_LOGIN_SHELL) {
+	len = strlen(shellbasename);
+	
+	if ((loginshellname = calloc(1, len + 2))
+	    == NULL) {
+	    
+	    return -1;
+	}
+	
+	loginshellname[0] = '-';
+	
+	strncpy(&(loginshellname[1]), shellbasename, len);
+	
+	if (execlp(shellname, loginshellname, NULL) < 0) {
+	    fprintf(stderr, "%s: failed to execute login shell \"%s\": %s\n",
+		    app->name, shellname, strerror(errno));
+	    
+	    return -1;
+	}
+    } else {
+	if (execlp(shellname, shellbasename, NULL) < 0) {
+	    fprintf(stderr, "%s: failed to execute shell \"%s\": %s\n",
+		    app->name, shellname, strerror(errno));
+	    
+	    return -1;
+	}
+    }
+    
+    return 0;
+}
+
+void
+Rterm_set_font_flag(struct R_term *term)
+{
+    struct R_termscreen *screen;
+
+    if (term == NULL) {
+
+	return;
+    }
+
+    screen = term->screen;
+
+    screen->textflags &= ~RTERM_CHAR_FONT_MASK;
+
+    switch (term->charsets[(term->charset)]) {
+        case RTERM_CHARSET_DEC_LINE:
+	    screen->textflags &= RTERM_CHAR_ACS_FONT;
+
+	    break;
+        case RTERM_CHARSET_UK:
+	    screen->textflags &= RTERM_CHAR_UK_FONT;
+
+	    break;
+	    /* TODO: implement these. */
+        case RTERM_CHARSET_US:
+
+	    break;
+        case RTERM_CHARSET_MULTINATIONAL:
+
+	    break;
+        case RTERM_CHARSET_FINNISH:
+
+	    break;
+        case RTERM_CHARSET_FINNISH2:
+
+	    break;
+        case RTERM_CHARSET_GERMAN:
+
+	    break;
+        default:
+
+	    break;
+    }
+
+    return;
+}
+
+void
+Rterm_set_charset(struct R_term *term, int set, char ch)
+{
+    if (term == NULL || ch == EOF) {
+	
+	return;
+    }
+    
+#if (USE_DUAL_BYTE_CHARACTERS)
+    if (set < 0 && set != RTERM_CHARSET_KANJI) {
+
+	return;
+    }
+    
+    if (set == RTERM_CHARSET_KANJI) {
+	term->dualbyte = TRUE;
+
+	set = -RTERM_CHARSET_KANJI;
+    }
+#endif
+    
+    if (set < 0 || set > RTERM_MAX_CHARSET) {
+	
+	return;
+    }
+    
+    term->charsets[set] = ch;
+
+    Rterm_set_font_flag(term);
+
+    return;
+}
+
+void
+Rterm_choose_charset(struct R_term *term, int set)
+{
+    if (term == NULL
+	|| set < 0
+	|| set > RTERM_MAX_CHARSET) {
+
+	return;
+    }
+
+    term->charset = set;
+
+    Rterm_set_font_flag(term);
+
+    return;
+}
+
+void
+Rterm_get_modifier_keys(struct R_term *term)
+{
+    struct R_app *app;
+    int i, j, k, l, match;
+    XModifierKeymap *modmap;
+    KeyCode *keycodes;
+    int modmasks[] = { Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
+
+    app = R_global.app;
+
+    modmap = XGetModifierMapping(app->display);
+    keycodes = modmap->modifiermap;
+
+    for (i = Mod5MapIndex ; i >= Mod1MapIndex ; i--) {
+	k = i * modmap->max_keypermod;
+
+	l = i - Mod1MapIndex;
+
+	match = 0;
+
+	for (j = 0 ; j < modmap->max_keypermod ; j++, k++) {
+	    if (keycodes[k] == 0) {
+
+		break;
+	    }
+
+	    switch(XKeycodeToKeysym(app->display,
+				    keycodes[k], 0)) {
+	        case XK_Meta_L:
+	        case XK_Meta_R:
+		    match = term->metamask = modmasks[l];
+
+		    break;
+	        case XK_Alt_L:
+	        case XK_Alt_R:
+		    match = term->altmask = modmasks[l];
+
+		    break;
+	        case XK_Num_Lock:
+		    match = term->numlockmask = modmasks[l];
+
+		    break;
+	    }
+
+	    if (match) {
+
+		break;
+	    }
+	}
+    }
+
+    XFreeModifiermap(modmap);
+
+    if (term->metamask == 0) {
+	if (term->altmask != 0) {
+	    /* default Meta key to match Alt mask. */
+
+	    term->metamask = term->altmask;
+	} else {
+	    /* default Meta key to match Mod1Mask. */
+
+	    term->metamask = Mod1Mask;
+	}
+    }
+
+    if (term->altmask == 0) {
+	/* default Alt key to match Meta mask. */
+
+	term->altmask = term->metamask;
+    }
+
+    return;
+}
+
+void
+Rterm_parse_cmdline(struct R_term *term, int argc, char *argv[])
+{
+    int ndx;
+
+    ndx = 1;
+    while (ndx < argc) {
+        ndx++;
+    }
+}
+
+int
+Rterm_main(struct R_app *app, int argc, char *argv[])
+{
+    struct R_term *term;
+
+    term = Rterm_init(app, argc, argv);
+    if (!term) {
+
+	return EXIT_FAILURE;
+    }
+
+    if (Rterm_run_command(term, term->screen, NULL) < 0) {
+
+	return -1;
+    }
+
+    return (Rterm_loop(term));
+}
+

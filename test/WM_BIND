@@ -1,0 +1,45 @@
+binding
+-------
+bits		description
+----		-----------
+0..7		ASCII value
+8..10		buttons 1-3
+11		motion
+12		shift
+13		ctrl
+14		meta
+15		extra
+
+#define R_BINDING_ASCII_MASK  0x00ff
+#define R_BINDING_BUTTON_MASK 0x0700
+#define R_BINDING_MOTION_FLAG 0x0800
+#define R_BINDING_SHIFT_FLAG  0x1000
+#define R_BINDING_CTRL_MASK   0x2000
+#define R_BINDING_META_MASK   0x4000
+#define R_BINDING_EXTRA_MASK  0x8000
+
+typedef int16_t R_binding_t;
+
+struct R_binding {
+    R_binding_t bindings[4];
+    struct R_binding *chain;
+    struct R_binding *prev;
+    struct R_binding *next;
+};
+
+----8<----
+
+typedef uint32_t R_binding_t;
+
+defaults
+--------
+
+ctrl-f1		terminal
+ctrl-f2		editor
+ctrl-f3		browser
+ctrl-q		exit
+alt-fn		desktop n
+ctrl-left	application menu
+ctrl-middle	action menu
+ctrl-right	config menu
+

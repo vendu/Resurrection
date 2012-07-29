@@ -1,0 +1,1642 @@
+/*
+ * char.c - single-byte character routines for Rterm.
+ * Copyright (C) 2003 Tuomo Venäläinen
+ *
+ * See the file COPYING for information about using this software.
+ */
+
+#include <Resurrection/Resurrection.h>
+
+int
+Rterm_alloc_screen_textbuffers(struct R_termscreen *screen)
+{
+    int row, rows, bufferrows;
+//    void (*destroy_buffers)(struct R_termscreen *);
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+    void (*blank_drawn)(struct R_termscreen *, int, int, int);
+
+//    destroy_buffers = screen->funcs.destroy_buffers;
+    blank_string = screen->funcs.blank_string;
+    blank_drawn = screen->funcs.blank_drawn;
+
+    screen->rows = MIN(screen->rows, RTERM_SCREEN_MAX_ROWS);
+    screen->columns = MIN(screen->columns, RTERM_SCREEN_MAX_COLUMNS);
+    bufferrows = screen->savelines + screen->rows;
+    screen->textbuf.nrows = bufferrows;
+    rows = screen->rows;
+    screen->drawbuf.nrows = rows;
+
+    if ((screen->textbuf.rowlens =
+	 calloc(bufferrows, sizeof(unsigned int)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->textbuf.rowcols =
+	 calloc(bufferrows, sizeof(unsigned int)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->textbuf.data =
+	 calloc(bufferrows, sizeof(R_text_t *)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->textbuf.renddata =
+	 calloc(bufferrows, sizeof(R_textflags_t *)))
+	== NULL) {
+//	destroy_buffers(screen);
+	
+	return -1;
+    }
+    
+    for (row = screen->savelines ;
+	 row < bufferrows ;
+	 row++) {
+	if ((screen->textbuf.data[row] =
+	     calloc(screen->columns, sizeof(R_text_t)))
+	    == NULL) {
+//	    destroy_buffers(screen);
+	    
+	    return -1;
+	}
+	
+	if ((screen->textbuf.renddata[row] =
+	     calloc(screen->columns, sizeof(R_textflags_t)))
+	    == NULL) {
+//	    destroy_buffers(screen);
+	    
+	    return -1;
+	}
+	
+	screen->textbuf.rowlens[row] = screen->columns;
+	screen->textbuf.rowcols[row] = 0;
+	blank_string(screen, row, 0, screen->textbuf.rowlens[row]);
+    }
+    
+    if ((screen->drawbuf.rowlens =
+	 calloc(screen->drawbuf.nrows, sizeof(unsigned int)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->drawbuf.rowcols =
+	 calloc(screen->drawbuf.nrows, sizeof(unsigned int)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->drawbuf.data =
+	 calloc(screen->drawbuf.nrows, sizeof(R_text_t *)))
+	== NULL) {
+//	destroy_buffers(screen);
+
+	return -1;
+    }
+
+    if ((screen->drawbuf.renddata =
+	 calloc(screen->drawbuf.nrows, sizeof(R_textflags_t *)))
+	== NULL) {
+//	destroy_buffers(screen);
+	
+	return -1;
+    }
+
+    if ((screen->drawbuf.rowdirty =
+         calloc(screen->drawbuf.nrows, sizeof(int)))
+        == NULL) {
+//        destroy_buffers(screen);
+	
+        return -1;
+    }
+	
+    for (row = 0 ;
+	 row < screen->drawbuf.nrows ;
+	 row++) {
+	if ((screen->drawbuf.data[row] =
+	     calloc(screen->columns, sizeof(R_text_t)))
+	    == NULL) {
+//	    destroy_buffers(screen);
+	    
+	    return -1;
+	}
+	
+	if ((screen->drawbuf.renddata[row] =
+	     calloc(screen->columns, sizeof(R_textflags_t)))
+	    == NULL) {
+//	    destroy_buffers(screen);
+	    
+	    return -1;
+	}
+	
+	screen->drawbuf.rowlens[row] = screen->columns;
+	screen->drawbuf.rowdirty[row] = 1;
+
+	blank_drawn(screen, row, 0,
+		    screen->drawbuf.rowlens[row]);
+	screen->drawbuf.rowcols[row] = 0;
+    }
+
+    return 0;
+}
+
+#if 0
+void
+Rterm_destroy_screen_textbuffers(struct R_termscreen *screen)
+{
+    int row, bufferrows, drawnrows;
+
+    bufferrows = screen->textbuf.nrows;
+    for (row = 0 ; row < bufferrows ; row++) {
+	if ((screen->textbuf.data)
+	    && (screen->textbuf.data[row])) {
+	    free(screen->textbuf.data[row]);
+	}
+
+	if ((screen->textbuf.renddata)
+	    && (screen->textbuf.renddata[row])) {
+	    free(screen->textbuf.renddata[row]);
+	}
+    }
+
+    screen->textbuf.nrows = 0;
+
+    if (screen->textbuf.rowlens) {
+	free(screen->textbuf.rowlens);
+        screen->textbuf.rowlens = NULL;
+    }
+
+    if (screen->textbuf.rowcols) {
+	free(screen->textbuf.rowcols);
+        screen->textbuf.rowcols = NULL;
+    }
+
+    if (screen->textbuf.data) {
+	free(screen->textbuf.data);
+        screen->textbuf.data = NULL;
+    }
+
+    if (screen->textbuf.renddata) {
+	free(screen->textbuf.renddata);
+        screen->textbuf.renddata = NULL;
+    }
+	
+    drawnrows = screen->drawbuf.nrows;
+    for (row = 0 ; row < drawnrows ; row++) {
+	if ((screen->drawbuf.data)
+	    && screen->drawbuf.data[row]) {
+	    free(screen->drawbuf.data[row]);
+            screen->drawbuf.data[row] = NULL;
+	}
+
+	if ((screen->drawbuf.renddata)
+	    && screen->drawbuf.renddata[row]) {
+	    free(screen->drawbuf.renddata[row]);
+            screen->drawbuf.renddata[row] = NULL;
+	}
+    }
+
+    screen->drawbuf.nrows = 0;
+
+    if (screen->drawbuf.rowlens) {
+	free(screen->drawbuf.rowlens);
+    }
+
+    if (screen->drawbuf.rowcols) {
+	free(screen->drawbuf.rowcols);
+    }
+
+    if (screen->drawbuf.data) {
+	free(screen->drawbuf.data);
+    }
+
+    if (screen->drawbuf.renddata) {
+	free(screen->drawbuf.renddata);
+    }
+
+    return;
+}
+#endif
+
+/*
+ * NOTE: everything below really belongs into Rterm/screen.c and it should only
+ * be called through function pointers from the screen structure...
+ */
+
+int
+Rterm_resize_screen_textbuffers(struct R_termscreen *screen,
+                                int rows,
+                                int columns)
+{
+    int row, oldrows, newrows, oldcolumns;
+    int drawrow;
+    int (*scroll_text)(struct R_termscreen *, int, int, int, int);
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+    void (*blank_drawn)(struct R_termscreen *, int, int, int);
+
+    if (screen == NULL
+	|| rows <= 0
+	|| columns <= 0
+	|| (rows == screen->rows
+	    && columns == screen->columns)) {
+
+	return -1;
+    }
+    scroll_text = screen->funcs.scroll_text;
+    blank_string = screen->funcs.blank_string;
+    blank_drawn = screen->funcs.blank_drawn;
+
+    oldrows = screen->rows;
+    oldcolumns = screen->columns;
+
+    screen->rows = rows;
+    screen->columns = columns;
+    screen->textbuf.nrows = screen->savelines + rows;
+    screen->drawbuf.nrows = rows;
+
+#if 0
+    rows = MIN(rows, SCREEN_MAX_ROWS);
+    columns = MIN(columns, SCREEN_MAX_COLUMNS);
+#endif
+
+    if (rows != oldrows) {
+	if (rows < oldrows) {
+	    if (screen->row > rows - 1) {
+		scroll_text(screen, 0, screen->rows - 1,
+			    screen->row - rows + 1,
+			    TRUE);
+
+		screen->row = rows - 1;
+	    }
+
+	    for (row = screen->savelines + rows ;
+		 row < screen->savelines + oldrows ;
+		 row++) {
+		if (screen->textbuf.data[row]) {
+		    drawrow = row - screen->savelines;
+		    free(screen->textbuf.data[row]);
+                    screen->textbuf.data[row] = NULL;
+		    free(screen->textbuf.renddata[row]);
+                    screen->textbuf.renddata[row] = NULL;
+		    free(screen->drawbuf.data[drawrow]);
+                    screen->drawbuf.data[row] = NULL;
+		    free(screen->drawbuf.renddata[drawrow]);
+                    screen->drawbuf.renddata[row] = NULL;
+		}
+	    }
+	}
+
+	newrows = screen->savelines + rows;
+
+	if ((screen->textbuf.rowlens
+	     = realloc(screen->textbuf.rowlens,
+		       newrows * sizeof(unsigned int)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if ((screen->textbuf.rowcols
+	     = realloc(screen->textbuf.rowcols,
+		       newrows * sizeof(unsigned int)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+	
+	if ((screen->textbuf.data
+	     = realloc(screen->textbuf.data,
+		       newrows * sizeof(R_text_t *)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if ((screen->textbuf.renddata
+	     = realloc(screen->textbuf.renddata,
+		       newrows * sizeof(R_textflags_t *)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+	
+	if ((screen->drawbuf.rowlens
+	     = realloc(screen->drawbuf.rowlens,
+		       rows * sizeof(unsigned int)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if ((screen->drawbuf.rowcols
+	     = realloc(screen->drawbuf.rowcols,
+		       rows * sizeof(unsigned int)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if ((screen->drawbuf.data
+	     = realloc(screen->drawbuf.data,
+		       rows * sizeof(R_text_t *)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+	
+	if ((screen->drawbuf.renddata
+	     = realloc(screen->drawbuf.renddata,
+		       rows * sizeof(R_textflags_t *)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if ((screen->drawbuf.rowdirty
+	     = realloc(screen->drawbuf.rowdirty,
+		       rows * sizeof(int)))
+	    == NULL) {
+	    
+	    return -1;
+	}
+
+	if (oldcolumns != columns) {
+	    for (row = screen->savelines ;
+		 row < screen->savelines + MIN(rows, oldrows) ;
+		 row ++) {
+		drawrow = row - screen->savelines;
+
+		if ((screen->textbuf.data[row]
+		     = realloc(screen->textbuf.data[row],
+			       columns * sizeof(R_text_t)))
+		    == NULL) {
+		    
+		    return -1;
+		}
+		
+		if ((screen->textbuf.renddata[row]
+		     = realloc(screen->textbuf.renddata[row],
+			       columns * sizeof(R_textflags_t)))
+		    == NULL) {
+		    
+		    return -1;
+		}
+
+		if ((screen->drawbuf.data[drawrow]
+		     = realloc(screen->drawbuf.data[drawrow],
+			       columns * sizeof(R_text_t)))
+		    == NULL) {
+
+		    return -1;
+		}
+		
+		if ((screen->drawbuf.renddata[drawrow]
+		     = realloc(screen->drawbuf.renddata[drawrow],
+			       columns * sizeof(R_textflags_t)))
+		    == NULL) {
+
+		    return -1;
+		}
+		
+		screen->textbuf.rowlens[row] = columns;
+		screen->textbuf.rowcols[row]
+		    = MIN(columns, screen->textbuf.rowcols[row]);
+		screen->drawbuf.rowlens[drawrow] = columns;
+		screen->drawbuf.rowcols[drawrow]
+		    = MIN(columns, screen->drawbuf.rowcols[drawrow]);
+
+		if (columns > oldcolumns) {
+		    blank_string(screen, row, oldcolumns,
+				 columns - oldcolumns);
+		    blank_drawn(screen, drawrow, oldcolumns,
+				columns - oldcolumns);
+		}
+	    }
+	}
+	    
+	for (row = screen->savelines + oldrows ;
+	     row < screen->savelines + rows ;
+	     row++) {
+	    drawrow = row - screen->savelines;
+
+	    if ((screen->textbuf.data[row]
+		 = calloc(1, columns * sizeof(R_text_t)))
+		== NULL) {
+		
+		return -1;
+	    }
+	    
+	    if ((screen->textbuf.renddata[row]
+		 = calloc(1, columns * sizeof(R_textflags_t)))
+		== NULL) {
+		
+		return -1;
+	    }
+
+	    if ((screen->drawbuf.data[drawrow]
+		 = calloc(1, columns * sizeof(R_text_t)))
+		== NULL) {
+		
+		return -1;
+	    }
+	    
+	    if ((screen->drawbuf.renddata[drawrow]
+		 = calloc(1, columns * sizeof(R_textflags_t)))
+		== NULL) {
+		
+		return -1;
+	    }
+
+	    screen->textbuf.rowlens[row] = columns;
+	    screen->textbuf.rowcols[row] = 0;
+	    screen->drawbuf.rowlens[drawrow] = columns;
+	    screen->drawbuf.rowcols[drawrow] = 0;
+            screen->drawbuf.rowdirty[drawrow] = 1;
+	    blank_string(screen, row, 0, columns);
+	    blank_drawn(screen, drawrow, 0, columns);
+	}
+    } else {
+	/* rows == oldrows && columns != oldcolumns */
+
+	for (row = screen->savelines ;
+	     row < screen->savelines + rows ;
+	     row++) {
+	    if ((screen->textbuf.data[row]
+		 = realloc(screen->textbuf.data[row],
+			   columns * sizeof(R_text_t)))
+		== NULL) {
+
+		return -1;
+	    }
+
+	    if ((screen->textbuf.renddata[row]
+		 = realloc(screen->textbuf.renddata[row],
+			   columns * sizeof(R_textflags_t)))
+		== NULL) {
+
+		return -1;
+	    }
+
+	    screen->textbuf.rowcols[row]
+		= MIN(columns, screen->textbuf.rowcols[row]);
+	    screen->textbuf.rowlens[row] = columns;
+	}
+
+	for (row = 0 ; row < rows ; row++) {
+	    if ((screen->drawbuf.data[row]
+		 = realloc(screen->drawbuf.data[row],
+			   columns * sizeof(R_text_t)))
+		== NULL) {
+
+		return -1;
+	    }
+
+	    if ((screen->drawbuf.renddata[row]
+		 = realloc(screen->drawbuf.renddata[row],
+			   columns * sizeof(R_textflags_t)))
+		== NULL) {
+
+		return -1;
+	    }
+
+	    screen->drawbuf.rowlens[row] = columns;
+	    screen->drawbuf.rowcols[row]
+		= MIN(columns, screen->drawbuf.rowcols[row]);
+
+	    if (columns > oldcolumns) {
+		blank_string(screen, row + screen->savelines,
+			     oldcolumns, columns - oldcolumns);
+		blank_drawn(screen, row,
+			    oldcolumns, columns - oldcolumns);
+	    }
+	}
+    }
+
+    return 0;
+}
+
+/* NOTE: this may make screen->row < 0, but it doesn't matter as long as
+ * you don't use screen->row for indexing arrays. This is a nice speedup. :)
+ */
+void
+Rterm_add_screen_text(struct R_termscreen *screen,
+                      const R_text_t *str,
+                      int len,
+                      int rows)
+{
+    struct R_term *term;
+    int i, row, column;
+    int drawrow;
+    R_text_t **bufferrows;
+    R_textflags_t **bufferflags;
+    unsigned int *bufferlens;
+    unsigned int *buffercolumns;
+    R_text_t **drawnrows;
+    R_textflags_t **drawnflags;
+    unsigned int *drawnlens;
+    unsigned int *drawncolumns;
+    int (*scroll_text)(struct R_termscreen *, int, int, int, int);
+    void (*insert_blank)(struct R_termscreen *, int);
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+    void (*blank_drawn)(struct R_termscreen *, int, int, int);
+    R_text_t ch;
+
+    if (screen == NULL
+	|| str == NULL
+	|| len <= 0
+	|| rows < 0) {
+
+        return;
+    }
+
+    term = R_global.app->client;
+    bufferrows = screen->textbuf.data;
+    bufferflags = screen->textbuf.renddata;
+    bufferlens = screen->textbuf.rowlens;
+    buffercolumns = screen->textbuf.rowcols;
+    drawnrows = screen->drawbuf.data;
+#if 0
+    drawnflags = screen->drawbuf.renddata;
+    drawnlens = screen->drawbuf.rowlens;
+    drawncolumns = screen->drawbuf.rowcols;
+#endif
+
+    scroll_text = screen->funcs.scroll_text;
+    insert_blank = screen->funcs.insert_blank;
+    blank_string = screen->funcs.blank_string;
+    blank_drawn = screen->funcs.blank_drawn;
+
+#if 0
+    if (termptr->privmodes & RTERM_PRIVMODE_HOME_ON_ECHO) {
+	termptr->window->screen->viewrow =
+	    termptr->window->screen->savelines;
+    }
+#endif
+
+    Rterm_clear_screen_cursor(screen);
+
+    rows -= screen->scrollbottom - screen->row;
+
+    if ((rows > 0)
+	&& (screen->savelines + screen->row - rows
+	    >= screen->savelines - screen->nsavelines)) {
+	scroll_text(screen,
+		    screen->scrolltop, screen->scrollbottom,
+		    rows,
+		    TRUE);
+
+	screen->row -= rows;
+    }
+
+    row = screen->savelines + screen->row;
+
+    for (i = 0 ; i < len ; i++) {
+	ch = str[i];
+	switch (ch) {
+    	    case R_DEL_CHAR:
+
+		continue;
+    	    case '\t':
+		Rterm_screen_tab(screen, 1);
+
+		continue;
+	    case '\n':
+                buffercolumns[row] = MAX(screen->column, buffercolumns[row]);
+                screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+		if (screen->row == screen->scrollbottom) {
+		    scroll_text(screen, screen->scrolltop,
+				screen->scrollbottom,
+				1,
+				TRUE);
+		} else if (screen->row < screen->rows - 1) {
+		    screen->row++;
+		    row++;
+		}
+		screen->column = 0;
+
+                continue;
+	    case '\r':
+                buffercolumns[row] = MAX(screen->column, buffercolumns[row]);
+                screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+		screen->column = 0;
+                if (row > screen->savelines
+                    && row < screen->savelines + screen->rows) {
+                    screen->drawbuf.rowdirty[row - screen->savelines] = 1;
+                }
+                
+                continue;
+	    default:
+#if 0
+                if (screen->cmdbuf.firstcol < 0) {
+                    screen->cmdbuf.firstcol = column;
+                    screen->cmdbuf.firstrow = row;
+                    screen->cmdbuf.lastcol = column;
+                    screen->cmdbuf.lastrow = row;
+                }
+#endif
+
+		break;
+	}
+	if (screen->flags & RTERM_SCREEN_WRAP_NEXT_CHAR) {
+            buffercolumns[row] = MAX(screen->columns, buffercolumns[row]);
+	    screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+	    if (screen->row == screen->scrollbottom) {
+		scroll_text(screen, screen->scrolltop,
+			    screen->scrollbottom,
+			    1,
+			    TRUE);
+	    } else if (screen->row < screen->rows - 1) {
+		screen->row++;
+		row++;
+	    }
+	    screen->column = 0;
+            if (row > screen->savelines
+                && row < screen->savelines + screen->rows) {
+                screen->drawbuf.rowdirty[row - screen->savelines] = 1;
+            }
+//            buffercolumns[row] = 0;
+	}
+//        column = screen->column;
+//        column = screen->column;
+        column = screen->column;
+	if (term->privmodes & RTERM_PRIVMODE_INSERT
+            && !(screen->flags & RTERM_SCREEN_WRAP_NEXT_CHAR)) {
+	    insert_blank(screen, 1);
+	}
+	bufferrows[row][column] = ch;
+	bufferflags[row][column] = screen->textflags;
+        buffercolumns[row] = MAX(column, buffercolumns[row]);
+        if (column < screen->columns - 1) {
+            screen->column++;
+	} else {
+//            buffercolumns[row] = column;
+            buffercolumns[row] = MAX(column, buffercolumns[row]);
+            if (term->privmodes & RTERM_PRIVMODE_AUTOWRAP) {
+                screen->flags |= RTERM_SCREEN_WRAP_NEXT_CHAR;
+            } else {
+                screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+            }
+        }
+        column = screen->column;
+        buffercolumns[row] = MAX(column, buffercolumns[row]);
+    }
+    column = screen->column;
+    buffercolumns[row] = MAX(column, buffercolumns[row]);
+    if (row > screen->savelines
+        && row < screen->savelines + screen->rows) {
+        screen->drawbuf.rowdirty[row - screen->savelines] = 1;
+    }
+
+    if (rows > 0 && (term->privmodes & RTERM_PRIVMODE_SCROLLBAR)) {
+	term->flags &= ~RTERM_SCROLLBAR_REFRESHED;
+    }
+
+    return;
+}
+
+int
+Rterm_scroll_screen_text(struct R_termscreen *screen,
+                         int toprow, int bottomrow,
+                         int count,
+                         int saverows)
+{
+    struct R_term *term;
+    int row1, row2;
+    int scrollrows;
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+    void (*blank_drawn)(struct R_termscreen *, int, int, int);
+
+    if (screen == NULL
+	|| toprow < 0
+	|| toprow > bottomrow
+	|| toprow > screen->rows - 1
+	|| bottomrow < 0
+	|| bottomrow > screen->rows - 1
+	|| count == 0) {
+
+	return -1;
+    }
+    term = R_global.app->client;
+    blank_string = screen->funcs.blank_string;
+    blank_drawn = screen->funcs.blank_drawn;
+
+    if (screen->type == RTERM_SECONDARY_SCREEN) {
+	saverows = FALSE;
+    }
+
+    Rterm_clear_screen_selection(screen);
+
+    for (row1 = toprow ; row1 <= bottomrow ; row1++) {
+	blank_drawn(screen, row1, 0, screen->drawbuf.rowlens[row1]);
+        screen->drawbuf.rowdirty[row1] = 1;
+    }
+
+//    screen_clear_selection(screen);
+#if 0
+    if (toprow == 0
+	&& bottomrow == screen->rows - 1
+	&& count > 0) {
+	if (screen->selection.firstrow >= 0
+	    && screen->selection.firstcolumn >= 0
+	    && screen->selection.lastrow >= 0
+	    && screen->selection.lastcolumn >= 0) {
+	    screen->selection.firstrow -= count;
+	    screen->selection.lastrow -= count;
+	    if (screen->selection.firstrow >= 0
+		&& screen->selection.lastrow >= 0) {
+		screen_add_selection(screen,
+				     screen->selection.firstrow,
+				     screen->selection.firstcolumn,
+				     screen->selection.lastrow,
+				     screen->selection.lastcolumn);
+	    }
+	}
+    }
+#endif
+
+    toprow += screen->savelines;
+    bottomrow += screen->savelines;
+
+#if 0
+    if (count < 0) {
+	count = MAX(count, -(bottomrow - toprow + 1));
+    }
+#endif
+
+    if (count > 0) {
+        if (term->selection.lastrow - count >= 0) {
+            term->selection.firstrow -= count;
+            term->selection.lastrow -= count;
+        }
+	/* scroll up */
+	if (saverows) {
+	    /* move rows up into scrollback buffer. */
+
+	    for (row1 = 0 ; row1 < count ; row1++) {
+		/* free rows in scrollback buffer. */
+
+		if (screen->textbuf.data[row1]) {
+		    free(screen->textbuf.data[row1]);
+                    screen->textbuf.data[row1] = NULL;
+		}
+
+		if (screen->textbuf.renddata[row1]) {
+		    free(screen->textbuf.renddata[row1]);
+                    screen->textbuf.renddata[row1] = NULL;
+		}
+//                screen->textbuf.rowcols[row1] = 0;
+	    }
+
+	    scrollrows = bottomrow - count + 1;
+
+	    memmove(screen->textbuf.rowlens,
+		    screen->textbuf.rowlens + count,
+		    scrollrows * sizeof(unsigned int));
+
+	    memmove(screen->textbuf.rowcols,
+		    screen->textbuf.rowcols + count,
+		    scrollrows * sizeof(unsigned int));
+
+	    memmove(screen->textbuf.data,
+		    screen->textbuf.data + count,
+		    scrollrows * sizeof(R_text_t *));
+
+	    memmove(screen->textbuf.renddata,
+		    screen->textbuf.renddata + count,
+		    scrollrows * sizeof(R_textflags_t *));
+	} else {
+	    /* !saverows */
+
+	    for (row1 = toprow ; row1 < toprow + count ; row1++) {
+		if (screen->textbuf.data[row1]) {
+		    free(screen->textbuf.data[row1]);
+		    screen->textbuf.data[row1] = NULL;
+		}
+
+		if (screen->textbuf.renddata[row1]) {
+		    free(screen->textbuf.renddata[row1]);
+		    screen->textbuf.renddata[row1] = NULL;
+		}
+//                screen->textbuf.rowcols[row1] = 0;
+	    }
+
+	    for (row1 = toprow, row2 = toprow + count ; row2 <= bottomrow ;
+		 row1++, row2++) {
+		/* copy rows */
+
+		screen->textbuf.rowlens[row1] =
+		    screen->textbuf.rowlens[row2];
+
+		screen->textbuf.rowcols[row1] =
+		    screen->textbuf.rowcols[row2];
+
+		screen->textbuf.data[row1] = screen->textbuf.data[row2];
+
+		screen->textbuf.renddata[row1] =
+		    screen->textbuf.renddata[row2];
+	    }
+	}
+
+	for (row1 = bottomrow - count + 1 ; row1 <= bottomrow ; row1++) {
+	    if ((screen->textbuf.data[row1] = calloc(screen->columns,
+							sizeof(R_text_t)))
+		== NULL) {
+		
+		return -1;
+	    }
+	    
+	    if ((screen->textbuf.renddata[row1] = calloc(screen->columns,
+							 sizeof(R_textflags_t)))
+		== NULL) {
+		free(screen->textbuf.data[row1]);
+		screen->textbuf.data[row1] = NULL;
+		
+		return -1;
+	    }
+	    
+	    screen->textbuf.rowlens[row1] = screen->columns;
+	    blank_string(screen, row1, 0, screen->textbuf.rowlens[row1]);
+//	    screen->textbuf.rowcols[row1] = 0;
+	}
+    } else {
+	/* count < 0, scroll down */
+
+        if (term->selection.lastrow >= 0
+            && (term->selection.lastrow + count
+                < screen->savelines + screen->rows)) {
+            term->selection.firstrow += count;
+            term->selection.lastrow += count;
+        }
+	count = -count;
+
+	for (row1 = bottomrow - count + 1; row1 <= bottomrow; row1++) {
+	    /* free rows */
+
+	    if (screen->textbuf.data[row1]) {
+		free(screen->textbuf.data[row1]);
+		screen->textbuf.data[row1] = NULL;
+	    }
+
+	    if (screen->textbuf.renddata[row1]) {
+		free(screen->textbuf.renddata[row1]);
+		screen->textbuf.renddata[row1] = NULL;
+	    }
+//            screen->textbuf.rowcols[row1] = 0;
+	}
+#if 0
+	for (row1 = bottomrow ;
+	     row1 > bottomrow + count ;
+	     row1--) {
+	    /* free rows */
+
+	    if (screen->textbuf.data[row1]) {
+		free(screen->textbuf.data[row1]);
+		screen->textbuf.data[row1] = NULL;
+	    }
+
+	    if (screen->textbuf.renddata[row1]) {
+		free(screen->textbuf.renddata[row1]);
+		screen->textbuf.renddata[row1] = NULL;
+	    }
+	}
+#endif
+
+	for (row1 = bottomrow - count, row2 = bottomrow ;
+	     row1 >= toprow;
+	     row1--, row2--) {
+	    /* copy rows */
+
+	    screen->textbuf.rowlens[row2] =
+		screen->textbuf.rowlens[row1];
+
+	    screen->textbuf.rowcols[row2] =
+		screen->textbuf.rowcols[row1];
+	    
+	    screen->textbuf.data[row2] =
+		screen->textbuf.data[row1];
+
+	    screen->textbuf.renddata[row2] =
+		screen->textbuf.renddata[row1];
+	}
+
+	for (row1 = toprow ; row1 < toprow + count ; row1++) {
+	    if ((screen->textbuf.data[row1] =
+		 calloc(screen->columns, sizeof(R_text_t)))
+		== NULL) {
+
+		return -1;
+	    }
+
+	    if ((screen->textbuf.renddata[row1] =
+		 calloc(screen->columns, sizeof(R_textflags_t)))
+		== NULL) {
+		free(screen->textbuf.data[row1]);
+		screen->textbuf.data[row1] = NULL;
+
+		return -1;
+	    }
+
+	    screen->textbuf.rowlens[row1] = screen->columns;
+	    blank_string(screen, row1, 0, screen->textbuf.rowlens[row1]);
+//	    screen->textbuf.rowcols[row1] = 0;
+	}
+    }
+    Rterm_highlight_selection(term);
+
+    if (count > 0 && saverows) {
+	screen->nsavelines = MIN(screen->nsavelines + count,
+				 screen->savelines);
+    }
+
+    return 0;
+}
+
+void
+Rterm_insert_blank_screen_string(struct R_termscreen *screen, int len)
+{
+    int row, column;
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+
+    if (screen == NULL
+	|| len <= 0) {
+
+	return;
+    }
+    blank_string = screen->funcs.blank_string;
+
+    len = MIN(len, screen->columns - screen->column);
+
+    row = screen->savelines + screen->row;
+
+    screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+
+#if 0
+    if (termptr->privmodes & RTERM_PRIVMODE_HOME_ON_ECHO) {
+	termptr->window->screen->viewrow =
+	    termptr->window->screen->savelines;
+    }
+#endif
+
+    for (column = screen->columns - 1 ; column - len >= screen->column ;
+	 column--) {
+	screen->textbuf.data[row][column] =
+	    screen->textbuf.data[row][(column - len)];
+	screen->textbuf.renddata[row][column] =
+	    screen->textbuf.renddata[row][(column - len)];
+    }
+
+    blank_string(screen, row, screen->column, len);
+    screen->textbuf.rowcols[row] += len;
+
+    screen->refreshed = FALSE;
+
+    return;
+}
+
+void
+Rterm_delete_screen_string(struct R_termscreen *screen, int len)
+{
+    int row, column;
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+
+    if (screen == NULL
+	|| len <= 0) {
+
+	return;
+    }
+    blank_string = screen->funcs.blank_string;
+
+    len = MIN(len, screen->columns - screen->column);
+
+    row = screen->savelines + screen->row;
+
+    if (len == 0) {
+
+	return;
+    }
+
+    screen->flags &= ~RTERM_SCREEN_WRAP_NEXT_CHAR;
+
+#if 0
+    if (termptr->privmodes & RTERM_PRIVMODE_HOME_ON_ECHO) {
+	termptr->window->screen->viewrow =
+	    termptr->window->screen->savelines;
+    }
+#endif
+
+    for (column = screen->column ; column + len < screen->columns ; column++) {
+	screen->textbuf.data[row][column] =
+	    screen->textbuf.data[row][column + len];
+	screen->textbuf.renddata[row][column] =
+	    screen->textbuf.renddata[row][column + len];
+    }
+    blank_string(screen, row, column, len);
+    screen->textbuf.rowcols[row] -= len;
+
+    /* FIXME: added */
+#if 0
+    screen->drawbuf.rowdirty[screen->row] = 1;
+#endif
+    screen->refreshed = FALSE;
+
+    return;
+}
+
+/* FIXME: should I really check for RTERM_PRIVMODE_ORIGIN_MODE with
+ * screen->row > screen->scrollbottom in screen_insert_blank_rows()
+ * and screen_delete_rows()?
+ */
+
+void
+Rterm_blank_screen_string(struct R_termscreen *screen,
+                          int row,
+                          int column,
+                          int len)
+{
+    R_text_t *textptr;
+    R_textflags_t *textflagsptr;
+    R_textflags_t textflags;
+
+    if (screen == NULL
+	|| row < 0
+	|| row > screen->savelines + screen->rows - 1
+	|| column < 0
+	|| column > screen->textbuf.rowlens[row] - 1
+	|| len <= 0) {
+
+	return;
+    }
+
+    len = MIN(len, screen->textbuf.rowlens[row] - column);
+
+    textptr = &(screen->textbuf.data[row][column]);
+    textflagsptr = &(screen->textbuf.renddata[row][column]);
+    textflags = screen->textflags;
+
+    memset(textptr, ' ', len);
+
+    textflags = RTERM_SCREEN_DEFAULT_TEXTFLAGS;
+    while (len--) {
+	*textflagsptr++ = textflags;
+    }
+
+    screen->refreshed = FALSE;
+
+    return;
+}
+
+void
+Rterm_blank_screen_drawn_string(struct R_termscreen *screen, int row, int column, int len)
+{
+    R_text_t *textptr;
+    R_textflags_t *textflagsptr;
+
+    if (screen == NULL
+	|| row < 0
+	|| row > screen->savelines + screen->rows - 1
+	|| column < 0
+	|| column > screen->drawbuf.rowlens[row] - 1
+	|| len <= 0) {
+
+	return;
+    }
+
+    len = MIN(len, screen->drawbuf.rowlens[row] - column);
+
+    textptr = &(screen->drawbuf.data[row][column]);
+
+    memset(textptr, 0, len);
+
+    textflagsptr = &(screen->drawbuf.renddata[row][column]);
+
+    while (len--) {
+	*textflagsptr++ = RTERM_SCREEN_DEFAULT_TEXTFLAGS;
+    }
+
+    return;
+}
+
+void
+Rterm_refresh_screen(struct R_termscreen *screen, int mode)
+{
+    struct R_term *term;
+    int row, column, len;
+    R_text_t *textptr;
+    R_textflags_t *textflagsptr;
+    void (*blank_drawn)(struct R_termscreen *, int, int, int);
+    void (*blank_string)(struct R_termscreen *, int, int, int);
+#if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
+    Pixmap pixmap;
+#endif
+    
+    if (screen == NULL
+	|| mode < 0
+	|| mode > RTERM_SCREEN_DRAW_MODES
+	|| screen->row < 0) {
+	
+	return;
+    }
+
+    term = R_global.app->client;
+    len = 0;
+    blank_drawn = screen->funcs.blank_drawn;
+    blank_string = screen->funcs.blank_string;
+
+#if 0
+#if (SUPPORT_RTERM_BLINKING_CHARS)
+    if (!(screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS)) {
+	term->blink = TRUE;
+    }
+#endif /* SUPPORT_RTERM_BLINKING_CHARS */
+#endif
+    
+    for (row = 0; row < screen->rows ; row++) {
+	len = MIN(screen->columns,
+		  screen->textbuf.rowcols[(screen->viewrow + row)]);
+#if 0
+	len = MIN(screen->columns,
+		  screen->textbuf.rowlens[(screen->viewrow + row)]);
+#endif
+	if (len) {
+	    textptr = screen->textbuf.data[(screen->viewrow + row)];
+	    textflagsptr = screen->textbuf.renddata[(screen->viewrow + row)];
+
+	    if (mode == RTERM_SCREEN_DRAW_BLINKING_ONLY) {
+
+                return;
+		Rterm_draw_screen_string(screen, row, 0, textptr, textflagsptr, len,
+                                         RTERM_SCREEN_DRAW_BLINKING_ONLY,
+                                         TRUE);
+	    } else {
+		Rterm_draw_screen_string(screen, row, 0, textptr, textflagsptr, len,
+                                         RTERM_SCREEN_DRAW_ALL,
+                                         FALSE);
+	    }
+
+	    screen->drawbuf.rowcols[row] = len;
+
+	    memcpy(screen->drawbuf.data[row],
+		   textptr,
+		   len * sizeof(R_text_t));
+	    
+	    memcpy(screen->drawbuf.renddata[row],
+		   textflagsptr,
+		   len * sizeof(R_textflags_t));
+
+	}
+        if (len < screen->textbuf.rowlens[screen->viewrow + row]) {
+            column = len;
+            len =  screen->textbuf.rowlens[screen->viewrow + row] - column;
+#if 0
+            blank_string(screen, row, column, len);
+            blank_drawn(screen, row, column, len);
+#endif
+            if (screen->buf) {
+                Rterm_clear_screen_buffer(screen, row, column, len,
+                                          RTERM_SCREEN_CLEAR_STRING);
+                Rterm_sync_screen(screen, row, column, len, RTERM_SCREEN_SYNC_STRING);
+            } else {
+                Rterm_clear_screen_string(screen, row, column, len);
+            }
+        }
+        screen->drawbuf.rowdirty[row] = 0;
+    }
+    
+//    Rterm_highlight_selection(term);
+
+#if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
+    Rterm_sync_screen(screen, 0, 0, 0, RTERM_SCREEN_SYNC);
+#endif
+    
+    XFlush(screen->window->app->display);
+    
+    return;
+}
+
+int
+Rterm_read_char(struct R_term *term)
+{
+    struct R_app *app;
+    unsigned int scrollbary, dummyui;
+    int dummyi, i, nfdsready;
+    ssize_t nbread;
+    fd_set readfds;
+    struct timeval timeval;
+    struct R_termscreen *screen, *ptyscreen;
+    Window dummywin;
+    void (*refresh)(struct R_termscreen *, int);
+    void (*ptyrefresh)(struct R_termscreen *, int);
+    
+    if (term == NULL) {
+	
+	return -1;
+    }
+    app = R_global.app;
+    if (!(term->privmodes & RTERM_PRIVMODE_SECONDARY_SCREEN)) {
+        term->screen = term->screens[0];
+    } else {
+        term->screen = term->screens[1];
+    }
+    screen = term->screen;
+    refresh = screen->funcs.refresh;
+
+    if (screen->refreshcnt
+        >= screen->rows * RTERM_REFRESH_THRESHOLD_SCREENS) {
+	screen->refreshcnt = 0;
+	screen->refreshed = TRUE;
+
+	refresh(screen, RTERM_SCREEN_DRAW_ALL);
+    }
+
+    if (screen->inptr < screen->inend) {
+	screen->refreshed = FALSE;
+
+	return (*screen->inptr++);
+    }
+
+    for ( ; ; ) {
+	if (screen->outend > screen->outbuf) {
+	    R_write_pty(screen->pty.masterfd, screen->outbuf,
+                        screen->outend - screen->outbuf);
+
+	    screen->outptr = screen->outbuf;
+	    screen->outend = screen->outbuf;
+
+	    if (screen->outsize > RTERM_OUTPUT_BUFFER_MIN_SIZE) {
+		if ((screen->outbuf = realloc(screen->outbuf,
+						    RTERM_OUTPUT_BUFFER_MIN_SIZE))
+		    == NULL) {
+		    fprintf(stderr, "term_read_char(): failed to allocate output buffer\n");
+
+		    return -1;
+		}
+
+		screen->outptr = screen->outbuf;
+		screen->outend = screen->outbuf;
+		screen->outsize = RTERM_OUTPUT_BUFFER_MIN_SIZE;
+	    }
+	}
+
+	/* block to wait for event if none queued. */
+	while(XPending(app->display)) {
+	    R_handle_next_event(app);
+	    
+	    if (screen->inptr < screen->inend) {
+		screen->refreshed = FALSE;
+
+		return (*screen->inptr++);
+	    }
+	}
+
+	if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+	    if ((term->scrollbar->flags & RTERM_SCROLLBAR_UP_ARROW_PRESSED)
+		|| (term->scrollbar->flags
+		    & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED)
+		|| (term->scrollbar->flags & RTERM_SCROLLBAR_PRESSED)) {
+		screen->refreshed = FALSE;
+	    }
+	}
+
+	FD_ZERO(&readfds);
+	for (i = 0 ; i < term->nfds ; i++) {
+	    ptyscreen = term->fdscreens[i];
+	    if (ptyscreen) {
+		FD_SET(ptyscreen->pty.masterfd, &readfds);
+	    }
+	}
+	FD_SET(term->xconnfd, &readfds);
+
+	if ((term->privmodes & RTERM_PRIVMODE_SCROLLBAR)
+	    && ((term->scrollbar->flags & RTERM_SCROLLBAR_UP_ARROW_PRESSED)
+		|| (term->scrollbar->flags
+		    & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED))) {
+	    timeval.tv_sec = 0;
+	    timeval.tv_usec = RTERM_SELECT_SCROLL_TIMEOUT_USEC;
+	    
+	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+	} else if ((term->privmodes & RTERM_PRIVMODE_SCROLLBAR)
+		   && (term->scrollbar->flags & RTERM_SCROLLBAR_PRESSED)) {
+	    timeval.tv_sec = 0;
+	    timeval.tv_usec = RTERM_SELECT_SCROLLBAR_PRESSED_TIMEOUT_USEC;
+	    
+	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+	} else if (!screen->refreshed) {
+	    timeval.tv_sec = 0;
+	    timeval.tv_usec = RTERM_SELECT_TIMEOUT_USEC;
+	    
+	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+	}
+#if (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)
+	else if ((term->window->stateflags & R_WINDOW_FOCUSED_FLAG)
+                 && (screen->flags & RTERM_SCREEN_HAS_BLINKING_CURSOR
+                     || (screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS))) {
+	    timeval.tv_sec = 0;
+	    timeval.tv_usec = RTERM_SELECT_BLINK_TIMEOUT_USEC;
+	    
+	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+	}
+#endif
+	else {
+	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, NULL);
+	}
+
+	if (FD_ISSET(screen->pty.masterfd, &readfds)) {
+	    screen->inptr = screen->inbuf;
+	    screen->inend = screen->inbuf;
+
+	    if ((nbread = R_read_pty(screen->pty.masterfd, screen->inend,
+                                     RTERM_INPUT_BUFFER_SIZE)) < 0) {
+
+		return -1;
+	    }
+	    screen->inend += nbread;
+
+	    if (screen->inptr < screen->inend) {
+		screen->refreshed = FALSE;
+
+		return (*screen->inptr++);
+            }
+	}
+#if 0
+        else {
+	    for (i = 0 ; i < term->nfds ; i++) {
+		ptyscreen = term->fdscreens[i];
+		if (ptyscreen) {
+		    if (ptyscreen->inptr < ptyscreen->inend) {
+			ptyscreen->refreshed = FALSE;
+			
+			add_text(term, ptyscreen);
+			
+			ptyrefresh = ptyscreen->funcs.refresh;
+			ptyrefresh(ptyscreen, RTERM_SCREEN_DRAW_ALL);
+		    }
+		    if (FD_ISSET(ptyscreen->pty.masterfd, &readfds)) {
+			ptyscreen->inptr = ptyscreen->inbuf;
+			ptyscreen->inend = ptyscreen->inbuf;
+			
+			if ((nbread = R_read_pty(ptyscreen->pty.masterfd,
+                                                 ptyscreen->inend,
+                                                 RTERM_INPUT_BUFFER_SIZE)) < 0) {
+			    
+			    return -1;
+			}
+			
+			ptyscreen->inend += nbread;
+			
+			if (ptyscreen->inptr < ptyscreen->inend) {
+			    ptyscreen->refreshed = FALSE;
+			    
+			    add_text(term, ptyscreen);
+
+			    ptyrefresh = ptyscreen->funcs.refresh;
+			    ptyrefresh(ptyscreen, RTERM_SCREEN_DRAW_ALL);
+#if 0			    
+			    ptyrefresh(screen, RTERM_SCREEN_DRAW_ALL);
+#endif
+			}
+		    }
+		}
+	    }
+	}
+#endif
+	
+	if (nfdsready == 0) {
+	    screen->refreshcnt = 0;
+	    if (!screen->refreshed) {
+		screen->refreshed = TRUE;
+		if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+		    if (term->scrollbar->flags
+			& RTERM_SCROLLBAR_UP_ARROW_PRESSED) {
+			Rterm_scroll_screen(screen, -1);
+		    } else if (term->scrollbar->flags
+			       & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED) {
+			Rterm_scroll_screen(screen, 1);
+		    } else if (term->scrollbar->flags
+			       & RTERM_SCROLLBAR_PRESSED) {
+			XQueryPointer(app->display,
+				      term->scrollbar->window->id,
+				      &dummywin, &dummywin,
+				      &dummyi, &dummyi,
+				      &dummyui, &scrollbary,
+				      &dummyui);
+			if (scrollbary < term->scrollbar->anchortop) {
+			    Rterm_scroll_screen(screen, -(screen->rows - 1));
+			} else if (scrollbary
+				   > term->scrollbar->anchorbottom) {
+			    Rterm_scroll_screen(screen, screen->rows - 1);
+			}
+		    } else if (!(term->flags
+                                 & RTERM_SCROLLBAR_REFRESHED)) {
+			Rterm_update_scrollbar(term);
+		    } else {
+                        Rterm_touch_screen(screen);
+
+			refresh(screen, RTERM_SCREEN_DRAW_ALL);
+		    }
+		} else {
+                    Rterm_touch_screen(screen);
+
+		    refresh(screen, RTERM_SCREEN_DRAW_ALL);
+		}
+	    }
+
+#if (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)
+	    if ((screen->flags & RTERM_SCREEN_HAS_BLINKING_CURSOR)
+		|| (screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS)) {
+
+		return 0;
+	    }
+#endif
+	}
+    }
+    
+    return 0;
+}
+
+void
+Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
+{
+    struct R_app *app;
+    int ch, rows;
+    R_text_t *inputstr;
+    void (*add_text)();
+
+    if (term == NULL
+	|| screen == NULL) {
+
+	return;
+    }
+    add_text = screen->funcs.add_text;
+
+    app = term->window->app;
+    screen->inptr--;
+    ch = *screen->inptr;
+    inputstr = screen->inptr++;
+
+    if (ch >= ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+	rows = 0;
+	/* read string from input buffer. */
+	
+	while (screen->inptr < screen->inend) {
+	    ch = *screen->inptr++;
+	    
+	    if (ch >= ' ' || ch == '\t' || ch == '\r') {
+
+                continue;
+	    } else if (ch == '\n') {
+		rows++;
+		
+		if (++screen->refreshcnt
+		    >= screen->rows * RTERM_REFRESH_THRESHOLD_SCREENS) {
+		    
+		    break;
+		}
+	    } else {
+		/* unprintable. */
+
+		screen->inptr--;
+
+		break;
+	    }
+	}
+	
+	add_text(screen, inputstr, screen->inptr - inputstr,
+		 rows);
+    } else if (ch) {
+	switch (ch) {
+	    case R_ENQ_CHAR:
+#if (USE_VT100_ANSWER)
+		R_write_pty(term->ptyfd, RTERM_VT100_ANSWER,
+                            sizeof(RTERM_VT100_ANSWER) - 1);
+#endif
+		
+		break;
+	    case R_BEL_CHAR:
+		/* FIXME: write screen_bell()? */
+		XBell(app->display, 50);
+		
+		break;
+	    case R_BACKSPACE_CHAR:
+		Rterm_screen_backspace(screen);
+		
+		break;
+	    case R_VERTICAL_TAB_CHAR:
+	    case R_FORM_FEED_CHAR:
+		/* scroll one line up. */
+		
+		Rterm_scroll_screen(screen, 1);
+		
+#if 0
+		if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+		    Rterm_update_scrollbar(term);
+		}
+#endif
+		
+		break;
+		/* TODO: make sure the charsets are right. */
+	    case R_SO_CHAR:
+		Rterm_choose_charset(term, RTERM_CHARSET_G1);
+		
+		break;
+	    case R_SI_CHAR:
+		Rterm_choose_charset(term, RTERM_CHARSET_G0);
+		
+		break;
+	    case R_ESC_CHAR:
+		Rterm_process_escape_sequence(term);
+		
+		break;
+	    default:
+		
+		break;
+	}
+    }
+
+    return;
+}
+
+int
+Rterm_queue_input(struct R_term *term, const char *str, int len)
+{
+    R_text_t *dest;
+    struct R_termscreen *screen;
+
+    if (term == NULL
+	|| str == NULL
+	|| len <= 0) {
+
+	return -1;
+    }
+
+    screen = term->screen;
+
+    len = MIN(len,
+	      screen->inbuf
+	      + sizeof(screen->inbuf)
+	      - screen->inend);
+
+    if (len > 0) {
+	dest = screen->inend;
+	screen->inend += len;
+	while (len--) {
+	    *dest++ = *str++;
+	}
+    }
+
+    return len;
+}
+
+int
+Rterm_queue_output(struct R_term *term, const char *str, int len)
+{
+    int datalen;
+    R_text_t *dest;
+    struct R_termscreen *screen;
+
+    if (term == NULL
+	|| str == NULL
+	|| len <= 0) {
+
+	return -1;
+    }
+
+    len = MAX(len, strlen(str));
+
+    screen = term->screen;
+
+    if (len > 0) {
+	datalen = screen->outend - screen->outbuf;
+	
+	if (len > screen->outsize - datalen) {
+	    if ((screen->outbuf = realloc(screen->outbuf,
+						datalen + len)) == NULL) {
+		
+		return -1;
+	    }
+
+	    screen->outend = screen->outbuf + datalen;
+	    screen->outsize = datalen + len;
+	}
+	
+	dest = screen->outend;
+	screen->outend += len;
+	while (len--) {
+	    *dest++ = *str++;
+	}
+    }
+
+    return len;
+}
+

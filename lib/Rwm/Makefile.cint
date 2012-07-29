@@ -1,0 +1,178 @@
+############################################################
+# Automatically created makefile for libRwm_cint.dl
+############################################################
+
+# Copying $CINTSYSDIR/MAKEINFO #############################
+
+############################################################
+# platform/linux_slackware9_gcc3
+#  Platform dependent information for LINUX Slackware9 or later
+#  using gcc-3.0/3.1/3.2
+############################################################
+
+# Tools
+RM	    = rm -f
+CP	    = cp
+AR	    = ar
+AROPT       = clq
+KRCC        = gcc -traditional
+CC          = gcc -fexceptions -Wall
+CPP         = g++ -Wall 
+LD          = g++
+CPREP       = gcc -E -C
+CPPPREP     = g++ -E -C
+
+# Compiler and linker option
+CCDLLOPT    = -fPIC
+LDDLLOPT    = -shared
+# gcc-3.00 has a bug in -O2. Use -O instead. -O2 may be OK for later version
+OPTIMIZE    = -O2
+LDOPT       = -lm -L/usr/lib/termcap -lncurses -ldl -rdynamic $(LIBS)
+SYSMACRO    = -DG__REGEXP -DG__SHAREDLIB -DG__OSFDLL -DG__ANSI -DG__ERRORCALLBACK -DG__NEWSTDHEADER
+OTHMACRO    = -DG__P2FCAST -DG__REDIRECTIO -DG__DETECT_NEWDEL -DG__POSIX -DG__STD_EXCEPTION 
+SYSIPATH    =
+
+# libraries
+MAINO	    = $(CINTSYSDIR)/main/G__cppmain.o
+CINTLIB     = $(CINTSYSDIR)/src/G__ci.a
+READLINEA   = /usr/lib/libreadline.a
+APIO	    = Api.o Class.o BaseCls.o Type.o DataMbr.o Method.o MethodAr.o CallFunc.o Typedf.o Apiif.o Token.o
+RANLIB	    = /usr/bin/ranlib
+STDLIBS     = gcc3strm.o v6_stdstrct.o
+PLATFORM    =
+
+# source code postfix
+CSRCPOST    = .c
+CHDRPOST    = .h
+CPPSRCPOST  = .C
+CPPHDRPOST  = .h
+OBJPOST     = .o
+DLLPOST     = .dl
+
+
+
+
+##########################################################
+# Control default behavior of cint command line input
+##########################################################
+#INPUTMODE = C++
+#INPUTMODE = root
+INPUTMODE = cint
+#INPUTMODELOCK = on
+INPUTMODELOCK = off
+
+# End of $CINTSYSDIR/MAKEINFO ##############################
+
+# Set variables ############################################
+IPATH      = $(SYSIPATH) \
+		-I../../include/ 
+MACRO      = $(SYSMACRO)
+CINTSYSDIR = /usr/local/src/cint-5.16
+CINTIPATH  = -I$(CINTSYSDIR)
+OBJECT     = libRwm_cint.dl
+OPTION     = $(CCDLLOPT)
+DLLSPEC    =
+LINKSPEC   =
+
+# Set File names ###########################################
+CIFC       =
+CIFH       =
+CIFO       =
+CPPIFC     =
+CPPIFH     =
+CPPIFO     =
+
+LIBS       = 
+
+CCOPT      = 
+
+CINTOPT      = 
+
+COFILES    = \
+		binding.o \
+		client.o \
+		desktop.o \
+		event.o \
+		global.o \
+		init.o \
+		menu.o \
+		pager.o \
+		root.o \
+		window.o 
+
+RMCOFILES  = \
+		binding.o \
+		client.o \
+		desktop.o \
+		event.o \
+		global.o \
+		init.o \
+		menu.o \
+		pager.o \
+		root.o \
+		window.o 
+
+CHEADER    = 
+CHEADERCINT = 
+
+CSTUB      = 
+CSTUBCINT  = 
+
+CPPOFILES  = 
+
+RMCPPOFILES = 
+
+CPPHEADER  = 
+CPPHEADERCINT  = 
+
+CPPSTUB    = 
+CPPSTUBCINT = 
+
+# Link Object #############################################
+$(OBJECT) : $(COFILES) $(CPPOFILES) $(CIFO) $(CPPIFO)
+	$(LD) $(LDDLLOPT) $(OPTIMIZE) $(IPATH) $(MACRO) $(CCOPT) -o $(OBJECT) $(COFILES) $(CIFO) $(CPPIFO) $(CPPOFILES) $(LIBS)
+
+# Compile User C source files ##############################
+binding.o : binding.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o binding.o -c binding.c
+
+client.o : client.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o client.o -c client.c
+
+desktop.o : desktop.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o desktop.o -c desktop.c
+
+event.o : event.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o event.o -c event.c
+
+global.o : global.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o global.o -c global.c
+
+init.o : init.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o init.o -c init.c
+
+menu.o : menu.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o menu.o -c menu.c
+
+pager.o : pager.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o pager.o -c pager.c
+
+root.o : root.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o root.o -c root.c
+
+window.o : window.c $(CHEADER)
+	$(CC) $(IPATH) $(MACRO) $(OPTIMIZE) $(OPTION) $(CCOPT) -o window.o -c window.c
+
+
+# Compile User C++ source files ############################
+
+
+
+# Clean up #################################################
+clean :
+	$(RM) $(OBJECT) core $(CIFO) $(CIFC) $(CIFH) $(CPPIFO) $(CPPIFC) $(CPPIFH) $(RMCOFILES) $(RMCPPOFILES)
+
+# re-makecint ##############################################
+makecint :
+	makecint -mk Makefile.cint -I../../include/ -dl libRwm_cint.dl -C binding.c client.c desktop.c event.c global.c init.c menu.c pager.c root.c window.c 
+

@@ -1,0 +1,310 @@
+TODO
+----
+
+19:42 <jercos> vendu: inverted colors doesn't seem to change background to
++foreground, only foreground to background
+
+I'd like you to start by trying these steps (most of the following is either
+irrelevant or potentially out of date)
+
+----8<----
+
+./configure
+make
+make install
+Rterm
+(in the terminal)
+export TERM=vt100 or export TERM=xterm
+export LC_ALL="en_US.ISO8859-1" (until UTF-8 support works)
+
+try something such as your IRC client; irssi has revealed quite a bunch of bugs.
+
+NOTES
+-----
+- You need X, a Unix-like OS, Imlib2 (version with header files, some Linux
+  distributions call it devel), as well as libXext installed to compile and run
+  Resurrection.
+- It's early software, development version, so it's likely to have bugs. :) Good
+  luck. :P
+
+Rwm may be of some use, your mileage may vary.
+
+Have fun,
+
+/* vendu */
+
+P.S. Comments would be welcome at resurrection.fin AT gmail DOT com.
+
+----8<----
+
+Start by editing RESURRECTION_SHARE_PATH in include/Resurrection/setup.h.
+
+RTERM
+-----
+
+- currently, Rterm should be run with double buffering on (the -X command line
+  option); this helps avoid some scroll bugs
+
+COMMANDS
+--------
+- Ctrl + Shift + keypad digits; input numeric character value, Ctrl + Shift +
+  Enter accepts
+- Ctrl-Shift-n - create new tab
+- Ctrl-Shift-x - close current tab
+- Ctrl-Tab, Ctrl-Up - move to next tab/screen
+- Ctrl-Backspace, Ctrl-Down - move to previous tab/screen
+
+FEATURES
+--------
+- supports a subset of VT100 control sequences (should be pretty useful already)
+- early support for UTF-8 encoded Unicode characters (16-bit)
+- early support for Truetype scalable fonts [that are rendered as if monospace]
+- supports 256 terminal colors xterm-style
+- can spawn login and non-login shells on pseudo-teletype devices
+- supports blinking cursor; this used to be rare back at the day
+- supports blinking characters, although i'm not sure if they work at the moment
+- when double-buffering is enabled, allows use of background images (currently
+  hardwired). See SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER in
+  include/Resurrection/term.h. Note that this may cause problems with XShm.
+
+NEWS
+----
+
+- adds tab support; see SUPPORT_RTERM_TABS in include/Resurrection/term.h.
+- fixes some tab bugs like colors that were wrong in 0.0.8
+- blinking cursor is drawn better / more reliably now
+- most command line editing related bugs should be history; these were mostly
+  also present in rxvt and many of its forks.
+
+RWM
+---
+
+- it's good practice to run a terminal as last command in your
+  .xinitrc/.xsession and then launch Rwm by hand from it. This way, a crashing
+  window manager will not take all your accounts down (when it runs as a session
+  manager, whose termination ends the X session)
+- XMMS playlist window doesn't work correctly; something to do with at least
+  ConfigureRequest events
+- window border button bindings are as follows; TODO: FIX THOSE THAT DON'T WORK
+  - left button hold on top and left borders	- move window
+  - right button on any border			- move window
+  - left button hold on bottom border		- resize window vertically
+  - left button hold on right border		- resize window horizontally
+  - ctrl + left button 	      			- shade (show only titlebar)
+  - shift + left button on top border (title)	- close window
+  - the following do NOT work yet
+  - shift + right button on top border (title)	- kill window
+  - shift + F1..F4     - switch between desktops 1-4
+  - ctrl + F1	       - launch terminal
+  - ctrl + F2	       - launch editor
+  - ctrl + F3	       - launch browser
+  - ctrl + F4	       - launch audio player
+  - ctrl + F5	       - launch instant messenger
+
+
+DISTRIBUTION
+------------
+
+resurrection-beta-0.0.29.tar.gz
+-------------------------------
+- worked on Rl; try Ctrl + click on the terminal button to open terminal tabs
+  which are only visible when you access them through the launcher terminal bar
+
+resurrection-beta-0.0.28.tar.gz
+-------------------------------
+- xmms crashes Rwm; audacious would seem to work
+- Rl has new commands and tooltips
+
+resurrection-beta-0.0.27.tar.gz
+-------------------------------
+- Rwm seems relatively useful and stable now, although might crash on occasion
+- new application, Rl, to demonstrate programming using the toolkit + other
+  goodies; a simple application launcher
+- fixed more bugs here and there
+
+resurrection-beta-0.0.26.tar.gz
+-------------------------------
+- fixed a bunch of mistakes I made when hacking in tabs support; for example,
+  control sequences and tab redraws should work better now (not perfectly yet)
+
+resurrection-beta-0.0.24.tar.gz
+-------------------------------
+- fixed some signal hassle; I hope the terminal won't hang any longer :)
+
+resurrection-beta-0.0.23.tar.gz
+-------------------------------
+- added input of numeric character values as suggested by jercos
+
+resurrection-beta-0.0.21.tar.gz
+-------------------------------
+- added mousewheel support; wheel + Ctrl scrolls 5 pages, wheel + Shift scrolls
+  1 line, wheel scrolls 1 page at a time
+- added handling of a couple of missing xterm control sequences; TERM=xterm
+  should be reasonably good now
+
+resurrection-beta-0.0.19.tar.gz
+-------------------------------
+- fixed lagginess
+- added support for Truetype scalable fonts; it's the default now and relies
+  on having /usr/local/share/Resurrection/fonts/ttf/VeraMono.ttf in place. The
+  font is included in the distribution (I need to check its copyrights for
+  proper distribution policy)
+
+resurrection-beta-0.0.18.tar.gz
+-------------------------------
+- fixes a couple of small bugs
+- improving UTF-8 support - testers needed :)
+- started bringing back support for truetype vector fonts using freetype2
+
+resurrection-beta-0.0.14.tar.gz
+-------------------------------
+- implemented more color-related control sequences. Let's hope Maff gets his
+  irssi colors now. ;)
+
+resurrection-beta-0.0.13.tar.gz
+-------------------------------
+- fixed a typo that broke background colors
+
+resurrection-beta-0.0.12.tar.gz
+-------------------------------
+- added support for xterm 256-color mode
+
+resurrection-beta-0.0.11.tar.gz
+-------------------------------
+- fixed 16-color support as Maff pointed out Irssi colors didn't work
+
+resurrection-beta-0.0.10.tar.gz
+-------------------------------
+- fixed some draw bugs and other things related to copy-paste
+
+resurrection-beta-0.0.9.tar.gz
+------------------------------
+- Rterm is worth trying, Rwm is quite early - only for the adventurous
+
+R-alpha13.tar.gz
+----------------
+
+- some additions for MALLOC_TRACE.
+- fixed at least one bug concerning valgrind-support.
+
+R-alpha12.tar.gz
+----------------
+
+- MALLOC_TRACE enabled, can now trace actively allocated blocks (I'm not doing
+  this for mapped regions though, the interface is so simple it shouldn't be
+  necessary to debug it much. :) Besides, chances are I have enough
+  book-keeping for mapped regions already. Oh, by the way, this tracing stuff
+  is, at the moment, yet another feature that will be hostile to 64-bit
+  systems... =)
+
+R-alpha11.tar.gz
+----------------
+
+- getting really excited about valgrind. added initial support for it into the
+  memory allocator. fixed a few minor nuisances mostly, and will look into the
+  rest - the ones that actually ARE my fault - soon. :)
+- readability cleanups in the allocator.
+
+R-alpha10.tar.gz
+----------------
+
+- finally looked into valgrind, and with its guidance
+	- fixed a mistake where I was allocating a window structure directly
+	  with calloc() instead of using R_alloc_object().
+	- found something that looks like a problem in the test-kludges; I'll
+	  really look into this if it turns out to be something not related to
+	  these KLUDGES that aren't supposed to be there to start with. >:)
+- fixed window manager frame windows to have pointers to static event handler
+  tables   instead of separately allocated tables of the same pointers for
+  each. Should hopefully save a bit of memory and more importantly, make the wm
+  run a bit faster. :)
+- hacked some other minor stuff.
+
+R-alpha9.tar.gz
+---------------
+
+- I don't think there's anything new worth mentioning or I forgot. :)
+
+R-alpha8.tar.gz
+---------------
+
+- simple allocator benchmark; try
+	cd lib/rc/malloc
+	./prof.sh
+
+R-alpha7.tar.gz
+---------------
+
+- swishy was the only one to get this. :)
+
+R-alpha6.tar.gz
+---------------
+
+- never released to the outside world
+
+R-alpha5.tar.gz
+---------------
+
+- never released to the outside world
+
+R-alpha4.tar.gz
+---------------
+
+- a bug I had introduced to valloc() fixed.
+- allocator cleanups, should be (almost? :) human-readable now. note that this
+  means there are no statistics routines at the moment, but I'll redo them.
+- a few more compiler warnings fixed.
+- window manager menu images are now cached more properly for the situation.
+  instead of allocating image objects for all menu items, i set pointers to
+  cached internal copies.
+
+NOTES
+-----
+
+You need Imlib2 to build and try this stuff. Other than that, you shouldn't
+need anything but base X11 libraries.
+
+The split of lib/Rwm/ into files sucks. :) Some functions are scattered over in
+wrong files and so on. I will fix this later.
+
+There's some stuff for the configure script in m4/. The file-split could, once
+again, be better, but I hope some of this will be useful for some.
+
+My new memory allocator is in lib/malloc - it's very simple and not complete
+yet, but I'd think it should be fast. :)
+
+There's a tiny bit of Unix porting utilities in include/Resurrection/port.h.
+This, together with the macros under m4/, will attempt to mask some differences
+between different Unix-like systems 
+
+TESTING
+-------
+
+Prepare and build with
+
+	./autogen.sh
+	./configure
+	make
+
+Alternatively, you can try
+
+	./autogen.sh --help
+
+to learn about autogen options.
+
+There will be a couple of executables in the test/-directory. The one of your
+interest is wmtest:
+
+	cd test
+	./wmtest &
+
+The menu and pager (the two bars at topleft) don't have labels yet, but try
+them; move on top of them.
+
+The following keybindings should work when the wmtest window has keyboard
+focus (you can focus by clicking on it):
+
+	ctrl-shift-q	- quit (shows memory allocation statistics)
+	shift-f1..f4	- desktop 1..4
+	alt-f1..f3	- rxvt, emacs, firefox
+

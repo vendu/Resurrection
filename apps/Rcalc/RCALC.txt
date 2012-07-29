@@ -1,0 +1,11 @@
+flags
+-----
+ZF	- result is zero
+CF	- carry bit
+SF	- result is signed
+
+modes
+-----
+dec/hex/oct/bin
+32/64 bit arithmetics
+

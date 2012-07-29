@@ -1,0 +1,50 @@
+CONTROL, NO BORDER
+
+xwininfo: Window id: 0xe002c5 "xine Panel"
+
+  Absolute upper-left X:  478
+  Absolute upper-left Y:  694
+  Relative upper-left X:  0
+  Relative upper-left Y:  0
+  Width: 520
+  Height: 100
+  Depth: 24
+  Visual: 0x21
+  Visual Class: TrueColor
+  Border width: 0
+  Class: InputOutput
+  Colormap: 0x20 (installed)
+  Bit Gravity State: ForgetGravity
+  Window Gravity State: NorthWestGravity
+  Backing Store State: NotUseful
+  Save Under State: no
+  Map State: IsViewable
+  Override Redirect State: no
+  Corners:  +478+694  -26+694  -26--26  +478--26
+  -geometry 520x100-26--26
+
+FULLSCREEN
+
+xwininfo: Window id: 0xe007d5 "xine: There is no MRL."
+
+  Absolute upper-left X:  0
+  Absolute upper-left Y:  0
+  Relative upper-left X:  0
+  Relative upper-left Y:  0
+  Width: 1024
+  Height: 768
+  Depth: 24
+  Visual: 0x21
+  Visual Class: TrueColor
+  Border width: 0
+  Class: InputOutput
+  Colormap: 0x20 (installed)
+  Bit Gravity State: ForgetGravity
+  Window Gravity State: NorthWestGravity
+  Backing Store State: NotUseful
+  Save Under State: no
+  Map State: IsViewable
+  Override Redirect State: no
+  Corners:  +0+0  -0+0  -0-0  +0-0
+  -geometry 1024x768+0+0
+

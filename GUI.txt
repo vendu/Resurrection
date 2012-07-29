@@ -1,0 +1,12 @@
+apps		files		comms		sites		desk	clock
+----		-----		-----		-----		----
+term		text		irc		search
+edit		image		im		social
+paint		audio		bookmark
+		video
+
+-choices	-play/show			
+		-edit				-facebook
+		-download			-youtube
+						-reddit
+						
