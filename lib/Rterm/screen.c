@@ -939,12 +939,10 @@ Rterm_screen_goto(struct R_termscreen *screen, int row, int column, int relative
 
     if (relative & RTERM_SCREEN_ROW_RELATIVE) {
 	screen->row += row;
-
 	screen->row = MAX(screen->row, screen->scrolltop);
 	screen->row = MIN(screen->row, screen->scrollbottom);
     } else if (screen->flags & RTERM_SCREEN_RELATIVE_ORIGIN) {
 	screen->row = screen->scrolltop + row;
-
 	screen->row = MAX(screen->row, screen->scrolltop);
 	screen->row = MIN(screen->row, screen->scrollbottom);
     } else {

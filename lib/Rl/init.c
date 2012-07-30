@@ -5,7 +5,7 @@
  * See the file COPYING for information about using this software.
  */
 
-#define RL_TERM_TABS 1
+#define RL_TERM_TABS 0
 
 #include <Resurrection/Resurrection.h>
 #include <X11/extensions/shape.h>
@@ -280,14 +280,20 @@ Rl_exit(void)
 {
     int i;
     pid_t pid;
-    int ret;
+    int waitstat;
 
+    signal(SIGCHLD, SIG_DFL);
     for (i = 0 ; i < RL_TERM_TABS ; i++) {
         pid = Rltermpids[i];
         if (pid) {
-            if (!kill(pid, SIGTERM)) {
-                waitpid(pid, &ret, WUNTRACED);
-            }
+            fprintf(stderr, "TERM -> %d\n", pid);
+            kill(pid, SIGTERM);
+            pid = waitpid(pid, &waitstat, 0);
+#if 0
+            pthread_mutex_lock(&termmtx);
+            Rl_remove_terminal_tab(child);
+            pthread_mutex_unlock(&termmtx);
+#endif
         }
     }
 
@@ -301,6 +307,7 @@ Rl_child_signal(int sig)
     pid_t child;
 
     child = waitpid(-1, &waitstat, 0);
+    fprintf(stderr, "WAIT: %d\n", child);
     pthread_mutex_lock(&termmtx);
     Rl_remove_terminal_tab(child);
     pthread_mutex_unlock(&termmtx);
@@ -962,10 +969,8 @@ Rl_start_terminal_tab(long flags)
 
 //    nb = 0;
 //    ndone = 0;
-#if 0
     sigaddset(&blkset, SIGCHLD);
     sigprocmask(SIG_BLOCK, &blkset, &oldset);
-#endif
 
     if (Rltermcnt == RL_MAX_TABS) {
 
@@ -980,8 +985,8 @@ Rl_start_terminal_tab(long flags)
     if (!pid) {
         int maxfd = ipcpipes[Rltermcnt][0];
 
-        sigprocmask(SIG_UNBLOCK, &blkset, NULL);
         SIGNAL(SIGCHLD, SIG_DFL);
+        sigprocmask(SIG_UNBLOCK, &blkset, NULL);
         FD_SET(ipcpipes[Rltermcnt][0], &readset);
         select(maxfd + 1, &readset, NULL, NULL, NULL);
         if (FD_ISSET(ipcpipes[Rltermcnt][0], &readset)) {
@@ -992,6 +997,7 @@ Rl_start_terminal_tab(long flags)
 //        close(ipcpipes[Rltermcnt][1]);
         }
     } else {
+        fprintf(stderr, "PID[%d] = %d\n", Rltermcnt, pid);
         Rltermpids[Rltermcnt] = pid;
         button = R_create_window(R_global.app, tabwins[0], 0);
         Rltermbuttons[Rltermcnt] = button;
@@ -1015,9 +1021,7 @@ Rl_start_terminal_tab(long flags)
                       RL_BUTTON_WIDTH + Rltermcnt * RL_BUTTON_WIDTH,
                       0);
         XSync(R_global.app->display, False);
-#if 0
         sigprocmask(SIG_UNBLOCK, &blkset, NULL);
-#endif
         Rwrite(ipcpipes[Rltermcnt - 1][1], ipcstr, 4);
     }
 
