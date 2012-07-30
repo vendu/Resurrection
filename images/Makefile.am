@@ -32,6 +32,8 @@ dist_miscimage_DATA = \
 dist_wmimage_DATA = \
 	wm/apps.png \
 	wm/audio.png \
+	wm/bordergold_horiz.png \
+	wm/bordergold_vert.png \
 	wm/desk.png \
 	wm/edit.png \
 	wm/menu.png \

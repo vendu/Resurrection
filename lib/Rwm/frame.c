@@ -47,7 +47,38 @@ struct Rwm_border {
     int right;
 };
 
-#if (RWM_ORIGINAL_THEME)
+#if (RWM_NEW_THEME)
+static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_vert.png",
+        NULL,
+        NULL
+    },
+};
+#elif (RWM_ORIGINAL_THEME)
 static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
     {
         RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",

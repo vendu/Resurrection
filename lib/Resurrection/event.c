@@ -7,7 +7,7 @@
 
 #include <Resurrection/Resurrection.h>
 
-#define R_DEBUG_EVENTS 1
+#define R_DEBUG_EVENTS 0
 
 #define R_DEBUG_EVENT(e) (UINT64_C(1) << (e))
 
@@ -696,7 +696,7 @@ R_handle_next_event(struct R_app *app)
     memset(&event, 0, sizeof(event));
     XNextEvent(app->display, &event);
     retval = event.type;
-    fprintf(stderr, "EVENT: %s\n", eventnames[retval]);
+//    fprintf(stderr, "EVENT: %s\n", eventnames[retval]);
     if (XFilterEvent(&event, None)) {
         XUngrabKeyboard(app->display,
                         CurrentTime);

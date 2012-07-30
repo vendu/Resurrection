@@ -1246,11 +1246,7 @@ Rterm_keypress(void *arg, XEvent *event)
     meta = event->xkey.state & term->metamask;
     numlock = event->xkey.state & term->numlockmask;
 
-#if 0
-    if (!term->blink) {
-        Rterm_clear_screen_cursor(screen);
-    }
-#endif
+    Rterm_clear_screen_cursor(screen);
 
     screen = term->screens[term->curscreen];
     screen->viewrow = screen->savelines;
@@ -1940,6 +1936,7 @@ Rterm_keypress(void *arg, XEvent *event)
     RTERM_WRITE_PTY(term, screen->pty.masterfd, str, len);
 
 //    screen->refreshed = FALSE;
+//    Rterm_draw_screen_cursor(screen);
     screen->refreshcnt = -1;
 
     return;

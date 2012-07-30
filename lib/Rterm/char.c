@@ -1726,13 +1726,11 @@ Rterm_refresh_screen(struct R_termscreen *screen, int mode)
     }
 #endif
 
-#if 0
 #if (SUPPORT_RTERM_BLINKING_CHARS)
     if (!(screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS)) {
-	term->blink = TRUE;
+	term->blink++;
     }
 #endif /* SUPPORT_RTERM_BLINKING_CHARS */
-#endif
 
     if (screen->buf) {
         Rterm_clear_screen_buffer(screen, 0, 0, 0,
@@ -1849,8 +1847,8 @@ Rterm_refresh_screen(struct R_termscreen *screen, int mode)
 #if !SUPPORT_RTERM_BLINKING_CURSOR
     } else {
         Rterm_draw_screen_cursor(screen);
-    }
 #endif
+    }
     screen->refreshed = TRUE;
 //    XSync(screen->window->app->display, False);
     
@@ -2226,8 +2224,8 @@ Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
     }
     add_text = screen->funcs.add_text;
 
-#if 0
     term = R_global.app->client;
+#if 0
     if (!term->blink) {
         Rterm_clear_screen_cursor(screen);
     }

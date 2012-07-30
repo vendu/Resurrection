@@ -46,6 +46,7 @@
 #define RWM_TEXT_COLOR { 0, 0xd7, 0, 0 }
 
 /* define to zero to use the new (unpolished) theme. */
+#define RWM_NEW_THEME      0
 #define RWM_ORIGINAL_THEME 1
 
 /* DO NOT TOUCH ANYTHING BELOW THIS. :) */

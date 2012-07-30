@@ -1067,8 +1067,8 @@ Rterm_draw_screen_string_8bit(struct R_termscreen *screen, int row, int column,
 #if !KLUDGE
 	    if (sync) {
 		Rterm_sync_screen(screen, row, column, stringlen, RTERM_SCREEN_SYNC_STRING);
-#endif
 	    }
+#endif
 #else
 	    Rterm_clear_screen_string(screen, row, column, stringlen);
 	    
@@ -1109,7 +1109,7 @@ Rterm_draw_screen_string_8bit(struct R_termscreen *screen, int row, int column,
 	text += stringlen;
 	stringlen = 0;
     }
-
+    
     return;
 }
 
@@ -1245,15 +1245,24 @@ Rterm_draw_screen_string_imlib2(struct R_termscreen *screen, int row, int column
 void
 Rterm_clear_screen_cursor(struct R_termscreen *screen)
 {
+    int row;
+    int column;
     if (screen == NULL) {
 
 	return;
     }
 
-    XFillRectangle(screen->window->app->display, screen->window->id,
-                   screen->cursorgc,
-                   Rterm_screen_cursor_x(screen), Rterm_screen_cursor_y(screen),
-                   screen->charw, screen->charh);
+    row = screen->row;
+    column = screen->column;
+    if (screen->drawbuf.data[screen->viewrow + row]) {
+        Rterm_draw_screen_string_8bit(screen,
+                                      screen->row, screen->column,
+                                      &screen->textbuf.data[screen->viewrow + row][column],
+                                      &screen->drawbuf.data[screen->viewrow + row][column],
+                                      1,
+                                      RTERM_SCREEN_DRAW_ALL,
+                                      TRUE);
+    }
 
     return;
 }
