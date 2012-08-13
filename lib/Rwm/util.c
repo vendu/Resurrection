@@ -634,8 +634,8 @@ Rwm_set_borderless(struct R_window *client, unsigned long decor)
             wm = R_global.app->client;
             Rwm_reparent_window(client,
                                 wm->desktop,
-                                frame->x,
-                                frame->y);
+                                client->x,
+                                client->y);
             R_unmap_window(frame);
         }
         client->stateflags |= R_WINDOW_BORDERLESS_FLAG;

@@ -25,6 +25,12 @@ void Rwm_client_buttonpress_handler(void *arg,
 void Rwm_client_enternotify_handler(void *arg,
                                     XEvent *event);
 #if 0
+void Rwm_client_leavenotify_handler(void *arg,
+                                    XEvent *event);
+void Rwm_client_focusout_handler(void *arg,
+                                 XEvent *event);
+#endif
+#if 0
 void Rwm_client_reparentnotify_handler(void *arg,
                                        XEvent *event);
 #endif
@@ -70,17 +76,17 @@ Rwm_init_client_events(struct R_window *window)
     mask = R_set_window_event_handler(window,
                                       ButtonPress,
                                       Rwm_client_buttonpress_handler);
-#endif
-#if 0
     mask = R_set_window_event_handler(window,
                                       LeaveNotify,
                                       Rwm_client_leavenotify_handler);
     mask = R_set_window_event_handler(window,
-                                      FocusIn,
-                                      Rwm_client_focusin_handler);
-    mask = R_set_window_event_handler(window,
                                       FocusOut,
                                       Rwm_client_focusout_handler);
+#endif
+#if 0
+    mask = R_set_window_event_handler(window,
+                                      FocusIn,
+                                      Rwm_client_focusin_handler);
 
     mask = R_set_window_event_handler(window,
                                       ReparentNotify,
@@ -821,7 +827,6 @@ Rwm_client_leavenotify_handler(void *arg,
 
     return;
 }
-#endif
 
 void
 Rwm_client_focusout_handler(void *arg,
@@ -883,6 +888,7 @@ Rwm_client_focusout_handler(void *arg,
 
     return;
 }
+#endif /* 0 */
 
 #if 0
 void
@@ -957,9 +963,11 @@ Rwm_client_propertynotify_handler(void *arg,
                 XFree(client->motifwmhints);
                 client->motifwmhints = NULL;
             }
+#if 0
             if (event->xproperty.state == PropertyNewValue) {
-//                Rwm_get_motif_wm_hints(client);
+                Rwm_get_motif_wm_hints(client);
             }
+#endif
         } else if (event->xproperty.atom == XA_WM_ICON_NAME) {
             if (event->xproperty.state == PropertyNewValue) {
                 if (client->parent

@@ -26,7 +26,7 @@ Imlib_Font _menufont;
 
 const char *_wmatomstrs[] = {
     "WM_PROTOCOLS",
-    "_MOTIF_WM_HINTS",
+//    "_MOTIF_WM_HINTS",
     "_NET_WM_NAME",
     "_NET_WM_ICON_NAME",
     "_NET_WM_USER_TIME",
@@ -58,7 +58,7 @@ Rwm_crash_handler(int sig)
 {
     SIGNAL(sig, SIG_DFL);
 
-    XCloseDisplay(R_global.app->display);
+//    XCloseDisplay(R_global.app->display);
 
     abort();
 }
