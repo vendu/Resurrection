@@ -1029,15 +1029,17 @@ Rterm_touch_screen(struct R_termscreen *screen)
 
     for (row = 0 ; row < screen->rows ; row++) {
         len = screen->textbuf.rowcols[(screen->viewrow + row)] = screen->columns;
-        memset(screen->drawbuf.data[row], 0, screen->drawbuf.rowlens[row]);
+        if (screen->drawbuf.data[row]) {
+            memset(screen->drawbuf.data[row], 0, screen->drawbuf.rowlens[row]);
 #if 0
-;
-	blank_drawn(screen, row, 0, len);
+            ;
+            blank_drawn(screen, row, 0, len);
 //        len = screen->textbuf.rowlens[screen->viewrow + row];
 //	blank_string(screen, row + screen->viewrow, 0, len);
 //	screen->drawbuf.rowcols[row] = 0;
 #endif
-	screen->drawbuf.rowdirty[row] = 1;
+            screen->drawbuf.rowdirty[row] = 1;
+        }
     }
 
     return;

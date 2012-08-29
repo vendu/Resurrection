@@ -328,10 +328,12 @@ void Rwm_draw_text(struct R_window *window)
     if (window->str) {
         Rwm_draw_string(window->str, window, 8, R_CENTER_TEXT, render);
         render = 0;
+#if 0
         if (window->timestr) {
             Rwm_draw_string(window->timestr, window,
                             R_ALIGN_TEXT_RIGHT, R_CENTER_TEXT, render);
         }
+#endif
     } else if (window->timestr) {
         Rwm_draw_string(window->timestr, window,
                         R_CENTER_TEXT, R_CENTER_TEXT, render);

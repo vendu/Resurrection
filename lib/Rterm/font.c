@@ -10,6 +10,7 @@
 /* TODO: rename R_load_font() to app_load_and_query_font() ? */
 
 #define RTERM_USE_XSHM_FONT_BITMAPS 0
+#define RTERM_UNICODE_FONT          "-misc-freemono-medium-r-normal--0-0-0-0-m-0-iso10646-1"
 
 #if (SUPPORT_TRUETYPE_FONTS)
 Pixmap
@@ -35,7 +36,7 @@ Rterm_load_screen_font(struct R_termscreen *screen, const char *fontname)
 #if (SUPPORT_RTERM_UTF8_CHARS)
     if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
         screen->fontinfo = R_load_font(screen->window->app,
-                                       "-misc-freemono-medium-r-normal--0-0-0-0-p-0-iso10646-1");
+                                       RTERM_UNICODE_FONT);
         if (screen->fontinfo == NULL) {
             
             return -1;

@@ -25,7 +25,7 @@ tardist_version="0.0.0"
 tardist_autogen_opts="--dist-clean"
 lsh_pkgdatadir="@lshdir@"
 if test -z "$lsh_pkgdatadir" || test "$lsh_pkgdatadir" = "@lshdir@" ; then
-    lsh_pkgdatadir="/data2/src/Lightning/lsh"
+    lsh_pkgdatadir="."
 fi
 . $lsh_pkgdatadir/lsh.sh
 

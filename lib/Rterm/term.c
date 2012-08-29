@@ -31,6 +31,7 @@ Rterm_probe_locale_utf8(void)
     if (((str = getenv("LC_ALL")) && *str)
         || ((str = getenv("LC_CTYPE")) && *str)
         || ((str = getenv("LANG")) && *str)) {
+        fprintf(stderr, "LOCALE: %s\n", str);
         if (strstr(str, "UTF-8")) {
 
             retval = 1;
@@ -471,13 +472,13 @@ Rterm_init(struct R_term *term, int argc, char *argv[], long flags)
 #if defined RTERM_LOCALE
     app_init_locale(RTERM_LOCALE);
 #elif (SUPPORT_RTERM_UTF8_CHARS)
-    if (Rterm_probe_locale_utf8()) {
+//    if (Rterm_probe_locale_utf8()) {
         if (app_init_locale() < 0) {
             
             return NULL;
         }
         term->privmodes |= RTERM_PRIVMODE_UTF8_CHARS;
-    }
+//    }
 #endif
 
 #if (SUPPORT_TRUETYPE_FONTS) && (SUPPORT_FREETYPE2)

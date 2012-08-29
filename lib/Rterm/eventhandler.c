@@ -1279,7 +1279,7 @@ Rterm_keypress(void *arg, XEvent *event)
                 || ((term->privmodes & RTERM_PRIVMODE_UTF8_CHARS)
                     && ch <= 0xffff)) {
                 if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
-#if (_BYTEORDER == _LITTLE_ENDIAN)
+#if (_BYTE_ORDER == _LITTLE_ENDIAN)
                     tmp = bswap_32(ch);
                     cp = &tmp;
 #else

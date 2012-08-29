@@ -1170,6 +1170,7 @@ R_write_pty_utf8(int fd, R_text_t *buffer, size_t count)
     static size_t buflen = 0;
     int slen;
     static R_text_t *buf = NULL;
+    static int bufalloc = 0;
 
     if (fd < 0
 	|| buffer == NULL
@@ -1181,10 +1182,13 @@ R_write_pty_utf8(int fd, R_text_t *buffer, size_t count)
     if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
         if (buflen < 4 * count) {
             buf = malloc(4 * count);
-            buflen = 4 * count;
+            if (buf) {
+                buflen = 4 * count;
+                bufalloc = 1;
+                RTERM_UTF8_ENC(buffer, buf, &slen, count);
+                count = slen;
+            }
         }
-        RTERM_UTF8_ENC(buffer, buf, &slen, count);
-        count = slen;
     } else {
         buf = buffer;
     }
@@ -1210,11 +1214,13 @@ R_write_pty_utf8(int fd, R_text_t *buffer, size_t count)
         count -= nbwritten;
 	len += nbwritten;
     }
-    if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
+#if 0
+    if ((buf) && (bufalloc)) {
         free(buf);
         buflen = 0;
         buf = NULL;
     }
+#endif
 
     return len;
 }

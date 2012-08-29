@@ -14,12 +14,12 @@
 #define RL_WEB_COMMAND_1      "firefox"
 #define RL_WEB_COMMAND_2      "opera"
 #define RL_WEB_COMMAND_3      "epiphany"
-#define RL_AUDIO_COMMAND_1    "audacious"
-#define RL_AUDIO_COMMAND_2    "amarok"
+#define RL_AUDIO_COMMAND_1    "deadbeef"
+#define RL_AUDIO_COMMAND_2    "audacious"
 #define RL_AUDIO_COMMAND_3    "xmms"
-#define RL_VIDEO_COMMAND_1    "vlc"
-#define RL_VIDEO_COMMAND_2    "xine"
-#define RL_VIDEO_COMMAND_3    "mplayer"
+#define RL_VIDEO_COMMAND_1    "gnome-mplayer"
+#define RL_VIDEO_COMMAND_2    "vlc"
+#define RL_VIDEO_COMMAND_3    "xine"
 #define RL_GRAPHICS_COMMAND_1 "gimp"
 #define RL_GRAPHICS_COMMAND_2  NULL
 #define RL_GRAPHICS_COMMAND_3  NULL
