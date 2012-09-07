@@ -7,8 +7,6 @@
 
 #include <Resurrection/Resurrection.h>
 
-#define RWM_DEBUG_X_ERRORS 0
-
 int _ignbadwindow = 0;
 int _ignbadmatch = 0;
 int _ignbadatom = 0;
@@ -240,10 +238,10 @@ R_handle_x_error(Display *display, XErrorEvent *event)
 	return 0;
     }
 
-//#if (RWM_DEBUG_X_ERRORS)
+#if (RWM_DEBUG_X_ERRORS)
     abort();
-//#else
-//    exit(EXIT_FAILURE);
-//#endif
+#else
+    exit(EXIT_FAILURE);
+#endif
 }
 

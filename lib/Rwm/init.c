@@ -7,8 +7,6 @@
 
 #include <Resurrection/Resurrection.h>
 
-#define RWM_DEBUG_ERRORS 0
-
 #include <signal.h>
 
 #if (_BYTE_ORDER == _LITTLE_ENDIAN)
@@ -136,9 +134,14 @@ Rwm_init(struct R_app *app,
          int argc,
          char **argv)
 {
+    struct R_app    *newapp;
     struct R_window *root;
     struct R_wm     *wm;
+    int              loop = 1;
+    int              nscreen = 0;
+    int              xfd;
     pid_t            pid;
+    fd_set           readfds;
 
 #if 0
     pid = fork();
@@ -148,112 +151,151 @@ Rwm_init(struct R_app *app,
         execvp("Rl", arg);
     }
 #endif
-
+    nscreen = R_init_display(app,
+                             argc,
+                             argv);
+    if (!nscreen) {
+        
+                return FALSE;
+    }
+    R_init_display(app,
+                   argc,
+                   argv);
+    while (nscreen--) {
+        pid = fork();
+        if (!pid) {
+            newapp = calloc(1, sizeof(struct R_app));
+            newapp->screen = nscreen;
+            newapp->name = "Rwm";
+//            newapp->display = app->display;
+            if (!R_init(newapp,
+                        argc,
+                        argv)) {
+                
+                return FALSE;
+            }
 #if 0
-    signal(SIGALRM, sig_alrm);
-    alarm(15);
+            signal(SIGALRM, sig_alrm);
+            alarm(15);
 #endif
-    app->flags = RWM_DEFAULT_FLAGS;
-    if (!R_init(app,
-                argc,
-                argv)) {
-
-        return FALSE;
-    }
-    atexit(Rwm_exit);
-
-    SIGNAL(SIGINT, Rwm_exit_handler);
-    SIGNAL(SIGTERM, Rwm_exit_handler);
-    SIGNAL(SIGQUIT, Rwm_exit_handler);
-    SIGNAL(SIGILL, Rwm_crash_handler);
-#if defined(SIGBUS)
-    SIGNAL(SIGBUS, Rwm_crash_handler);
-#endif
-    SIGNAL(SIGFPE, Rwm_crash_handler);
-    SIGNAL(SIGSEGV, Rwm_crash_handler);
-#if defined(SIGSYS)
-    SIGNAL(SIGSYS, Rwm_crash_handler);
-#endif
-
-    wm = calloc(1, sizeof(struct R_wm));
-    app->client = wm;
-    Rwm_init_optflags(wm);
-    Rwm_init_colors(wm);
-    Rwm_init_atoms(wm);
-#if (RWM_DEBUG_X_ERRORS)
-    XSynchronize(app->display, True);
-#endif
-    XSetErrorHandler(R_handle_x_error);
-#if (USE_IMLIB2)
-    Rwm_load_title_font(app);
-#endif
-    if (!Rwm_set_root_window(app)) {
-
-        return FALSE;
-    }
-
-    fprintf(stderr, "#1\n");
-
-    fprintf(stderr, "#2\n");
-
-    if (!Rwm_init_desktops(app)) {
-
-        return FALSE;
-    }
-    wm->desktop = wm->desktops[0];
-
-    gettimeofday(&Rwm_action_info.tv, NULL);
-    Rwm_init_frame_event_handlers(app);
-#if (USE_IMLIB2)
-    if (!Rwm_init_frame_images(app)) {
-
-        return FALSE;
-    }
-#endif
-
-#if (!R_DEBUG_WM)
-    if (!Rwm_take_windows(app)) {
-
-        return FALSE;
-    }
-#endif
-
-    Rwm_init_root_events(app);
-    if (!Rwm_init_bindings(app)) {
-
-        return FALSE;
-    }
-
-    fprintf(stderr, "#3\n");
-
-    if (!Rwm_init_menu(app)) {
-
-        return FALSE;
-    }
-    Rwm_init_menu_events(app);
-
-    fprintf(stderr, "#4\n");
-
-    if (!Rwm_init_pager(app)) {
-
-        return FALSE;
-    }
-    Rwm_init_pager_events(app);
-    if (!Rwm_init_frame_cursors(app)) {
-
-        return FALSE;
-    }
-    if (wm->optflags & (RWM_DESKTOP_CLOCK_FLAG | RWM_FOCUS_CLOCK_FLAG)) {
-        if (!Rwm_init_clock(app)) {
+            newapp->flags = RWM_DEFAULT_FLAGS;
+            atexit(Rwm_exit);
             
+            SIGNAL(SIGINT, Rwm_exit_handler);
+            SIGNAL(SIGTERM, Rwm_exit_handler);
+            SIGNAL(SIGQUIT, Rwm_exit_handler);
+            SIGNAL(SIGILL, Rwm_crash_handler);
+#if defined(SIGBUS)
+            SIGNAL(SIGBUS, Rwm_crash_handler);
+#endif
+            SIGNAL(SIGFPE, Rwm_crash_handler);
+            SIGNAL(SIGSEGV, Rwm_crash_handler);
+#if defined(SIGSYS)
+            SIGNAL(SIGSYS, Rwm_crash_handler);
+#endif
+            
+            wm = calloc(1, sizeof(struct R_wm));
+            newapp->client = wm;
+            Rwm_init_optflags(wm);
+            Rwm_init_colors(wm);
+#if (RWM_DEBUG_X_ERRORS)
+            XSynchronize(newapp->display, True);
+#endif
+            XSetErrorHandler(R_handle_x_error);
+            Rwm_init_atoms(wm);
+#if (USE_IMLIB2)
+            Rwm_load_title_font(newapp);
+#endif
+            newapp->screen = nscreen;
+            fprintf(stderr, "initialising screen %d\n", nscreen);
+            if (!Rwm_set_root_window(newapp)) {
+                
+                return FALSE;
+            }
+            
+            fprintf(stderr, "#1\n");
+            
+            fprintf(stderr, "#2\n");
+            
+            if (!Rwm_init_desktops(newapp)) {
+                
             return FALSE;
+            }
+            wm->desktop = wm->desktops[0];
+            
+            fprintf(stderr, "#3\n");
+            
+            gettimeofday(&Rwm_action_info.tv, NULL);
+            Rwm_init_frame_event_handlers(newapp);
+#if (USE_IMLIB2)
+            if (!Rwm_init_frame_images(newapp)) {
+                
+                return FALSE;
+            }
+#endif
+            
+            fprintf(stderr, "#4\n");
+            
+#if (!R_DEBUG_WM)
+            if (!Rwm_take_windows(newapp)) {
+                
+                return FALSE;
+            }
+#endif
+            
+            fprintf(stderr, "#5\n");
+            
+            Rwm_init_root_events(newapp);
+            if (!Rwm_init_bindings(newapp)) {
+                
+                return FALSE;
+            }
+            
+            fprintf(stderr, "#6\n");
+            
+            if (!Rwm_init_menu(newapp)) {
+                
+                return FALSE;
+            }
+            Rwm_init_menu_events(newapp);
+            
+            fprintf(stderr, "#7\n");
+            
+            if (!Rwm_init_pager(newapp)) {
+                
+                return FALSE;
+            }
+            Rwm_init_pager_events(newapp);
+            if (!Rwm_init_frame_cursors(newapp)) {
+                
+                return FALSE;
+            }
+            if (wm->optflags
+                & (RWM_DESKTOP_CLOCK_FLAG | RWM_FOCUS_CLOCK_FLAG)) {
+                if (!Rwm_init_clock(newapp)) {
+                    
+                    return FALSE;
+                }
+            }
+            R_global.app = newapp;
+            
+#if (R_DEBUG_WM)
+            Rwm_init_test(newapp);
+#endif
+            xfd = XConnectionNumber(newapp->display);
+            FD_SET(xfd, &readfds);
+            while (TRUE) {
+                R_handle_events(newapp);
+#if 0
+                if (_updateclock) {
+                    Rwm_update_clock(&_clock);
+                    _updateclock = 0;
+                }
+#endif
+                Rselect(xfd + 1, &readfds, NULL, NULL, NULL);
+            }
         }
     }
-    R_global.app = app;
-
-#if (R_DEBUG_WM)
-    Rwm_init_test(app);
-#endif
 
     return TRUE;
 }
@@ -267,7 +309,7 @@ Rwm_load_title_font(struct R_app *app)
     _menufont = R_load_font_imlib2("VeraMono/16");
 #endif
     _titlefont = R_load_font_imlib2("VeraMono/10");
-    _menufont = R_load_font_imlib2("bladerunner/16");
+    _menufont = R_load_font_imlib2("bladerunner/10");
     if (!_titlefont) {
 
         exit(1);
@@ -381,8 +423,10 @@ Rwm_take_windows(struct R_app *app)
                             R_free_window(window);
                         }
                     }
+#if 0
                     XSync(app->display,
                           False);
+#endif
                     _ignbadwindow = 0;
                     _ignbadmatch = 0;
                 }

@@ -263,7 +263,7 @@ Rwm_move_func(void *arg,
     }
     frame = window->parent;
     screenptr = ScreenOfDisplay(window->app->display,
-                                DefaultScreen(window->app->display));
+                                window->app->screen);
     XQueryPointer(window->app->display,
                   window->id,
                   &dummywin,

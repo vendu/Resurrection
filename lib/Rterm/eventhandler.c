@@ -1221,7 +1221,7 @@ Rterm_keypress(void *arg, XEvent *event)
 #if (SUPPORT_RTERM_INPUT_NUMERIC)
     static int ch = 0;
     int clen;
-#if (_BYTE_ORDER == _LITTLE_ENDIAN)
+#if (__BYTE_ORDER == __LITTLE_ENDIAN)
     static int tmp = 0;
 #endif
     R_text_t *cp;
@@ -1279,7 +1279,8 @@ Rterm_keypress(void *arg, XEvent *event)
                 || ((term->privmodes & RTERM_PRIVMODE_UTF8_CHARS)
                     && ch <= 0xffff)) {
                 if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
-#if (_BYTE_ORDER == _LITTLE_ENDIAN)
+#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+                    fprintf(stderr, "%x (%x)\n", ch, bswap_32(ch));
                     tmp = bswap_32(ch);
                     cp = &tmp;
 #else
@@ -1307,12 +1308,11 @@ Rterm_keypress(void *arg, XEvent *event)
     }
 #endif
 
-#if 0 && (SUPPORT_RTERM_UTF8_CHARS)
+#if (SUPPORT_RTERM_UTF8_CHARS)
     if ((term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) && len == 1) {
         uint8_t ch = str[0];
-        if (ch < 0x80) {
-            str[0] = (unsigned char)ch;
-        } else {
+
+        if (ch >= 0x80) {
             str[0] = (unsigned char )(0xc0 | ((ch & 0xc0) >> 6));
             str[1] = (unsigned char)(0x80 | (ch & 0x3f));
             len = 2;

@@ -7,6 +7,7 @@
 int
 main(int argc, char *argv[])
 {
+    int          nscreen;
     struct R_app app;
 //    pid_t        pid;
     int          xfd;
@@ -19,10 +20,12 @@ main(int argc, char *argv[])
         execvp("Rl", arg);
     }
 #endif
+#if 0
     memset(&app,
            0,
            sizeof(app));
     app.name = "Rwm";
+#endif
     if (!Rwm_init(&app,
                   argc,
                   argv)) {
@@ -31,7 +34,7 @@ main(int argc, char *argv[])
         
         exit(1);
     }
-    
+#if 0
     xfd = XConnectionNumber(app.display);
     FD_SET(xfd, &readfds);
     while (TRUE) {
@@ -43,6 +46,10 @@ main(int argc, char *argv[])
         }
 #endif
         Rselect(xfd + 1, &readfds, NULL, NULL, NULL);
+    }
+#endif
+    while (TRUE) {
+        pause();
     }
 
     exit(0);

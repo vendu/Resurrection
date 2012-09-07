@@ -17,11 +17,20 @@ void Rwm_set_desktop_backgrounds(struct R_app *app);
 void Rwm_fade_desktop_in(void *arg, XEvent *event);
 #endif
 
-const char *Rwm_desktop_image_names[RWM_DESKTOPS] = {
+const char *Rwm_desktop_image_names[RWM_DESKTOPS]
+= {
     RESURRECTION_IMAGE_SEARCH_PATH "background/sword.png",
     RESURRECTION_IMAGE_SEARCH_PATH "background/background.jpg",
     RESURRECTION_IMAGE_SEARCH_PATH "background/cavefire.jpg",
-    RESURRECTION_IMAGE_SEARCH_PATH "background/plasmadiff.png"
+    RESURRECTION_IMAGE_SEARCH_PATH "background/redmetal.png"
+};
+
+const int Rwm_desktop_image_flags[RWM_DESKTOPS]
+= {
+    R_IMAGE_FIT_FLAG,
+    R_IMAGE_FIT_FLAG,
+    R_IMAGE_FIT_FLAG,
+    0
 };
 
 #if (USE_IMLIB2)
@@ -272,15 +281,23 @@ Rwm_set_desktop_backgrounds(struct R_app *app)
 #endif
         desktop = wm->desktops[i];
         desktop->image = &Rwm_desktop_images[i];
-        R_set_background_imlib2(desktop->image,
-                                desktop,
+        if (Rwm_desktop_image_flags[i]) {
+            R_set_background_imlib2(desktop->image,
+                                    desktop,
 #if 0
-                                R_FIT_IMAGE,
-                                R_FIT_IMAGE,
+                                    R_FIT_IMAGE,
+                                    R_FIT_IMAGE,
 #endif
-                                root->w,
-                                root->h,
-                                R_IMAGE_FIT_FLAG);
+                                    root->w,
+                                    root->h,
+                                    Rwm_desktop_image_flags[i]);
+        } else {
+            R_set_background_imlib2(desktop->image,
+                                    desktop,
+                                    R_TILE_IMAGE,
+                                    R_TILE_IMAGE,
+                                    R_IMAGE_FIT_FLAG);
+        }
         R_render_thumb_imlib2(desktop->image,
                               desktop,
                               RWM_PAGER_THUMB_WIDTH,

@@ -47,7 +47,38 @@ struct Rwm_border {
     int right;
 };
 
-#if (RWM_NEW_THEME)
+#if (RWM_OLDE_THEME)
+static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/hruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/hruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/hruler.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+        NULL,
+        NULL
+    },
+};
+#elif (RWM_NEW_THEME)
 static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
     {
         RESURRECTION_IMAGE_SEARCH_PATH "wm/bordergold_horiz.png",

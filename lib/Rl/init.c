@@ -40,6 +40,8 @@
 #define RL_LABEL_WIDTH   0
 #define RL_LABEL_HEIGHT  0
 #endif
+#define RL_RULER_WIDTH   5
+#define RL_RULER_HEIGHT  5
 #if (RL_TOOLTIPS)
 //#define RL_TOOLTIP_WIDTH  213
 #define RL_TOOLTIP_WIDTH  384
@@ -491,6 +493,7 @@ Rl_init_windows(struct R_app *app)
     struct R_image  *tooltipimg;
 #endif
     struct R_window *button;
+    struct R_window *ruler;
 #if (RL_TERM_TABS)
     struct R_window *tabwin;
 #endif
@@ -537,11 +540,19 @@ Rl_init_windows(struct R_app *app)
     parent->chain = label;
 //    R_add_window(label);
     R_map_window_raised(label);
+#if (RLRULERS)
     R_move_resize_window(label,
                          0,
                          0,
                          RL_LABEL_WIDTH,
                          RL_LABEL_HEIGHT);
+#else
+    R_move_resize_window(label,
+                         RL_RULER_HEIGHT,
+                         RL_RULER_WIDTH,
+                         RL_LABEL_WIDTH,
+                         RL_LABEL_HEIGHT);
+#endif
 #endif
 #if (RL_LABEL || RL_TOOLTIPS)
     imlib_context_set_drawable(parent->id);
@@ -574,6 +585,50 @@ Rl_init_windows(struct R_app *app)
     curwindow = label;
 #else
     curwindow = parent;
+#endif
+#if (RLRULERS)
+    ruler = R_create_window(app,
+                            parent,
+                            flags);
+    if (ruler == NULL) {
+        
+        exit(1);
+    }
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+                                NULL);
+    image->flags |= R_IMAGE_STATIC_FLAG;
+    R_render_image_imlib2(image, ruler, RL_LABEL_WIDTH, RL_COMMANDS * (RL_BUTTON_WIDTH + RL_RULER_WIDTH), 0);
+    R_move_resize_window(ruler,
+                         0,
+                         0,
+                         RL_BUTTON_WIDTH + 2 * RL_RULER_WIDTH,
+                         RL_COMMANDS * (RL_BUTTON_WIDTH + RL_RULER_HEIGHT));
+    ruler = R_create_window(app,
+                            parent,
+                            flags);
+    if (ruler == NULL) {
+        
+        exit(1);
+    }
+    R_render_image_imlib2(image, ruler, RL_LABEL_WIDTH, RL_COMMANDS * (RL_BUTTON_WIDTH + RL_RULER_WIDTH), 0);
+    R_move_resize_window(ruler,
+                         0,
+                         0,
+                         RL_RULER_WIDTH,
+                         RL_BUTTON_WIDTH + 2 * RL_RULER_HEIGHT);
+    ruler = R_create_window(app,
+                            parent,
+                            flags);
+    if (ruler == NULL) {
+        
+        exit(1);
+    }
+    R_move_resize_window(ruler,
+                         0,
+                         RL_COMMANDS * (RL_BUTTON_HEIGHT + RL_RULER_WIDTH),
+                         RL_BUTTON_WIDTH + 2 * RL_RULER_WIDTH,
+                         RL_COMMANDS * (RL_BUTTON_WIDTH + RL_RULER_HEIGHT));
 #endif
     for (i = 0 ; i < RL_COMMANDS ; i++) {
         button = R_create_window(app,
@@ -611,13 +666,13 @@ Rl_init_windows(struct R_app *app)
 #if (RL_BAR)
         R_move_resize_window(button,
                              0,
-                             RL_LABEL_HEIGHT + i * RL_BUTTON_HEIGHT,
+                             RL_RULER_HEIGHT + i * RL_BUTTON_HEIGHT,
                              RL_BUTTON_WIDTH,
                              RL_BUTTON_HEIGHT);
 #else
         R_move_resize_window(button,
                              0,
-                             RL_LABEL_HEIGHT + i * RL_BUTTON_HEIGHT,
+                             i * RL_BUTTON_HEIGHT,
                              RL_BUTTON_WIDTH,
                              RL_BUTTON_HEIGHT);
 #endif

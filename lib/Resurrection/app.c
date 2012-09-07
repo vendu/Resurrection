@@ -43,13 +43,13 @@ R_parse_display(struct R_app *app)
 }
 
 int
-R_init(struct R_app *app,
-       int argc,
-       char **argv)
+R_init_display(struct R_app *app,
+               int argc,
+               char **argv)
 {
     char *dispname;
     Display *disp;
-    int screen;
+    int retval;
 
     app->argc = argc;
     app->argv = argv;
@@ -58,17 +58,40 @@ R_init(struct R_app *app,
     XInitThreads();
     disp = XOpenDisplay(dispname);
     if (disp == NULL) {
-
+        
         return FALSE;
     }
     app->display = disp;
+    retval = ScreenCount(disp);
+
+    return retval;
+}
+
+int
+R_init(struct R_app *app,
+       int argc,
+       char **argv)
+{
+    int screen;
+    Display *disp;
+
+    if (!app->display
+        && !R_init_display(app,
+                           argc,
+                           argv)) {
+
+        return FALSE;
+    }
+    disp = app->display;
 #if (R_DEBUG_X_ERRORS)
     XSynchronize(app->display, True);
 #endif
     XSetErrorHandler(R_handle_x_error);
     XSetIOErrorHandler(R_handle_x_io_error);
-    screen = DefaultScreen(disp);
-    app->screen = screen;
+    if (!app->screen) {
+        screen = DefaultScreen(disp);
+        app->screen = screen;
+    }
     app->depth = DefaultDepth(disp,
                               screen);
     app->visual = DefaultVisual(disp,

@@ -79,6 +79,7 @@ Rwm_set_root_window(struct R_app *app)
                                 screen);
     root->app = app;
     root->typeflags = R_WINDOW_ROOT_FLAG;
+    fprintf(stderr, "ROOT: %lx\n", rootwin);
     root->id = rootwin;
     root->w = WidthOfScreen(screenptr);
     root->h = HeightOfScreen(screenptr);

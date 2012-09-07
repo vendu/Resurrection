@@ -8,6 +8,7 @@ dist_backgroundimage_DATA = \
 	background/plasmacircuit.png \
 	background/plasmadiff.png \
 	background/tile_caverock.jpg \
+	background/redmetal.jpg \
 	background/sun.jpg \
 	background/sword.jpg \
 	background/sword.png \
@@ -99,7 +100,12 @@ dist_widgetimage_DATA = \
 	widget/btn_action_exit_normal.png \
 	widget/btn_action_exit_hilited.png \
 	widget/btn_action_exit_clicked.png \
-        orige/q1.png \
+	orige/hruler.png \
+	orige/vruler.png \
+        orige/menu.png \
+	orige/menu_o.png \
+	orige/menu_t.png \
+	orige/q1.png \
         orige/q2.png \
         orige/icon_monitor_1.png \
         orige/icon_monitor_2.png \
@@ -114,3 +120,4 @@ dist_widgetimage_DATA = \
         orige/icon_beethoven_2.png \
         orige/icon_beethoven_3.png
 
+ 

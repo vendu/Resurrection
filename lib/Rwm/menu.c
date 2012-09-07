@@ -103,6 +103,15 @@ static char *Rwm_menu_strings[RWM_MENU_ITEMS] = {
 };
 #endif
 
+#if (RWM_OLDE_THEME)
+static char *Rwm_menu_image_names[RWM_MENU_ITEMS] = {
+    RESURRECTION_IMAGE_SEARCH_PATH "widget/menu_t.png",
+    RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+    RESURRECTION_IMAGE_SEARCH_PATH "widget/menu_o.png",
+    NULL,
+    NULL
+};
+#else
 static char *Rwm_menu_image_names[RWM_MENU_ITEMS] = {
     RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
     RESURRECTION_IMAGE_SEARCH_PATH "widget/winselh.png",
@@ -110,6 +119,7 @@ static char *Rwm_menu_image_names[RWM_MENU_ITEMS] = {
     NULL,
     NULL
 };
+#endif
 
 #if (USE_IMLIB2)
 #define RWM_MENU_HORIZONTAL_RULER 0
@@ -254,17 +264,23 @@ Rwm_create_menu_window(struct R_app *app)
                            RWM_MENU_ITEM_HEIGHT,
                            w,
                            h);
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselv.png",
                                 NULL);
+#endif
     image->w = RWM_MENU_RULER_WIDTH;
     image->h = R_TILE_FIT_IMAGE;
     child->images[R_WINDOW_NORMAL_STATE] = image;
     RWM_SET_WINDOW_IMAGE(child, R_WINDOW_NORMAL_STATE);
     R_set_background_imlib2(image,
                             child,
-                            w,
-                            h,
+                            image->w,
+                            image->h,
                             0);
     menu->child = child;
     tmp = child;
@@ -277,17 +293,23 @@ Rwm_create_menu_window(struct R_app *app)
                            RWM_MENU_ITEM_HEIGHT,
                            w,
                            h);
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselv.png",
                                 NULL);
+#endif
     image->w = RWM_MENU_RULER_WIDTH;
     image->h = R_TILE_FIT_IMAGE;
     child->images[R_WINDOW_NORMAL_STATE] = image;
     RWM_SET_WINDOW_IMAGE(child, R_WINDOW_NORMAL_STATE);
     R_set_background_imlib2(image,
                             child,
-                            w,
-                            h,
+                            image->w,
+                            image->h,
                             0);
     tmp->chain = child;
     tmp = child;
@@ -306,17 +328,23 @@ Rwm_create_menu_window(struct R_app *app)
                                y,
                                w,
                                h);
+#if (RWM_OLDE_THEME)
+        image = R_load_image_imlib2(app,
+                                    RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+                                    NULL);
+#else
         image = R_load_image_imlib2(app,
                                     RESURRECTION_IMAGE_SEARCH_PATH "widget/winselh.png",
                                     NULL);
+#endif
         image->w = R_TILE_FIT_IMAGE;
         image->h = RWM_MENU_RULER_HEIGHT;
         child->images[R_WINDOW_NORMAL_STATE] = image;
         RWM_SET_WINDOW_IMAGE(child, R_WINDOW_NORMAL_STATE);
         R_set_background_imlib2(image,
                                 child,
-                                w,
-                                h,
+                                image->w,
+                                image->h,
                                 0);
         y += RWM_MENU_RULER_HEIGHT + RWM_MENU_ITEM_HEIGHT;
         tmp->chain = child;
@@ -443,15 +471,27 @@ Rwm_init_menu_item(struct R_window *item)
     int i;
 
     app = item->app;
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/menu_t.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
                                 NULL);
+#endif
     image->w = R_TILE_FIT_IMAGE;
     image->h = RWM_MENU_ITEM_HEIGHT;
     item->images[R_WINDOW_NORMAL_STATE] = image;
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselh.png",
                                 NULL);
+#endif
     image->w = R_TILE_FIT_IMAGE;
     image->h = RWM_MENU_ITEM_HEIGHT;
     item->images[R_WINDOW_ACTIVE_STATE] = image;

@@ -81,8 +81,7 @@ Rwm_create_clock_window(struct R_app *app)
     window->font = _menufont;
 #if (USE_NEW_MENU)
     Rwm_move_resize_window(window,
-                           2 * RWM_MENU_ITEM_WIDTH
-                           + 4 * RWM_MENU_RULER_WIDTH,
+                           2 * RWM_MENU_ITEM_WIDTH,
                            0,
                            RWM_CLOCK_WIDTH,
                            RWM_MENU_ITEM_HEIGHT);
@@ -105,9 +104,15 @@ Rwm_init_clock_window(struct R_window *window)
 {
     struct R_image *image;
 
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(window->app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/menu_t.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(window->app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
                                 NULL);
+#endif
     image->w = R_TILE_FIT_IMAGE;
     image->h = RWM_MENU_ITEM_HEIGHT;
     window->images[R_WINDOW_NORMAL_STATE] = image;

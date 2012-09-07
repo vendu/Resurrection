@@ -13,8 +13,8 @@
 
 #define RWM_MINIATURE_PAGER 1
 #if (RWM_MINIATURE_PAGER)
-#define RWM_MINIATURE_WIDTH  400
-#define RWM_MINIATURE_HEIGHT 300
+#define RWM_MINIATURE_WIDTH  96
+#define RWM_MINIATURE_HEIGHT 72
 struct R_window *miniwins[RWM_DESKTOPS];
 #endif
 
@@ -192,8 +192,13 @@ Rwm_create_pager_windows(struct R_app *app)
     }
 #if (USE_IMLIB2)
     label->font = _menufont;
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/menu_t.png",
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
+#endif
                                 NULL);
     if (image == NULL) {
 
@@ -204,9 +209,15 @@ Rwm_create_pager_windows(struct R_app *app)
     label->images[R_WINDOW_NORMAL_STATE] = image;
     label->image = image;
     label->str = "desk";
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselh.png",
                                 NULL);
+#endif
     if (image == NULL) {
 
         return FALSE;
@@ -262,9 +273,15 @@ Rwm_create_pager_windows(struct R_app *app)
                            RWM_MENU_ITEM_HEIGHT,
                            w,
                            h);
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselv.png",
                                 NULL);
+#endif
     image->w = RWM_MENU_RULER_WIDTH;
     image->h = R_TILE_FIT_IMAGE;
     child->images[R_WINDOW_NORMAL_STATE] = image;
@@ -285,9 +302,15 @@ Rwm_create_pager_windows(struct R_app *app)
                            RWM_MENU_ITEM_HEIGHT,
                            w,
                            h);
+#if (RWM_OLDE_THEME)
+    image = R_load_image_imlib2(app,
+                                RESURRECTION_IMAGE_SEARCH_PATH "widget/vruler.png",
+                                NULL);
+#else
     image = R_load_image_imlib2(app,
                                 RESURRECTION_IMAGE_SEARCH_PATH "widget/winselv.png",
                                 NULL);
+#endif
     image->w = RWM_MENU_RULER_WIDTH;
     image->h = R_TILE_FIT_IMAGE;
     child->images[R_WINDOW_NORMAL_STATE] = image;
@@ -314,9 +337,15 @@ Rwm_create_pager_windows(struct R_app *app)
                                y,
                                w,
                                h);
+#if (RWM_OLDE_THEME)
+        image = R_load_image_imlib2(app,
+                                    RESURRECTION_IMAGE_SEARCH_PATH "widget/hruler.png",
+                                    NULL);
+#else
         image = R_load_image_imlib2(app,
                                     RESURRECTION_IMAGE_SEARCH_PATH "widget/winselh.png",
                                     NULL);
+#endif
         image->w = R_TILE_FIT_IMAGE;
         image->h = RWM_MENU_RULER_HEIGHT;
         child->images[R_WINDOW_NORMAL_STATE] = image;

@@ -58,13 +58,13 @@ extern struct Rwm_configure_info Rwm_action_info;
 #define RWM_MENU_ITEMS         7
 #define RWM_MENU_RULER_WIDTH   4
 #define RWM_MENU_RULER_HEIGHT  4
-#define RWM_MENU_ITEM_WIDTH    128
+#define RWM_MENU_ITEM_WIDTH    96
 #define RWM_MENU_ITEM_HEIGHT   24
 #if 0
 #define RWM_MENU_ITEM_HEIGHT   40
 #endif
-#define RWM_PAGER_THUMB_WIDTH  128
-#define RWM_PAGER_THUMB_HEIGHT 96
+#define RWM_PAGER_THUMB_WIDTH  96
+#define RWM_PAGER_THUMB_HEIGHT 72
 
 #define RWM_TEXT_COLOR_INDEX   0
 

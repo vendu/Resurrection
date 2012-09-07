@@ -45,9 +45,10 @@
 //#define RWM_TEXT_COLOR { 0xff, 255, 215, 0 }
 #define RWM_TEXT_COLOR { 0, 0xd7, 0, 0 }
 
+#define RWM_OLDE_THEME     1
 /* define to zero to use the new (unpolished) theme. */
 #define RWM_NEW_THEME      0
-#define RWM_ORIGINAL_THEME 1
+#define RWM_ORIGINAL_THEME 0
 
 /* DO NOT TOUCH ANYTHING BELOW THIS. :) */
 

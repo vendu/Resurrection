@@ -242,7 +242,8 @@ R_init_window(struct R_app *app,
     } else {
         window->sysflags |= R_WINDOW_STATIC_EVENTS_FLAG;
     }
-    screen = DefaultScreen(app->display);
+//    screen = DefaultScreen(app->display);
+    screen = app->screen;
     memset(&attr, 0, sizeof(attr));
     attr.background_pixel = BlackPixel(app->display,
                                        screen);
@@ -285,6 +286,7 @@ R_init_window(struct R_app *app,
     if (!parent) {
         parentwin = RootWindow(app->display,
                                screen);
+        fprintf(stderr, "PARENT: %lx (%lx)\n", (long)parentwin, screen);
     }
     win = XCreateWindow(app->display,
                         parentwin,
@@ -1167,7 +1169,7 @@ void
 _R_iconify_window(struct R_window *window)
 {
     XIconifyWindow(window->app->display, window->id,
-		   DefaultScreen(window->app->display));
+		   window->app->screen);
 
     return;
 }
@@ -1176,7 +1178,7 @@ void
 _R_withdraw_window(struct R_window *window)
 {
     XWithdrawWindow(window->app->display, window->id,
-		    DefaultScreen(window->app->display));
+		    window->app->screen);
 
     return;
 }

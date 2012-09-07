@@ -15,7 +15,7 @@
 #define R_FIXED_STATE_IMAGES 1
 
 #define R_DEBUG_X_ERRORS     0
-#define RWM_DEBUG_X_ERRORS   0
+#define RWM_DEBUG_X_ERRORS   1
 #define RWM_DEBUG_EVENTS     0
 
 #endif /* __RESURRECTION_DEBUG_H__ */
