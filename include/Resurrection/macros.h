@@ -8,6 +8,8 @@
 #ifndef __RESURRECTION_MACROS_H__
 #define __RESURRECTION_MACROS_H__
 
+//#define R_init(app, argc, argv) (R_init_display(app, argc, argv), R_init_screen(app, argc, argv, DefaultScreen((app)->display))
+
 #define X_FONT_WIDTH(fp) ((fp)->max_bounds.width)
 #define X_FONT_HEIGHT(fp) ((fp)->ascent + (fp)->descent)
 

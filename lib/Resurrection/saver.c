@@ -1117,3 +1117,4 @@ alien_dummy(void)
 }
 
 #endif /* 0 */
+

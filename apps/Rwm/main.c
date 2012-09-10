@@ -20,12 +20,10 @@ main(int argc, char *argv[])
         execvp("Rl", arg);
     }
 #endif
-#if 0
     memset(&app,
            0,
            sizeof(app));
     app.name = "Rwm";
-#endif
     if (!Rwm_init(&app,
                   argc,
                   argv)) {

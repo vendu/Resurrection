@@ -139,6 +139,8 @@ Rwm_init(struct R_app *app,
     struct R_wm     *wm;
     int              loop = 1;
     int              nscreen = 0;
+    int              i;
+    int              defscreen;
     int              xfd;
     pid_t            pid;
     fd_set           readfds;
@@ -151,29 +153,37 @@ Rwm_init(struct R_app *app,
         execvp("Rl", arg);
     }
 #endif
-    nscreen = R_init_display(app,
-                             argc,
-                             argv);
+    nscreen = R_init_display_screen(app,
+                                    argc,
+                                    argv,
+                                    0);
     if (!nscreen) {
         
                 return FALSE;
     }
-    R_init_display(app,
-                   argc,
-                   argv);
-    while (nscreen--) {
+    XCloseDisplay(app->display);
+    fprintf(stderr, "%d screens\n", nscreen);
+    defscreen = DefaultScreen(app->display);
+    for (i = 0 ; i < nscreen ; i++) {
         pid = fork();
         if (!pid) {
             newapp = calloc(1, sizeof(struct R_app));
-            newapp->screen = nscreen;
-            newapp->name = "Rwm";
-//            newapp->display = app->display;
-            if (!R_init(newapp,
-                        argc,
-                        argv)) {
+            if (!R_init_screen(newapp,
+                               argc,
+                               argv,
+                               i)) {
                 
                 return FALSE;
             }
+            R_global.app = newapp;
+            wm = calloc(1, sizeof(struct R_wm));
+            newapp->client = wm;
+#if 0
+            if (i == defscreen) {
+                
+                continue;
+            }
+#endif
 #if 0
             signal(SIGALRM, sig_alrm);
             alarm(15);
@@ -193,9 +203,6 @@ Rwm_init(struct R_app *app,
 #if defined(SIGSYS)
             SIGNAL(SIGSYS, Rwm_crash_handler);
 #endif
-            
-            wm = calloc(1, sizeof(struct R_wm));
-            newapp->client = wm;
             Rwm_init_optflags(wm);
             Rwm_init_colors(wm);
 #if (RWM_DEBUG_X_ERRORS)
@@ -206,8 +213,8 @@ Rwm_init(struct R_app *app,
 #if (USE_IMLIB2)
             Rwm_load_title_font(newapp);
 #endif
-            newapp->screen = nscreen;
-            fprintf(stderr, "initialising screen %d\n", nscreen);
+            newapp->screen = i;
+            fprintf(stderr, "initialising screen %d\n", i);
             if (!Rwm_set_root_window(newapp)) {
                 
                 return FALSE;
@@ -219,7 +226,7 @@ Rwm_init(struct R_app *app,
             
             if (!Rwm_init_desktops(newapp)) {
                 
-            return FALSE;
+                return FALSE;
             }
             wm->desktop = wm->desktops[0];
             
@@ -277,7 +284,6 @@ Rwm_init(struct R_app *app,
                     return FALSE;
                 }
             }
-            R_global.app = newapp;
             
 #if (R_DEBUG_WM)
             Rwm_init_test(newapp);
@@ -296,6 +302,7 @@ Rwm_init(struct R_app *app,
             }
         }
     }
+    app->screen = defscreen;
 
     return TRUE;
 }

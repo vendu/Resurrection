@@ -9,9 +9,10 @@
 #define __RESURRECTION_PROTOS_H__
 
 char * R_parse_display(struct R_app *app);
-int R_init(struct R_app *app,
-           int argc,
-           char **argv);
+int R_init_screen(struct R_app *app,
+                  int argc,
+                  char **argv,
+                  int screen);
 
 void * R_alloc_object(int zero);
 void R_free_object(void *obj);

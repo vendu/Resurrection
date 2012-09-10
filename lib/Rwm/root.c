@@ -117,6 +117,7 @@ Rwm_init_root_events(struct R_app *app)
                                ReparentNotify,
                                Rwm_root_reparentnotify_handler);
 #endif
+    fprintf(stderr, "EVENTS: %lx\n", (long)root->id);
     R_add_window_events(root,
                         SubstructureNotifyMask
                         | SubstructureRedirectMask
@@ -253,6 +254,7 @@ Rwm_root_createnotify_handler(void *arg,
     XSetWindowAttributes attr;
 
     root = arg;
+    fprintf(stderr, "CREATE: %lx\n", (long)root->id);
     wm = root->app->client;
     create = &event->xcreatewindow;
     if (create->override_redirect) {
