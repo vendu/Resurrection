@@ -287,9 +287,11 @@ Rwm_set_desktop_backgrounds(struct R_app *app)
 #if 0
                                     R_FIT_IMAGE,
                                     R_FIT_IMAGE,
-#endif
                                     root->w,
                                     root->h,
+#endif
+                                    R_TILE_IMAGE,
+                                    R_TILE_IMAGE,
                                     Rwm_desktop_image_flags[i]);
         } else {
             R_set_background_imlib2(desktop->image,
