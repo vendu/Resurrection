@@ -162,7 +162,7 @@ Rwm_init(struct R_app *app,
                 return FALSE;
     }
     XCloseDisplay(app->display);
-    fprintf(stderr, "%d screens\n", nscreen);
+//    fprintf(stderr, "%d screens\n", nscreen);
     defscreen = DefaultScreen(app->display);
     for (i = 0 ; i < nscreen ; i++) {
         pid = fork();
@@ -214,23 +214,17 @@ Rwm_init(struct R_app *app,
             Rwm_load_title_font(newapp);
 #endif
             newapp->screen = i;
-            fprintf(stderr, "initialising screen %d\n", i);
+//            fprintf(stderr, "initialising screen %d\n", i);
             if (!Rwm_set_root_window(newapp)) {
                 
                 return FALSE;
             }
-            
-            fprintf(stderr, "#1\n");
-            
-            fprintf(stderr, "#2\n");
             
             if (!Rwm_init_desktops(newapp)) {
                 
                 return FALSE;
             }
             wm->desktop = wm->desktops[0];
-            
-            fprintf(stderr, "#3\n");
             
             gettimeofday(&Rwm_action_info.tv, NULL);
             Rwm_init_frame_event_handlers(newapp);
@@ -241,8 +235,6 @@ Rwm_init(struct R_app *app,
             }
 #endif
             
-            fprintf(stderr, "#4\n");
-            
 #if (!R_DEBUG_WM)
             if (!Rwm_take_windows(newapp)) {
                 
@@ -250,23 +242,17 @@ Rwm_init(struct R_app *app,
             }
 #endif
             
-            fprintf(stderr, "#5\n");
-            
             Rwm_init_root_events(newapp);
             if (!Rwm_init_bindings(newapp)) {
                 
                 return FALSE;
             }
             
-            fprintf(stderr, "#6\n");
-            
             if (!Rwm_init_menu(newapp)) {
                 
                 return FALSE;
             }
             Rwm_init_menu_events(newapp);
-            
-            fprintf(stderr, "#7\n");
             
             if (!Rwm_init_pager(newapp)) {
                 

@@ -135,7 +135,6 @@ Rwm_fade_desktop_in(void *arg, XEvent *event)
         imlib_context_set_drawable(desktop->id);
         imlib_context_set_image(image->orig);
         imlib_context_set_color_modifier(colormod);
-        fprintf(stderr, "IMG(%p): %dx%d (%dx%d)\n", desktop->image->orig, desktop->w, desktop->h, desktop->image->origw, desktop->image->origh);
         img = imlib_create_cropped_scaled_image(0,
                                                 0,
                                                 desktop->image->origw,
@@ -145,7 +144,6 @@ Rwm_fade_desktop_in(void *arg, XEvent *event)
         imlib_context_set_image(img);
         for (i = 0 ; i <= 256 ; i++) {
             brite = i;
-            fprintf(stderr, "brite: %Lf\n", brite);
             imlib_modify_color_modifier_brightness(brite);
             imlib_render_pixmaps_for_whole_image_at_size(&pmap, &mask,
                                                          desktop->w,

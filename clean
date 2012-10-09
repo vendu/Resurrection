@@ -1,6 +1,6 @@
 #! /bin/sh
 
-make distclean
+# make distclean
 rm -rf `find . -name .libs`
 rm -rf `find . -name .deps`
 rm -rf `find . -name \*.core`

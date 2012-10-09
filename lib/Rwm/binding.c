@@ -156,7 +156,6 @@ Rwm_kill_func(void *arg,
     struct R_window *frame;
     struct R_window *client;
 
-    fprintf(stderr, "KILL_WINDOW\n");
     window = arg;
 
     return;
@@ -171,7 +170,6 @@ Rwm_close_func(void *arg,
     struct R_window *frame;
     struct R_window *client;
 
-    fprintf(stderr, "CLOSE_WINDOW\n");
     window = arg;
     Rwm_delete_window(window->parent->child);
 

@@ -958,7 +958,7 @@ Rwm_client_propertynotify_handler(void *arg,
         } else if ((_wmatoms[RWM_MOTIF_WM_HINTS_ATOM])
                     && event->xproperty.atom
                        == _wmatoms[RWM_MOTIF_WM_HINTS_ATOM]) {
-            fprintf(stderr, "MOTIF hints detected\n");
+//            fprintf(stderr, "MOTIF hints detected\n");
             if (client->motifwmhints) {
                 XFree(client->motifwmhints);
                 client->motifwmhints = NULL;
@@ -1014,7 +1014,7 @@ Rwm_client_propertynotify_handler(void *arg,
         } else if (event->xproperty.atom) {
 #if (DEBUG_ATOM)
             fprintf(errfile, "%s\n", XGetAtomName(client->app->display,event->xproperty.atom));
-#elif 0
+#else
             fprintf(stderr, "unknown atom %d: %s\n",
                     event->xproperty.atom,
                     XGetAtomName(client->app->display,event->xproperty.atom));

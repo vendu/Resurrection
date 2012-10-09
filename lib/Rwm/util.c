@@ -512,7 +512,7 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
     }
     frame = client->parent;
     if (event->xany.type == ConfigureRequest) {
-        Rwm_print_configurerequest(event);
+//        Rwm_print_configurerequest(event);
         configure = &event->xconfigurerequest;
         flags = configure->value_mask;
         if (flags & CWX) {
@@ -552,7 +552,7 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
 #endif
         }
     } else {
-        Rwm_print_resizerequest(event);
+//        Rwm_print_resizerequest(event);
         resize = &event->xresizerequest;
         if (frame) {
             x = frame->x;
@@ -739,7 +739,7 @@ Rwm_get_motif_wm_hints(struct R_window *client)
     XSync(client->app->display,
           False);
     if ((n) == 5) {
-        fprintf(stderr, "CHANGING MOTIF WM HINTS\n");
+//        fprintf(stderr, "CHANGING MOTIF WM HINTS\n");
         mwmhints = client->motifwmhints;
         if (mwmhints->flags & R_MOTIF_DECOR_FLAG) {
             Rwm_set_borderless(client, mwmhints->decor);
