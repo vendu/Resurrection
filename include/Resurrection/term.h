@@ -916,6 +916,7 @@ do { \
 /* sequences prefixed with ESC (Ctrl-[). */
 
 /* escape sequence characters. */
+#define RTERM_VISIBLE              28
 
 #define RTERM_CHARSET_KANJI_ESCAPE '$'
 #define RTERM_CHARSET_G0_ESCAPE	 '('
@@ -1114,16 +1115,16 @@ do { \
 
 #define RTERM_SGR_ATTRIBUTES 'm' /* SGR. */
 
-#define RTERM_NORMAL        0
-#define RTERM_BOLD_ON       1
-#define RTERM_UNDERLINE_ON  4
-#define RTERM_BLINK_ON      5
-#define RTERM_REVERSE_ON    7
+#define RTERM_NORMAL             0
+#define RTERM_BOLD_ON            1
+#define RTERM_UNDERLINE_ON       4
+#define RTERM_BLINK_ON           5
+#define RTERM_REVERSE_ON         7
 
-#define RTERM_BOLD_OFF      22
-#define RTERM_UNDERLINE_OFF 24
-#define RTERM_BLINK_OFF     25
-#define RTERM_REVERSE_OFF   27
+#define RTERM_BOLD_OFF           22
+#define RTERM_UNDERLINE_OFF      24
+#define RTERM_BLINK_OFF          25
+#define RTERM_REVERSE_OFF        27
 
 #define RTERM_FOREGROUND_BLACK   30
 #define RTERM_FOREGROUND_RED     31

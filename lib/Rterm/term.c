@@ -295,7 +295,8 @@ Rterm_start(struct R_term *term)
      * export terminal type.
      */
 
-    putenv("TERM=xterm");
+//    putenv("TERM=xterm");
+    putenv("TERM=vt100");
 
     if ((term->path = calloc(1, PATH_MAX + 1)) == NULL) {
 

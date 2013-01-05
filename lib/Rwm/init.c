@@ -348,6 +348,8 @@ Rwm_take_windows(struct R_app *app)
                    &nchildren)) {
         if (nchildren) {
             ui = 0;
+            _ignbadwindow = 1;
+            _ignbadmatch = 1;
             while (ui < nchildren) {
                 win = children[ui];
                 memset(&attr, 0, sizeof(attr));
@@ -369,8 +371,6 @@ Rwm_take_windows(struct R_app *app)
                         window->w = w;
                         window->h = h;
                         window->border = attr.border_width;
-                        _ignbadwindow = 1;
-                        _ignbadmatch = 1;
                         if (!attr.override_redirect) {
                             R_add_save_window(window);
                             window->sysflags |= R_WINDOW_STATIC_IMAGES_FLAG;
@@ -416,15 +416,13 @@ Rwm_take_windows(struct R_app *app)
                             R_free_window(window);
                         }
                     }
-#if 0
                     XSync(app->display,
                           False);
-#endif
-                    _ignbadwindow = 0;
-                    _ignbadmatch = 0;
                 }
                 ui++;
             }
+            _ignbadwindow = 0;
+            _ignbadmatch = 0;
             XFree(children);
         }
     }

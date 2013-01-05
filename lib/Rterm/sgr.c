@@ -19,6 +19,7 @@ void Rterm_sgr_bold_off(struct R_term *term, struct R_termscreen *screen);
 void Rterm_sgr_underline_off(struct R_term *term, struct R_termscreen *screen);
 void Rterm_sgr_blink_off(struct R_term *term, struct R_termscreen *screen);
 void Rterm_sgr_reverse_off(struct R_term *term, struct R_termscreen *screen);
+void Rterm_sgr_visible(struct R_term *term, struct R_termscreen *screen);
 void Rterm_sgr_foreground_color(struct R_term *term, struct R_termscreen *screen, int arg);
 void Rterm_sgr_background_color(struct R_term *term, struct R_termscreen *screen, int arg);
 void Rterm_sgr_foreground_black(struct R_term *term, struct R_termscreen *screen);
@@ -119,6 +120,12 @@ Rterm_register_sgr_handlers(void)
 	return -1;
     }
 
+    if (Rterm_register_sgr_handler(RTERM_VISIBLE,
+                                   Rterm_sgr_visible) < 0) {
+	
+	return -1;
+    }
+
     if (Rterm_register_sgr_handler(RTERM_FOREGROUND_BLACK,
                                    Rterm_sgr_foreground_black) < 0) {
 
@@ -167,12 +174,14 @@ Rterm_register_sgr_handlers(void)
 	return -1;
     }
 
+#if 0
     /* TODO */
     if (Rterm_register_sgr_handler(RTERM_FOREGROUND_EXTRA,
-                                   Rterm_sgr_foreground_default) < 0) {
+                                   Rterm_sgr_foreground_extra) < 0) {
 
 	return -1;
     }
+#endif
 
     if (Rterm_register_sgr_handler(RTERM_FOREGROUND_DEFAULT,
                                    Rterm_sgr_foreground_default) < 0) {
@@ -391,7 +400,7 @@ Rterm_process_sgr_attributes(struct R_term *term, struct R_termscreen *screen, i
                 handler(term, screen);
             } else {
                 app = R_global.app;
-                fprintf(stderr, "%s: Rterm_process_sgr_attributes(): unknown command %d\n", app->name, operation);
+                fprintf(stderr, "%s: Rterm_process_sgr_attributes(): unknown command %x\n", app->name, operation);
             }
     }
     
@@ -512,6 +521,12 @@ Rterm_sgr_reverse_off(struct R_term *term, struct R_termscreen *screen)
 
     screen->textflags &= ~RTERM_CHAR_REVERSE;
 
+    return;
+}
+
+void
+Rterm_sgr_visible(struct R_term *term, struct R_termscreen *screen)
+{
     return;
 }
 

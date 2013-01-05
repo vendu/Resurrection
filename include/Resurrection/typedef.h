@@ -28,7 +28,7 @@ typedef unsigned long R_uword_t;
 
 /* pixel types */
 typedef int32_t       R_argb32_t;
-typedef unsigned long R_color_t;
+typedef uint32_t      R_color_t;
 #if (USE_IMLIB2)
 typedef double        R_colormod_t;
 #else

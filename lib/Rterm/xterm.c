@@ -280,58 +280,58 @@ Rterm_process_xterm_sequence(struct R_term *term, struct R_termscreen *screen)
     }
 
     if (isdigit(ch)) {
-	arg = ch - '0';
-	if ((ch = read_char(term)) < 0) {
-
-	    return;
-	}
-
-	for ( ; isdigit(ch) ; ch = read_char(term)) {
-	    if (ch < 0) {
-
-		return;
-	    }
-
-	    arg = arg * 10 + ch - '0';
-	}
+        arg = ch - '0';
+        if ((ch = read_char(term)) < 0) {
+            
+            return;
+        }
+        
+        for ( ; isdigit(ch) ; ch = read_char(term)) {
+            if (ch < 0) {
+                
+                return;
+            }
+            
+            arg = arg * 10 + ch - '0';
+        }
     } else if (ch == ';') {
-	arg = 0;
+        arg = 0;
     } else {
-	arg = ch;
-
-	if ((ch = read_char(term)) < 0) {
-	    
-	    return;
-	}
+        arg = ch;
+        
+        if ((ch = read_char(term)) < 0) {
+            
+            return;
+        }
     }
-
+    
     if (ch == ';') {
-	i = 0;
-
-	while ((ch = read_char(term)) != R_BEL_CHAR) {
-	    if (ch < 0) {
-
-		return;
-	    } else if (ch == '\t') {
-		ch = ' ';
-	    } else if (ch < ' ') {
-		/* control character. */
+        i = 0;
+        
+        while ((ch = read_char(term)) != R_BEL_CHAR) {
+            if (ch < 0) {
+                
+                return;
+            } else if (ch == '\t') {
+                ch = ' ';
+            } else if (ch < ' ') {
+                /* control character. */
                 if (ch == 27 && (ch = read_char(term)) == '\\') {
-
+                    
                     break;
                 }
-
-		return;
-	    }
-	    
-	    if (i < sizeof(str) - 1) {
-		str[i++] = (char)ch;
-	    }
-	}
-	
-	str[i] = '\0';
-	
-	Rterm_do_xterm_sequence(term, screen, arg, str);
+                
+                return;
+            }
+            
+            if (i < sizeof(str) - 1) {
+                str[i++] = (char)ch;
+            }
+        }
+        
+        str[i] = '\0';
+        
+        Rterm_do_xterm_sequence(term, screen, arg, str);
     } else {
 	i = 0;
 

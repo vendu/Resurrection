@@ -372,6 +372,11 @@ Rterm_process_csi_sequence(struct R_term *term, struct R_termscreen *screen)
     /* read numerical arguments. */
 
     do {
+#if 0
+        if (ch == '[' || ch == ']') {
+            ch = read_char(term);
+        }
+#endif
 	for (arg = 0 ; isdigit(ch) ; ch = read_char(term)) {
 	    if (ch < 0) {
 

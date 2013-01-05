@@ -13,6 +13,8 @@ static R_termescapehandler_t *escapehandlers[RTERM_ESCAPE_HANDLER_ARRAY_SIZE];
 
 void Rterm_process_csi_sequence(struct R_term *term, struct R_termscreen *screen);
 void Rterm_process_xterm_sequence(struct R_term *term, struct R_termscreen *screen);
+void Rterm_escape_visible(struct R_term *term, struct R_termscreen *screen);
+void Rterm_reverse_off(struct R_term *term, struct R_termscreen *screen);
 #if (SUPPORT_DUALBYTE_CHARACTERS)
 void Rterm_escape_charset_kanji(struct R_term *term, struct R_termscreen *screen);
 #endif
@@ -55,6 +57,18 @@ Rterm_register_escape_handler(int operation, R_termescapehandler_t *handler)
 int
 Rterm_register_escape_handlers(void)
 {
+    if (Rterm_register_escape_handler(RTERM_VISIBLE,
+                                      Rterm_escape_visible) < 0) {
+
+	return -1;
+    }
+
+    if (Rterm_register_escape_handler(RTERM_REVERSE_OFF,
+                                      Rterm_reverse_off) < 0) {
+
+        return -1;
+    }
+
 #if (SUPPORT_DUALBYTE_CHARACTERS)
 
     if (Rterm_register_escape_handler(RTERM_CHARSET_KANJI_ESCAPE,
@@ -198,7 +212,6 @@ Rterm_process_escape_sequence(struct R_term *term, struct R_termscreen *screen)
 	return;
     }
     ch = read_char(term);
-
     if (ch < 0 || ch > RTERM_ESCAPE_HANDLER_ARRAY_SIZE - 1) {
 
 	return;
@@ -211,6 +224,18 @@ Rterm_process_escape_sequence(struct R_term *term, struct R_termscreen *screen)
     }
 
     return;
+}
+
+void
+Rterm_escape_visible(struct R_term *term, struct R_termscreen *screen)
+{
+    return;
+}
+
+void
+Rterm_reverse_off(struct R_term *term, struct R_termscreen *screen)
+{
+    term->privmodes &= ~RTERM_PRIVMODE_REVERSE_VIDEO;
 }
 
 #if (SUPPORT_DUALBYTE_CHARACTERS)
