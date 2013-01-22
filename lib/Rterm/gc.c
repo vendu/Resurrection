@@ -290,8 +290,8 @@ Rterm_set_screen_gc(struct R_termscreen *screen, R_textflags_t textflags)
     if (textflags & RTERM_CHAR_BLINKING) {
 	if (RTERM_CHAR_BG_COLOR(textflags) < RTERM_SCREEN_MIN_BRIGHT_COLOR) {
 	    Rterm_set_screen_background_color(screen,
-					RTERM_CHAR_BG_COLOR(textflags)
-					+ RTERM_SCREEN_BRIGHT_OFFSET);
+                                              RTERM_CHAR_BG_COLOR(textflags)
+                                              + RTERM_SCREEN_BRIGHT_OFFSET);
 	} else if ((textflags & RTERM_CHAR_BG_COLOR_MASK)
 		   != (screen->gctextflags & RTERM_CHAR_BG_COLOR_MASK)) {
 	    Rterm_set_screen_background_color(screen, RTERM_CHAR_BG_COLOR(textflags));

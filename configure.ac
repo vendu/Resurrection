@@ -12,7 +12,7 @@ R_SET_CC_FLAGS
 
 AC_CONFIG_AUX_DIR(config_aux)
 
-AM_INIT_AUTOMAKE(Resurrection, 0.1.25)
+AM_INIT_AUTOMAKE(Resurrection, 0.0.1)
 
 R_SET_PATHS
 

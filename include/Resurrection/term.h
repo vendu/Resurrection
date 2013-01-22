@@ -1606,6 +1606,7 @@ struct R_term {
     struct R_termscrollbar  *scrollbar;
     char                    *bgname;
     char                    *fontname;
+    int                      fgcolor;
     int                      x;
     int                      y;
     unsigned int             w;

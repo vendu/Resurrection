@@ -44,6 +44,8 @@ struct R_app {
     /* v */
     struct R_window   *navi;
 
+    void             **wintree;
+
     /* client-specific */
     void              *client;
 

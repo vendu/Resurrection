@@ -116,8 +116,8 @@ AC_DEFUN([R_SET_PATHS],
     R_SET_INSTALL_DIRS
 
     # header path
-    INCLUDES=-I$R_DIST_ROOT/include $INCLUDE
-    AC_SUBST([INCLUDES])
+    AM_CPPFLAGS=-I$R_DIST_ROOT/include $INCLUDE
+    AC_SUBST([AM_CPPFLAGS])
 
     # Image installation directories.
     imagedir="$pkgdatadir/images"
@@ -153,7 +153,7 @@ AC_DEFUN([R_PRINT_INFO],
     echo "flags:    $CFLAGS"
     echo "preproc   $CPP $CPPFLAGS"
     echo "prefix:   $prefix"
-    echo "includes: $INCLUDES"
+    echo "includes: $AM_CPPFLAGS"
     echo "libs:     $LIBS"
     echo "----"
     echo "do not forget to read README"

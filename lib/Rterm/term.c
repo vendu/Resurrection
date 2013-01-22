@@ -227,6 +227,9 @@ Rterm_parse_options(struct R_term *term, int argc, char *argv[])
         } else if (!strcmp(argv[i], "-s")) {
             fprintf(stderr, "enabled background image scaling\n");
             term->flags |= RTERM_SCALE_BACKGROUND_PIXMAP;
+        } else if (!strcmp(argv[i], "-fg")) {
+            term->fgcolor = atoi(argv[++i]);
+            fprintf(stderr, "fg: %s\n", argv[i]);
         } else if (!strcmp(argv[i], "-f")) {
             fprintf(stderr, "enabled font %s\n", argv[i + 1]);
             term->fontname = argv[++i];

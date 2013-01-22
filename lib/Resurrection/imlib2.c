@@ -42,6 +42,7 @@ R_load_image_imlib2(struct R_app *app,
         image = R_alloc_image();
     }
     if (image) {
+        fprintf(stderr, "imgload: %s\n", filename);
         img = imlib_load_image(filename);
         if (img) {
             imlib_context_set_image(img);
@@ -547,7 +548,7 @@ R_render_thumb_imlib2(struct R_image *image,
     return TRUE;
 }
 
-void
+int
 R_set_background_imlib2(struct R_image *image,
                         struct R_window *window,
                         int w,
@@ -555,6 +556,7 @@ R_set_background_imlib2(struct R_image *image,
                         int flags)
 {
     Pixmap pixmap;
+    int    retval = -1;
 
     if (!image->orig) {
 
@@ -565,12 +567,14 @@ R_set_background_imlib2(struct R_image *image,
         pixmap = image->xpixmap;
     }
     if (!pixmap) {
-        R_render_image_imlib2(image,
-                              window,
-                              w,
-                              h,
-                              flags);
-        pixmap = image->pixmap;
+        retval = R_render_image_imlib2(image,
+                                       window,
+                                       w,
+                                       h,
+                                       flags);
+        if (!retval) {
+            pixmap = image->pixmap;
+        }
     }
     if (pixmap) {
         XSetWindowBackgroundPixmap(window->app->display,
@@ -584,7 +588,7 @@ R_set_background_imlib2(struct R_image *image,
         R_free_image_imlib2(image);
     }
 
-    return;
+    return retval;
 }
 
 void

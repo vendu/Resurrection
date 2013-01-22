@@ -102,6 +102,118 @@ R_free_window(struct R_window *window)
     return;
 }
 
+#define WINTREE 1
+
+#if (WINTREE)
+
+void
+R_add_window(struct R_window *window)
+{
+    void **wintree = R_global.app->wintree;
+    struct R_window **win1;
+    struct R_window **win2;
+    uint8_t k1;
+    uint8_t k2;
+    uint8_t k3;
+    uint8_t k4;
+    uint32_t val = (uint32_t)window->id;
+
+    k1 = (val >> 24) & 0xff;
+    k2 = (val >> 16) & 0xff;
+    k3 = (val >> 8) & 0xff;
+    k4 = val & 0xff;
+
+    win1 = wintree[k1];
+    if (!win1) {
+        win1 = calloc(256, sizeof(void *));
+        wintree[k1] = win1;
+    }
+    if (win1) {
+        win2 = (struct R_window **)win1[k2];
+        if (!win2) {
+            win2 = calloc(256, sizeof(void *));
+            win1[k2] = win2;
+        }
+        if (win2) {
+            win1 = (struct R_window **)win2[k3];
+            if (!win1) {
+                win1 = calloc(256, sizeof(void *));
+                win2[k3] = win1;
+            }
+            if (win1) {
+                win1[k4] = window;
+            }
+        }
+    }
+
+    return;
+}
+
+struct R_window *
+R_remove_window(struct R_window *window)
+{
+    void **wintree = R_global.app->wintree;
+    struct R_window **win;
+    struct R_window *ret = NULL;
+    uint8_t k1;
+    uint8_t k2;
+    uint8_t k3;
+    uint8_t k4;
+    uint32_t val = (uint32_t)window->id;
+
+    k1 = (val >> 24) & 0xff;
+    k2 = (val >> 16) & 0xff;
+    k3 = (val >> 8) & 0xff;
+    k4 = val & 0xff;
+
+    win = wintree[k1];
+    if (win) {
+        win = (struct R_window **)win[k2];
+        if (win) {
+            win = (struct R_window **)win[k3];
+            if (win) {
+                ret = win[k4];
+                win[k4] = NULL;
+            }
+        }
+    }
+
+    return ret;
+}
+
+struct R_window *
+R_find_window(Window id)
+{
+    void **wintree = R_global.app->wintree;
+    struct R_window **win;
+    struct R_window *ret = NULL;
+    uint8_t k1;
+    uint8_t k2;
+    uint8_t k3;
+    uint8_t k4;
+    uint32_t val = (uint32_t)id;
+
+    k1 = (val >> 24) & 0xff;
+    k2 = (val >> 16) & 0xff;
+    k3 = (val >> 8) & 0xff;
+    k4 = val & 0xff;
+
+    win = wintree[k1];
+    if (win) {
+        win = (struct R_window **)win[k2];
+        if (win) {
+            win = (struct R_window **)win[k3];
+            if (win) {
+                ret = (struct R_window **)win[k4];
+            }
+        }
+    }
+
+    return ret;
+}
+
+#else /* !WINTREE */
+
 void
 R_add_window(struct R_window *window)
 {
@@ -174,6 +286,8 @@ R_remove_window(struct R_window *window)
 
     return NULL;
 }
+
+#endif
 
 struct R_window *
 R_create_window(struct R_app *app,

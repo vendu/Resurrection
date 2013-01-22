@@ -91,6 +91,11 @@ R_init_display_screen(struct R_app *app,
     Display *disp;
     int retval;
 
+    app->wintree = calloc(256, sizeof(void *));
+    if (!app->wintree) {
+
+        return FALSE;
+    }
     app->argc = argc;
     app->argv = argv;
     dispname = R_parse_display_screen(app, screen);
@@ -109,8 +114,8 @@ R_init_display_screen(struct R_app *app,
 
 int
 R_init_display(struct R_app *app,
-                      int argc,
-                      char **argv)
+               int argc,
+               char **argv)
 {
     char *dispname;
     Display *disp;
@@ -177,6 +182,12 @@ R_init(struct R_app *app,
     int      screen;
     Display *disp;
 
+    app->wintree = calloc(256, sizeof(void *));
+    if (!app->wintree) {
+        
+        return FALSE;
+    }
+    fprintf(stderr, "WINTREE: %x\n", (long)app->wintree);
     if (!app->display
         && !R_init_display(app,
                            argc,

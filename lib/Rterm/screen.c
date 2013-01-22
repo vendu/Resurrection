@@ -198,6 +198,7 @@ Rterm_load_screen_draw_image(struct R_termscreen *screen)
                             RESURRECTION_IMAGE_SEARCH_PATH "background/darkstone.png",
                             &screen->drawimage);
     }
+    
     if (screen->drawimage.orig) {
 
         retval = 0;
@@ -216,9 +217,10 @@ Rterm_create_screen_draw_pixmap(struct R_termscreen *screen)
             if (term->flags & RTERM_SCALE_BACKGROUND_PIXMAP) {
                 if (R_render_image_imlib2(&screen->drawimage,
                                           screen->window,
-                                          0,
-                                          0,
-                                          R_IMAGE_STRETCH_FLAG | R_IMAGE_STATIC_FLAG) < 0) {
+                                          R_TILE_IMAGE,
+                                          R_TILE_IMAGE,
+                                          R_IMAGE_STRETCH_FLAG
+                                          | R_IMAGE_STATIC_FLAG) < 0) {                                          
                     
                     screen->drawpixmap = None;
                 } else {
@@ -576,6 +578,7 @@ Rterm_init_screen(struct R_termscreen *screen, struct R_termscreen *copyfrom)
 int
 Rterm_init_screen_colors(struct R_termscreen *screen)
 {
+    struct R_term *term;
     int screennum, i;
     R_color_t tmpcolor;
     XColor color;
@@ -585,6 +588,7 @@ Rterm_init_screen_colors(struct R_termscreen *screen)
 	return -1;
     }
 
+    term = R_global.app->client;
     screennum = DefaultScreen(screen->window->app->display);
 
     if (screen->window->app->depth >= 8) {
@@ -673,7 +677,9 @@ Rterm_init_screen_colors(struct R_termscreen *screen)
 	    BlackPixel(screen->window->app->display,
 		       RootWindow(screen->window->app->display, screennum));
     }
-    
+    if (term->fgcolor) {
+        screen->colors[RTERM_SCREEN_FOREGROUND_COLOR] = term->fgcolor;
+    }
     if (screen->flags & RTERM_SCREEN_REVERSE_VIDEO) {
 	tmpcolor = screen->colors[RTERM_SCREEN_FOREGROUND_COLOR];
 	screen->colors[RTERM_SCREEN_FOREGROUND_COLOR] = screen->colors[RTERM_SCREEN_BACKGROUND_COLOR];

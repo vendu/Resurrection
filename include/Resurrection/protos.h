@@ -231,11 +231,11 @@ int R_render_image_imlib2(struct R_image *image,
                           int w,
                           int h,
                           int flags);
-void R_set_background_imlib2(struct R_image *image,
-                             struct R_window *window,
-                             int w,
-                             int h,
-                             int flags);
+int R_set_background_imlib2(struct R_image *image,
+                            struct R_window *window,
+                            int w,
+                            int h,
+                            int flags);
 struct R_window * R_create_thumb_imlib2(struct R_window *parent,
                                         struct R_image *image,
                                         int w,

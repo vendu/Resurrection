@@ -145,6 +145,8 @@ Rwm_init(struct R_app *app,
     pid_t            pid;
     fd_set           readfds;
 
+#if 0    
+#endif
 #if 0
     pid = fork();
     if (!pid) {
@@ -153,6 +155,11 @@ Rwm_init(struct R_app *app,
         execvp("Rl", arg);
     }
 #endif
+    app->wintree = calloc(256, sizeof(void *));
+    if (!app->wintree) {
+        
+        return FALSE;
+    }
     nscreen = R_init_display_screen(app,
                                     argc,
                                     argv,
@@ -164,10 +171,16 @@ Rwm_init(struct R_app *app,
     XCloseDisplay(app->display);
 //    fprintf(stderr, "%d screens\n", nscreen);
     defscreen = DefaultScreen(app->display);
+    R_global.app = app;
     for (i = 0 ; i < nscreen ; i++) {
         pid = fork();
         if (!pid) {
             newapp = calloc(1, sizeof(struct R_app));
+            newapp->wintree = app->wintree;
+            if (!newapp->wintree) {
+                
+                return FALSE;
+            }
             if (!R_init_screen(newapp,
                                argc,
                                argv,
@@ -175,7 +188,7 @@ Rwm_init(struct R_app *app,
                 
                 return FALSE;
             }
-            R_global.app = newapp;
+//
             wm = calloc(1, sizeof(struct R_wm));
             newapp->client = wm;
 #if 0

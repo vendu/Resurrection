@@ -11,7 +11,7 @@
 
 #define R_DEBUG_EVENT(e) (UINT64_C(1) << (e))
 
-static uint64_t _debugmask = R_DEBUG_EVENT(MapNotify) | R_DEBUG_EVENT(MapRequest);
+static uint64_t _debugmask = R_DEBUG_EVENT(MapNotify) | R_DEBUG_EVENT(MapRequest | R_DEBUG_EVENT(KeyPress));
 
 typedef void R_eventdebugfunc(struct R_window *, XEvent *);
 

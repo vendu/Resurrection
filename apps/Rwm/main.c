@@ -33,6 +33,13 @@ main(int argc, char *argv[])
         exit(1);
     }
 #if 0
+    app.wintree = calloc(256, sizeof(void *));
+    if (!app.wintree) {
+
+        return FALSE;
+    }
+#endif
+#if 0
     xfd = XConnectionNumber(app.display);
     FD_SET(xfd, &readfds);
     while (TRUE) {

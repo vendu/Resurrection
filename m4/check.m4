@@ -7,7 +7,7 @@ AC_DEFUN([R_CHECK_HEADERS],
     AC_CHECK_HEADER(sys/termios.h)
     AC_CHECK_HEADER(sys/ttycom.h)
     AC_CHECK_HEADER(sys/endian.h)
-#    AC_CHECK_HEADER(freetype2/freetype/freetype.h, INCLUDES="$INCLUDES -I/usr/include/freetype2")
+#    AC_CHECK_HEADER(freetype2/freetype/freetype.h, AM_CPPFLAGS="$AM_CPPFLAGS -I/usr/include/freetype2")
 ])
 
 AC_DEFUN([R_CHECK_SIZES],
@@ -30,7 +30,7 @@ AC_DEFUN([R_CHECK_LIBS],
     AC_CHECK_LIB(Imlib2, imlib_context_set_display, LIBS="$LIBS -lImlib2")
     AC_CHECK_LIB(freetype, FT_New_Face, enable_freetype="yes", enable_freetype="no")
     if test "$enable_freetype" = "yes" ; then
-        INCLUDES="$INCLUDES -I/usr/include/freetype2"
+        AM_CPPFLAGS="$AM_CPPFLAGS -I/usr/include/freetype2"
 	LIBS="$LIBS -lfreetype"
     fi
 ])
