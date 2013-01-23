@@ -11,6 +11,7 @@
 #define RTERM_NO_COLOR NULL
 
 #define RTERM_USE_XSHM 0
+#define RTERM_CURSOR_HACKS 1
 
 #include <Resurrection/conf/term.h>
 
@@ -848,7 +849,8 @@ do { \
 #define RTERM_CHAR_DUALBYTE_2        0x00800000U /* 16-bit character, 2nd byte. */
 #define RTERM_CHAR_ACS_FONT          0x01000000U /* ACS graphics character set. */
 #define RTERM_CHAR_UK_FONT           0x02000000U /* UK character set */
-#define RTERM_CHAR_NO_BACKGROUND     0x04000000U
+#define RTERM_CHAR_CURSOR            0x04000000U
+#define RTERM_CHAR_NO_BACKGROUND     0x08000000U
 
 #else
 #define RTERM_CHAR_FG_COLOR(tf) ((tf) & RTERM_CHAR_FG_COLOR_MASK)
@@ -1696,6 +1698,8 @@ struct R_termscreen {
     int           columns;
     int           row;
     int           column;
+    int           cursorrow;
+    int           cursorcolumn;
     int           winw;
     int           winh;
     int           scrolltop;

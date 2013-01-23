@@ -1447,6 +1447,9 @@ Rterm_insert_blank_screen_string(struct R_termscreen *screen, int len)
 
 	return;
     }
+
+//    Rterm_clear_screen_cursor(screen);
+
     blank_string = screen->funcs.blank_string;
 
     len = MIN(len, screen->columns - screen->column);
@@ -1720,11 +1723,9 @@ Rterm_refresh_screen(struct R_termscreen *screen, int mode)
     blank_drawn = screen->funcs.blank_drawn;
     blank_string = screen->funcs.blank_string;
 
-#if 0
     if (!term->blink) {
         Rterm_clear_screen_cursor(screen);
     }
-#endif
 
 #if (SUPPORT_RTERM_BLINKING_CHARS)
     if (!(screen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS)) {
@@ -1842,9 +1843,10 @@ Rterm_refresh_screen(struct R_termscreen *screen, int mode)
         }
         screen->drawbuf.rowdirty[row] = 1;
     }
+    Rterm_draw_screen_cursor(screen);
     if (screen->buf) {
         Rterm_sync_screen(screen, 0, 0, 0, RTERM_SCREEN_SYNC);
-#if !SUPPORT_RTERM_BLINKING_CURSOR
+#if !RTERM_CURSOR_HACKS && !SUPPORT_RTERM_BLINKING_CURSOR
     } else {
         Rterm_draw_screen_cursor(screen);
 #endif

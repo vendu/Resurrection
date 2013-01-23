@@ -946,7 +946,6 @@ Rterm_draw_screen_string_8bit(struct R_termscreen *screen, int row, int column,
             }
 #endif
 #endif
-
 	    if (len == 0) {
 		
 		return;
@@ -1247,21 +1246,23 @@ Rterm_clear_screen_cursor(struct R_termscreen *screen)
 {
     int row;
     int column;
+
     if (screen == NULL) {
 
 	return;
     }
 
-    row = screen->row;
-    column = screen->column;
+    row = screen->cursorrow;
+    column = screen->cursorcolumn;
     if (screen->drawbuf.data[screen->viewrow + row]) {
         Rterm_draw_screen_string_8bit(screen,
-                                      screen->row, screen->column,
+                                      row, column,
                                       &screen->textbuf.data[screen->viewrow + row][column],
                                       &screen->drawbuf.data[screen->viewrow + row][column],
                                       1,
                                       RTERM_SCREEN_DRAW_ALL,
                                       TRUE);
+        screen->drawbuf.renddata[row][column] &= ~RTERM_CHAR_CURSOR;
     }
 
     return;
@@ -1270,15 +1271,35 @@ Rterm_clear_screen_cursor(struct R_termscreen *screen)
 void
 Rterm_draw_screen_cursor(struct R_termscreen *screen)
 {
+    int row;
+    int column;
+
     if (screen == NULL) {
 
 	return;
     }
 
+    row = screen->cursorrow = screen->row;
+    column = screen->cursorcolumn = screen->column;
+    screen->drawbuf.renddata[row][column] |= RTERM_CHAR_CURSOR;
+#if 0
     XFillRectangle(screen->window->app->display, screen->window->id,
                    screen->cursorgc,
                    Rterm_screen_cursor_x(screen), Rterm_screen_cursor_y(screen),
                    screen->charw, screen->charh);
+#endif
+    if (screen->buf) {
+        XFillRectangle(screen->window->app->display, screen->buf,
+                       screen->cursorgc,
+                       Rterm_screen_cursor_x(screen), Rterm_screen_cursor_y(screen),
+                       screen->charw, screen->charh);
+        Rterm_sync_screen(screen, row, column, 1, RTERM_SCREEN_SYNC_STRING);
+    } else {
+        XFillRectangle(screen->window->app->display, screen->window->id,
+                       screen->cursorgc,
+                       Rterm_screen_cursor_x(screen), Rterm_screen_cursor_y(screen),
+                       screen->charw, screen->charh);
+    }
 
     return;
 }

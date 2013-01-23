@@ -1246,10 +1246,10 @@ Rterm_keypress(void *arg, XEvent *event)
     meta = event->xkey.state & term->metamask;
     numlock = event->xkey.state & term->numlockmask;
 
-    Rterm_clear_screen_cursor(screen);
-
     screen = term->screens[term->curscreen];
     screen->viewrow = screen->savelines;
+
+    Rterm_clear_screen_cursor(screen);
 
     if (numlock) {
 	term->privmodes &= ~RTERM_PRIVMODE_APPLICATION_KEYPAD;
@@ -1590,9 +1590,11 @@ Rterm_keypress(void *arg, XEvent *event)
             case XK_KP_Up:          /* \033Ox or standard */
             case XK_KP_Right:       /* \033Ov or standard */
             case XK_KP_Down:        /* \033Ow or standard */
+#if 0
                 if (!term->blink) {
                     Rterm_clear_screen_cursor(screen);
                 }
+#endif
 
 		if ((term->privmodes & RTERM_PRIVMODE_APPLICATION_KEYPAD)
 		    ? !shift
@@ -1621,9 +1623,11 @@ Rterm_keypress(void *arg, XEvent *event)
 
 		str[2] = "DACB"[(keysym - XK_Left)];
 
+#if 0
                 if (!term->blink) {
                     Rterm_clear_screen_cursor(screen);
                 }
+#endif
 
 		if (term->privmodes
 		    & RTERM_PRIVMODE_APPLICATION_CURSOR_KEYS) {

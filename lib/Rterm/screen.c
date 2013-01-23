@@ -974,18 +974,12 @@ Rterm_screen_goto(struct R_termscreen *screen, int row, int column, int relative
 void
 Rterm_screen_backspace(struct R_termscreen *screen)
 {
-    struct R_term *term;
-    
     if (screen == NULL
 	|| screen->row < 0) {
 
 	return;
     }
 
-    term = R_global.app->client;
-    if (!term->blink) {
-        Rterm_clear_screen_cursor(screen);
-    }
 
     if (screen->column == 0 && screen->row > 0) {
 	screen->column = screen->columns - 1;
@@ -1038,7 +1032,6 @@ Rterm_touch_screen(struct R_termscreen *screen)
         if (screen->drawbuf.data[row]) {
             memset(screen->drawbuf.data[row], 0, screen->drawbuf.rowlens[row]);
 #if 0
-            ;
             blank_drawn(screen, row, 0, len);
 //        len = screen->textbuf.rowlens[screen->viewrow + row];
 //	blank_string(screen, row + screen->viewrow, 0, len);
@@ -1244,12 +1237,10 @@ Rterm_blank_screen_row(struct R_termscreen *screen, int mode)
     }
     blank_string = screen->funcs.blank_string;
 
-#if 0
     term = R_global.app->client;
     if (!term->blink) {
         Rterm_clear_screen_cursor(screen);
     }
-#endif
 
     row = screen->savelines + screen->row;
 
@@ -1634,7 +1625,7 @@ Rterm_screen_cursor_x(struct R_termscreen *screen)
 	return -1;
     }
 
-    return (screen->charw * screen->column);
+    return (screen->charw * screen->cursorcolumn);
 }
 
 int
@@ -1646,7 +1637,7 @@ Rterm_screen_cursor_y(struct R_termscreen *screen)
 	return -1;
     }
 
-    return (screen->charh * screen->row);
+    return (screen->charh * screen->cursorrow);
 }
 
 void
@@ -1833,7 +1824,7 @@ Rterm_switch_screen(struct R_term *term, struct R_termscreen *screen, int which)
 {
     struct R_termscreen *curscreen, *oldscreen, *destscreen;
     void (*refresh)(struct R_termscreen *, int);
-    int id;
+    int id = 0;
 
     oldscreen = screen;
 #if 0
