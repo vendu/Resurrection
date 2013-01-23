@@ -1,6 +1,6 @@
 /*
  * imlib2.c - Resurrection Imlib2 interface.
- * Copyright (C) 2006 Tuomo VenÃ¤lÃ¤inen
+ * Copyright (C) 2006 Tuomo Venäläinen
  *
  * See the file COPYING for information about using this software.
  */
@@ -42,7 +42,6 @@ R_load_image_imlib2(struct R_app *app,
         image = R_alloc_image();
     }
     if (image) {
-        fprintf(stderr, "imgload: %s\n", filename);
         img = imlib_load_image(filename);
         if (img) {
             imlib_context_set_image(img);
@@ -57,6 +56,8 @@ R_load_image_imlib2(struct R_app *app,
 #if (USE_XSHM)
             image->hasshm = 0;
 #endif
+        } else {
+            fprintf(stderr, "failed to load: %s\n", filename);
         }
     }
 
