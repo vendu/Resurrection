@@ -93,7 +93,7 @@ RWM
   - ctrl + left button 	      			- shade (show only titlebar)
   - shift + left button on top border (title)	- close window
   - the following do NOT work yet
-  - shift + right button on top border (title)	- kill window
+  - shift + left button on top border (title)	- kill window
   - shift + F1..F4     - switch between desktops 1-4
   - ctrl + F1	       - launch terminal
   - ctrl + F2	       - launch editor
