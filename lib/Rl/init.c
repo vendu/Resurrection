@@ -6,6 +6,7 @@
  */
 
 #define RL_TERM_TABS  0
+#define RL_RTERM_IPC  0
 
 #include <Resurrection/Resurrection.h>
 #include <X11/extensions/shape.h>
@@ -1036,14 +1037,22 @@ Rl_start_terminal_tab(long flags)
     memset(&term, 0, sizeof(term));
     app.name = "Rterm";
     term.flags |= flags;
+#if (RL_RTERM_IPC)
     fifo = pipe(ipcpipes[Rltermcnt]);
+#endif
+    fprintf(stderr, "ipcpipes[0] == %d, ipcpipes[1] == %d\n",
+            ipcpipes[Rltermcnt][0], ipcpipes[Rltermcnt][1]);
     pid = fork();
     if (!pid) {
+#if (RL_RTERM_IPC)
         int maxfd = ipcpipes[Rltermcnt][0];
+#endif
 
-        fprintf(stderr, "MAXFD: %d\n", (int)maxfd);
         SIGNAL(SIGCHLD, SIG_DFL);
         sigprocmask(SIG_UNBLOCK, &blkset, NULL);
+
+#if (RL_RTERM_IPC)
+        fprintf(stderr, "MAXFD: %d\n", (int)maxfd);
         FD_SET(ipcpipes[Rltermcnt][0], &readset);
         select(maxfd + 1, &readset, NULL, NULL, NULL);
         if (FD_ISSET(ipcpipes[Rltermcnt][0], &readset)) {
@@ -1056,6 +1065,7 @@ Rl_start_terminal_tab(long flags)
             close(ipcpipes[Rltermcnt][1]);
 #endif
         }
+#endif /* RLRTERMIPC */
     } else {
         fprintf(stderr, "PID[%d] = %d\n", Rltermcnt, pid);
         Rltermpids[Rltermcnt] = pid;
@@ -1082,7 +1092,9 @@ Rl_start_terminal_tab(long flags)
                       0);
         XSync(R_global.app->display, False);
         sigprocmask(SIG_UNBLOCK, &blkset, NULL);
+#if (RL_RTERM_IPC)
         Rwrite(ipcpipes[Rltermcnt - 1][1], ipcstr, 4);
+#endif
     }
 
     return;
