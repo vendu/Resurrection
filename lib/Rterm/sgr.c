@@ -381,7 +381,7 @@ Rterm_process_sgr_attributes(struct R_term *term, struct R_termscreen *screen, i
 	    continue;
 	}
 
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
         if (operation == RTERM_FOREGROUND_EXTRA) {
             if (i < nargs - 2 && args[i + 1] == 5) {
                 i += 2;

@@ -5,7 +5,7 @@
  * See the file COPYING for information about using this software.
  */
 
-#define RL_TERM_TABS 0
+#define RL_TERM_TABS  0
 
 #include <Resurrection/Resurrection.h>
 #include <X11/extensions/shape.h>
@@ -13,13 +13,13 @@
 #include <pthread.h>
 #endif
 
-#define OLDE_THEME   0
+#define OLDE_THEME    0
 
-#define RL_MENU      1
-#define RL_MAX_TABS  8
-#define RL_SMALL   0    /* half-size images */
-#define RL_LABEL   0
-#define RL_BAR     0    /* all buttons visible */
+#define RL_MENU       1
+#define RL_MAX_TABS   8
+#define RL_SMALL      0 /* half-size images */
+#define RL_LABEL      0
+#define RL_BAR        0 /* all buttons visible */
 #define RL_HORIZONTAL 0 /* otherwise vertical menu/bar */
 #undef RL_TOOLTIPS
 #define RL_TOOLTIPS   1
@@ -288,9 +288,10 @@ Rl_exit(void)
     for (i = 0 ; i < RL_TERM_TABS ; i++) {
         pid = Rltermpids[i];
         if (pid) {
-            fprintf(stderr, "TERM -> %d\n", pid);
+            fprintf(stderr, "TERM -> %d\n", (int)pid);
             kill(pid, SIGTERM);
             pid = waitpid(pid, &waitstat, 0);
+            fprintf(stderr, "WAIT: %d\n", (int)pid);
 #if 0
             pthread_mutex_lock(&termmtx);
             Rl_remove_terminal_tab(child);
@@ -1040,6 +1041,7 @@ Rl_start_terminal_tab(long flags)
     if (!pid) {
         int maxfd = ipcpipes[Rltermcnt][0];
 
+        fprintf(stderr, "MAXFD: %d\n", (int)maxfd);
         SIGNAL(SIGCHLD, SIG_DFL);
         sigprocmask(SIG_UNBLOCK, &blkset, NULL);
         FD_SET(ipcpipes[Rltermcnt][0], &readset);
@@ -1049,7 +1051,10 @@ Rl_start_terminal_tab(long flags)
             if (strncmp(buf, ipcstr, 4)) {
                 execvp("Rterm", argv);
             }
-//        close(ipcpipes[Rltermcnt][1]);
+#if 0
+            close(ipcpipes[Rltermcnt][0]);
+            close(ipcpipes[Rltermcnt][1]);
+#endif
         }
     } else {
         fprintf(stderr, "PID[%d] = %d\n", Rltermcnt, pid);

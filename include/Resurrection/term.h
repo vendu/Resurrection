@@ -26,7 +26,8 @@
 
 #define RTERM_PRINT_PIPE "lp"
 
-#define RTERM_DEFAULT_TRUETYPE_FONT        "VeraMono"
+//#define RTERM_DEFAULT_TRUETYPE_FONT        "VeraMono"
+#define RTERM_DEFAULT_TRUETYPE_FONT        "ProggyCleanSZ"
 
 #define SUPPORT_RTERM_INPUT_NUMERIC        1
 #define SUPPORT_XSHM_FONT_BITMAP           0
@@ -36,7 +37,7 @@
 #define SUPPORT_RTERM_BLINKING_CHARS       1
 #define SUPPORT_RTERM_BLINKING_CURSOR      0
 #define SUPPORT_RTERM_TABS                 1
-#define SUPPORT_RTERM_256_COLORS           1
+#define SUPPORT_XTERM_256_COLORS           1
 #define SUPPORT_RTERM_UTF8_CHARS           1
 #define RTERM_TABS                         1
 
@@ -309,7 +310,7 @@ do { \
 
 /* default color pixel values. */
 
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
 #define RTERM_COLOR_0 "#000000"
 #define RTERM_COLOR_1 "#cd0000"
 #define RTERM_COLOR_2 "#00cd00"
@@ -1314,7 +1315,7 @@ do { \
 #define RTERM_XTERM_CHANGE_ICON_NAME                  1
 #define RTERM_XTERM_CHANGE_WINDOW_TITLE               2
 #define RTERM_XTERM_SET_TEXT_PROPERTY                 3
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
 #define RTERM_XTERM_SET_COLOR                         4
 #endif
 #define RTERM_XTERM_SET_SPECIAL_COLOR                 5
@@ -1608,6 +1609,9 @@ struct R_term {
     struct R_termscrollbar  *scrollbar;
     char                    *bgname;
     char                    *fontname;
+#if (SUPPORT_TRUETYPE_FONTS)
+    ftfont_t                *font;
+#endif
     int                      fgcolor;
     int                      x;
     int                      y;
@@ -1720,6 +1724,7 @@ struct R_termscreen {
     Pixmap        buf;
     GC            bufgc;
 #if (SUPPORT_TRUETYPE_FONTS)
+    ftfont_t     *font;
     GC            bggc;
 #endif
 #if (RTERM_USE_XSHM)

@@ -442,13 +442,13 @@ Rterm_init_screen(struct R_termscreen *screen, struct R_termscreen *copyfrom)
 	screen->bufgc = copyfrom->bufgc;
 #endif
 #if (SUPPORT_TRUETYPE_FONTS)
-//        screen->ftfont = copyfrom->ftfont;
 #if (SUPPORT_TRUETYPE_IMLIB2)
 	screen->stringbuffer = copyfrom->stringbuffer;
 	screen->im2font = copyfrom->im2font;
         screen->im2textimg = copyfrom->im2textimg;
 #else
-	screen->ftfont = copyfrom->ftfont;
+        screen->font = copyfrom->font;
+//	screen->ftfont = copyfrom->ftfont;
 #endif
 #endif
 	screen->fontinfo = copyfrom->fontinfo;
@@ -497,8 +497,10 @@ Rterm_init_screen(struct R_termscreen *screen, struct R_termscreen *copyfrom)
 	screen->stringbuffer = calloc(1,
 				      (screen->columns + 1) * sizeof(R_text_t));
 #else
-        if (Rterm_load_screen_font_freetype(screen, NULL, 10)
-            < 0) {
+        screen->font = Rterm_load_screen_font_freetype(screen,
+                                                       RTERM_DEFAULT_TRUETYPE_FONT,
+                                                       8);
+        if (screen->font < 0) {
             
             return -1;
         }
@@ -574,7 +576,7 @@ Rterm_init_screen(struct R_termscreen *screen, struct R_termscreen *copyfrom)
 
 /* TODO: this needs error handling */
 
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
 int
 Rterm_init_screen_colors(struct R_termscreen *screen)
 {
@@ -1857,6 +1859,9 @@ Rterm_switch_screen(struct R_term *term, struct R_termscreen *screen, int which)
 #endif
     destscreen = term->screens[id];
 //    term->screen = term->screens[which];
+#if (SUPPORT_TRUETYPE_FONTS)
+    term->window->font = destscreen->font;
+#endif
 
     refresh = destscreen->funcs.refresh;
     if (refresh == NULL) {

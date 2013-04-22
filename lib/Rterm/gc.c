@@ -48,7 +48,8 @@ menu_create_gc(Rwindow_t *window)
     gcvalues.foreground = WhitePixel(window->app->display,
 				     DefaultScreen(window->app->display));
     gcvalues.line_width = MENU_DEFAULT_LINE_WIDTH;
-    
+
+#if !(SUPPORT_TRUETYPE_FONTS)    
     if (window->fontinfo == NULL) {
 	window->fontinfo = app_load_font(window->app, MENU_DEFAULT_FONT);
 	if (window->fontinfo == NULL) {
@@ -57,11 +58,15 @@ menu_create_gc(Rwindow_t *window)
 	}
     }
     gcvalues.font = window->fontinfo->fid;
+#endif
     
     gcvalues.graphics_exposures = False;
     
     newgc = XCreateGC(window->app->display, window->win,
-		      GCForeground | GCLineWidth | GCFont
+		      GCForeground | GCLineWidth
+#if !(SUPPORT_TRUETYPE_FONTS)
+                      | GCFont
+#endif
 		      | GCGraphicsExposures,
 		      &gcvalues);
 
@@ -138,6 +143,7 @@ Rterm_init_screen_gcs(struct R_termscreen *screen)
     gcvalues.foreground = screen->defcolors[RTERM_SCREEN_FOREGROUND_COLOR];
     gcvalues.background = screen->defcolors[RTERM_SCREEN_BACKGROUND_COLOR];
 
+#if !(SUPPORT_TRUETYPE_FONTS)
     if (Rterm_load_screen_font(screen, RTERM_SCREEN_DEFAULT_FONT) < 0) {
         fprintf(stderr, "Rterm_load_screen_font failed\n");
 
@@ -145,12 +151,16 @@ Rterm_init_screen_gcs(struct R_termscreen *screen)
     }
 
     gcvalues.font = screen->fontinfo->fid;
+#endif
 
     gcvalues.graphics_exposures = False;
 
     screen->gc = XCreateGC(screen->window->app->display,
 			   screen->window->id,
-			   GCForeground | GCBackground | GCFont
+			   GCForeground | GCBackground
+#if !(SUPPORT_TRUETYPE_FONTS)
+                           | GCFont
+#endif
 			   | GCGraphicsExposures,
 			   &gcvalues);
     if (screen->gc == NULL) {
@@ -161,7 +171,10 @@ Rterm_init_screen_gcs(struct R_termscreen *screen)
 
     screen->defaultgc = XCreateGC(screen->window->app->display,
 				  screen->window->id,
-				  GCForeground | GCBackground | GCFont
+				  GCForeground | GCBackground
+#if !(SUPPORT_TRUETYPE_FONTS)
+                                  | GCFont
+#endif
 				  | GCGraphicsExposures,
 				  &gcvalues);
     if (screen->defaultgc == NULL) {

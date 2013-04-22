@@ -227,7 +227,9 @@ struct R_window {
 #endif
     struct R_binding     **bindings;
 #if (USE_IMLIB2)
+#if !(SUPPORT_TRUETYPE_FONTS)
     Imlib_Font             font;
+#endif
     struct R_image        *images[R_WINDOW_STATES];
 #endif
     struct R_window       *desktop;
@@ -239,11 +241,15 @@ struct R_window {
     Visual                *vis;
     Colormap               cmap;
 #endif
+#if (SUPPORT_TRUETYPE_FONTS)
 #if (SUPPORT_TRUETYPE_IMLIB2)
     Imlib_Font            *im2font;
     Imlib_Image           *im2title;
     int                    im2titlew;
     int                    im2titleh;
+#else
+    ftfont_t              *font;
+#endif
 #endif
     long                   eventmask;
     int                    nevents;

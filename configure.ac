@@ -3,7 +3,7 @@
 PATH=$PATH:/usr/bin:/bin:/usr/local/bin:/usr/ccs/bin:/usr/contrib/bin:/usr/ucb/bin
 export PATH
 
-AC_INIT(include/Resurrection/Resurrection.h)
+AC_INIT([Resurrection], [0.0.0])
 AC_PREREQ(2.50)
 
 R_SAVE_OPTS([$@])
@@ -12,7 +12,7 @@ R_SET_CC_FLAGS
 
 AC_CONFIG_AUX_DIR(config_aux)
 
-AM_INIT_AUTOMAKE(Resurrection, 0.0.1)
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 R_SET_PATHS
 

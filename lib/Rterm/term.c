@@ -211,7 +211,11 @@ Rterm_parse_options(struct R_term *term, int argc, char *argv[])
     }
 
     term->flags |= RTERM_DEFAULT_FLAGS;
+#if (SUPPORT_TRUETYPE_FONTS)
+    term->fontname = RTERM_DEFAULT_TRUETYPE_FONT;
+#else
     term->fontname = RTERM_DEFAULT_FONTNAME;
+#endif
     for (i = 1 ; i < argc ; i++) {
 //        fprintf(stderr, "argv[%d] == %s\n", i, argv[i]);
         if (!strcmp(argv[i], "-h")) {
@@ -485,7 +489,7 @@ Rterm_init(struct R_term *term, int argc, char *argv[], long flags)
 //    }
 #endif
 
-#if (SUPPORT_TRUETYPE_FONTS) && (SUPPORT_FREETYPE2)
+#if (SUPPORT_TRUETYPE_FONTS)
     if (app_init_freetype(app) < 0) {
 
         return NULL;

@@ -4,21 +4,6 @@ TODO
 19:42 <jercos> vendu: inverted colors doesn't seem to change background to
 +foreground, only foreground to background
 
-I'd like you to start by trying these steps (most of the following is either
-irrelevant or potentially out of date)
-
-----8<----
-
-./configure
-make
-make install
-Rterm
-(in the terminal)
-export TERM=vt100 or export TERM=xterm
-export LC_ALL="en_US.ISO8859-1" (until UTF-8 support works)
-
-try something such as your IRC client; irssi has revealed quite a bunch of bugs.
-
 NOTES
 -----
 - You need X, a Unix-like OS, Imlib2 (version with header files, some Linux
@@ -34,73 +19,6 @@ Have fun,
 /* vendu */
 
 P.S. Comments would be welcome at resurrection.fin AT gmail DOT com.
-
-----8<----
-
-Start by editing RESURRECTION_SHARE_PATH in include/Resurrection/setup.h.
-
-RTERM
------
-
-- currently, Rterm should be run with double buffering on (the -X command line
-  option); this helps avoid some scroll bugs
-
-COMMANDS
---------
-- Ctrl + Shift + keypad digits; input numeric character value, Ctrl + Shift +
-  Enter accepts
-- Ctrl-Shift-n - create new tab
-- Ctrl-Shift-x - close current tab
-- Ctrl-Tab, Ctrl-Up - move to next tab/screen
-- Ctrl-Backspace, Ctrl-Down - move to previous tab/screen
-
-FEATURES
---------
-- supports a subset of VT100 control sequences (should be pretty useful already)
-- early support for UTF-8 encoded Unicode characters (16-bit)
-- early support for Truetype scalable fonts [that are rendered as if monospace]
-- supports 256 terminal colors xterm-style
-- can spawn login and non-login shells on pseudo-teletype devices
-- supports blinking cursor; this used to be rare back at the day
-- supports blinking characters, although i'm not sure if they work at the moment
-- when double-buffering is enabled, allows use of background images (currently
-  hardwired). See SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER in
-  include/Resurrection/term.h. Note that this may cause problems with XShm.
-
-NEWS
-----
-
-- adds tab support; see SUPPORT_RTERM_TABS in include/Resurrection/term.h.
-- fixes some tab bugs like colors that were wrong in 0.0.8
-- blinking cursor is drawn better / more reliably now
-- most command line editing related bugs should be history; these were mostly
-  also present in rxvt and many of its forks.
-
-RWM
----
-
-- it's good practice to run a terminal as last command in your
-  .xinitrc/.xsession and then launch Rwm by hand from it. This way, a crashing
-  window manager will not take all your accounts down (when it runs as a session
-  manager, whose termination ends the X session)
-- XMMS playlist window doesn't work correctly; something to do with at least
-  ConfigureRequest events
-- window border button bindings are as follows; TODO: FIX THOSE THAT DON'T WORK
-  - left button hold on top and left borders	- move window
-  - right button on any border			- move window
-  - left button hold on bottom border		- resize window vertically
-  - left button hold on right border		- resize window horizontally
-  - ctrl + left button 	      			- shade (show only titlebar)
-  - shift + left button on top border (title)	- close window
-  - the following do NOT work yet
-  - shift + left button on top border (title)	- kill window
-  - shift + F1..F4     - switch between desktops 1-4
-  - ctrl + F1	       - launch terminal
-  - ctrl + F2	       - launch editor
-  - ctrl + F3	       - launch browser
-  - ctrl + F4	       - launch audio player
-  - ctrl + F5	       - launch instant messenger
-
 
 DISTRIBUTION
 ------------

@@ -43,6 +43,24 @@ Rterm_load_screen_font(struct R_termscreen *screen, const char *fontname)
         }
     } else
 #endif
+#if (SUPPORT_FREETYPE_FONTS)
+    if (term->fontname == NULL) {
+	screen->font = R_load_font_freetype(RTERM_DEFAULT_TRUETYPE_FONT,
+                                            8);
+	if (screen->font == NULL) {
+	    
+	    return -1;
+	}
+    } else {
+	screen->font = R_load_font_freetype(R_global.app,
+                                            term->fontname,
+                                            8);
+	if (screen->font == NULL) {
+	    
+	    return -1;
+	}
+    }
+#else
     if (term->fontname == NULL) {
 	screen->fontinfo = R_load_font(screen->window->app,
                                        RTERM_DEFAULT_FONTNAME);
@@ -51,12 +69,13 @@ Rterm_load_screen_font(struct R_termscreen *screen, const char *fontname)
 	    return -1;
 	}
     } else {
-	screen->fontinfo = R_load_font(screen->window->app, fontname);
+	screen->fontinfo = R_load_font(screen->window->app, term->fontname);
 	if (screen->fontinfo == NULL) {
 	    
 	    return -1;
 	}
     }
+#endif
 
     screen->charw = X_FONT_WIDTH(screen->fontinfo);
     screen->charh = X_FONT_HEIGHT(screen->fontinfo);
@@ -397,32 +416,38 @@ int
 Rterm_load_screen_font_freetype(struct R_termscreen *screen, const char *fontname,
                                 int size)
 {
+    struct R_term *term = R_global.app->client;
+
     if (screen == NULL) {
 
 	return -1;
     }
 
+    fprintf(stderr, "FONT: %s\n", fontname);
     if (fontname == NULL) {
-	screen->ftfont = R_load_font_freetype(screen->window->app,
-                                              RTERM_DEFAULT_TRUETYPE_FONT,
-                                              size);
-	if (screen->ftfont == NULL) {
+	screen->font = R_load_font_freetype(screen->window->app,
+                                            RTERM_DEFAULT_TRUETYPE_FONT,
+                                            size);
+	if (screen->font == NULL) {
 	    
 	    return -1;
 	}
     } else {
-	screen->ftfont = R_load_font_freetype(screen->window->app,
-                                              fontname,
-                                              size);
-	if (screen->ftfont == NULL) {
+	screen->font = R_load_font_freetype(screen->window->app,
+                                            fontname,
+                                            size);
+	if (screen->font == NULL) {
 	    
 	    return -1;
 	}
     }
 
     screen->charasc = screen->ftfont->ascent;
-    screen->charw = screen->ftfont->w;
-    screen->charh = screen->ftfont->h;
+    screen->charw = screen->font->w;
+    screen->charh = screen->font->h;
+    if (!term->font) {
+        term->font = screen->font;
+    }
 
     return 0;
 }

@@ -9,7 +9,7 @@
 
 extern const char *defaultcolornames[];
 
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
 void
 Rterm_reset_color(struct R_term *term, struct R_termscreen *screen, char *str)
 {
@@ -125,7 +125,7 @@ Rterm_do_xterm_sequence(struct R_term *term, struct R_termscreen *screen,
 	    R_set_text_property(term->window, valuestr, value);
 
 	    break;
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
         case RTERM_XTERM_SET_COLOR:
         case RTERM_XTERM_SET_SPECIAL_COLOR:
 
@@ -205,7 +205,7 @@ Rterm_do_xterm_sequence(struct R_term *term, struct R_termscreen *screen,
         case RTERM_XTERM_SET_FONT:
 
 	    break;
-#if (SUPPORT_RTERM_256_COLORS)
+#if (SUPPORT_XTERM_256_COLORS)
         case RTERM_XTERM_RESET_COLOR:
         case RTERM_XTERM_RESET_SPECIAL_COLOR:
             Rterm_reset_color(term, screen, tmpstr);
