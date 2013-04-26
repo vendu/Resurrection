@@ -190,6 +190,7 @@ Rterm_print_usage(void)
     fprintf(stderr, "\t-g <geom>\tsupply X geometry string <geom>\n");
     fprintf(stderr, "\t-B\t\trun with no borders/decoration\n");
     fprintf(stderr, "\t-C\t\tenable console output\n");
+    fprintf(stderr, "\t-E\t\tenable focus on enter\n");
     fprintf(stderr, "\t-X\t\tenable screen draw buffers\n");
     fprintf(stderr, "\t-s\t\tscale background image\n");
 
@@ -225,6 +226,9 @@ Rterm_parse_options(struct R_term *term, int argc, char *argv[])
         } else if (!strcmp(argv[i], "-C")) {
             fprintf(stderr, "enabled console output\n");
             term->flags |= RTERM_CONSOLE;
+        } else if (!strcmp(argv[i], "-E")) {
+            fprintf(stderr, "enabled focus on enter\n");
+            term->flags |= RTERM_ENTER_FOCUS;
         } else if (!strcmp(argv[i], "-b")) {
             fprintf(stderr, "enabled background image %s\n", argv[i + 1]);
             term->bgname = argv[++i];

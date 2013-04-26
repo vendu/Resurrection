@@ -7,7 +7,7 @@
 
 #include <Resurrection/Resurrection.h>
 
-#define R_DEBUG_EVENTS 1
+#define R_DEBUG_EVENTS 0
 
 #define R_DEBUG_EVENT(e) (UINT64_C(1) << (e))
 

@@ -1982,8 +1982,9 @@ Rterm_enternotify(void *arg, XEvent *event)
     window = arg;
     term = R_global.app->client;
 
-    if (!(term->flags & RTERM_START_UNMAPPED)
-        && ((term->flags & RTERM_BORDERLESS) || event->xcrossing.focus)) {
+    if ((term->flags & RTERM_ENTER_FOCUS)
+        || (!(term->flags & RTERM_START_UNMAPPED)
+            && ((term->flags & RTERM_BORDERLESS) || event->xcrossing.focus))) {
 	XSetInputFocus(event->xany.display,
 		       term->window->id,
 		       RevertToPointerRoot,
