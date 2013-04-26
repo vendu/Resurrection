@@ -40,6 +40,22 @@ const char *_wmprotostrs[] = {
 void
 Rwm_exit(void)
 {
+    pid_t pid;
+    int   stat;
+    
+    errno = 0;
+    /* wait for per-desktop children */
+    do {
+        pid = wait(&stat);
+        if (pid < 0) {
+            if (errno == EINTR) {
+                errno = 0;
+            } else {
+
+                break;
+            }
+        }
+    } while (1);
     XCloseDisplay(R_global.app->display);
 
     exit(0);
