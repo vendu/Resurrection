@@ -94,6 +94,7 @@ Rwm_exec_func(void *arg,
     argv[1] = NULL;
     pid = fork();
     if (!pid) {
+        setpgid(0, 0);
         execvp(bindingarg->cmd,
                argv);
     }
