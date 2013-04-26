@@ -5,6 +5,8 @@
  * See the file COPYING for information about using this software.
  */
 
+#define RL_EXEC_RTERM   1
+
 #define RL_TERM_TABS  0
 #define RL_RTERM_IPC  0
 
@@ -394,7 +396,22 @@ Rl_init(struct R_app *app,
 {
     struct R_window *window;
     int dummyi;
+#if (RL_EXEC_RTERM)
+    pid_t pid;
+#endif
 
+#if (RL_EXEC_RTERM)
+    pid = fork();
+    if (!pid) {
+        char geomstr[32];
+        char *arg[6] = { "Rterm", "-B", "-E", "-g", geomstr, NULL };
+
+        snprintf(geomstr, 32, "80x3+%d+0", RL_BUTTON_WIDTH);
+
+        execvp("Rterm", arg);
+    }
+#endif
+    
 #if (RL_TERM_TABS)
     atexit(Rl_exit);
     SIGNAL(SIGCHLD, Rl_child_signal);
