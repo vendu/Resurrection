@@ -17,8 +17,10 @@ pkginclude_HEADERS = \
 	Resurrection/setup.h \
 	Resurrection/struct.h \
 	Resurrection/system.h \
+	Resurrection/typedef.h \
 	Resurrection/term.h \
-	Resurrection/typedef.h
+	Resurrection/wm.h \
+	Resurrection/launch.h
 
 @resurrection_subst_dirs@
 

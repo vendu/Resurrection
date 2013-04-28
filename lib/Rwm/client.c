@@ -9,6 +9,7 @@
 
 #define DEBUG_ATOM 0
 #define KLUDGE     0
+#define RWMKLUDGES 1
 
 void Rwm_client_configurerequest_handler(void *arg,
                                          XEvent *event);
@@ -202,7 +203,11 @@ Rwm_resize_client(struct R_window *client,
                 w = wm->desktop->w - frame->left - frame->right;
             }
             if (h == wm->desktop->h) {
+#if (RWM_EXEC_RL)
+                frame->y = RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT;
+#else
                 frame->y = RWM_MENU_ITEM_HEIGHT;
+#endif
                 h = wm->desktop->h - RWM_MENU_ITEM_HEIGHT - frame->top - frame->bottom;
             }
             framew = w + frame->left + frame->right;
@@ -607,6 +612,9 @@ Rwm_client_maprequest_handler(void *arg,
             R_map_window_raised(frame);
         }
     }
+#if (RWMKLUDGES)
+    Rwm_send_configure(window);
+#endif
     XSync(client->app->display,
           False);
     _ignbadwindow = 0;
@@ -655,6 +663,8 @@ Rwm_client_unmapnotify_handler(void *arg,
     frame = client->parent;
     if (frame) {
         R_unmap_window(frame);
+    } else {
+        R_remove_save_window(client);
     }
     XSync(client->app->display,
           False);

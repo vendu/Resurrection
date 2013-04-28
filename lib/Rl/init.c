@@ -5,92 +5,11 @@
  * See the file COPYING for information about using this software.
  */
 
-#define RL_EXEC_RTERM   1
-
-#define RL_TERM_TABS  0
-#define RL_RTERM_IPC  0
-
 #include <Resurrection/Resurrection.h>
 #include <X11/extensions/shape.h>
 #if (RL_TERM_TABS)
 #include <pthread.h>
 #endif
-
-#define OLDE_THEME    0
-
-#define RL_MENU       1
-#define RL_MAX_TABS   8
-#define RL_SMALL      0 /* half-size images */
-#define RL_LABEL      0
-#define RL_BAR        0 /* all buttons visible */
-#define RL_HORIZONTAL 0 /* otherwise vertical menu/bar */
-#undef RL_TOOLTIPS
-#define RL_TOOLTIPS   1
-#define NEW_TOOLTIPS  1
-#define RL_BUTTONS    3
-
-#if (OLDE_THEME)
-#define RL_COMMANDS      4
-#else
-#define RL_PAINT_COMMAND "gimp"
-#define RL_COMMANDS      8
-#endif
-#define RL_SUBWINDOWS    (RL_COMMANDS + 1) /* label */
-#if (RL_LABEL)
-#define RL_LABEL_WIDTH   RL_BUTTON_WIDTH
-#define RL_LABEL_HEIGHT  16
-#else
-#define RL_LABEL_WIDTH   0
-#define RL_LABEL_HEIGHT  0
-#endif
-#define RL_RULER_WIDTH   5
-#define RL_RULER_HEIGHT  5
-#if (RL_TOOLTIPS)
-//#define RL_TOOLTIP_WIDTH  213
-#define RL_TOOLTIP_WIDTH  384
-#if (RL_SMALL)
-#if (OLDE_THEME)
-#define RL_TOOLTIP_HEIGHT 21
-#else
-#define RL_TOOLTIP_HEIGHT 20
-#endif
-#else
-//#define RL_TOOLTIP_HEIGHT 24
-#define RL_TOOLTIP_HEIGHT RL_BUTTON_HEIGHT
-#endif
-#endif
-
-#if (OLDE_THEME)
-#if (RL_SMALL)
-#define RL_BUTTON_WIDTH  24
-#define RL_BUTTON_HEIGHT 21
-#else
-#define RL_BUTTON_WIDTH  48
-#define RL_BUTTON_HEIGHT 43
-#endif
-#else
-#if (RL_SMALL)
-#define RL_BUTTON_WIDTH  20
-#define RL_BUTTON_HEIGHT 20
-#else
-#define RL_BUTTON_WIDTH  40
-#define RL_BUTTON_HEIGHT 40
-#endif
-#endif
-
-#define RL_NAVI_BUTTONS 4
-
-#define RL_BUTTON_NORMAL  0
-#define RL_BUTTON_ACTIVE  1
-#define RL_BUTTON_CLICKED 2
-#define RL_BUTTON_STATES  3
-
-#define RL_EXIT            1
-#define RL_RESTART         2
-#define RL_ACTIONS         255
-#define RL_EXIT_COMMAND    ((char *)RL_EXIT)
-#define RL_RESTART_COMMAND ((char *)RL_RESTART)
-#define RL_MAX_ACTION      ((char *)RL_ACTIONS)
 
 struct R_window * Rl_init_windows(struct R_app *app);
 void Rl_init_parent_events(struct R_window *window);
@@ -149,7 +68,7 @@ static const char *Rl_tooltips[RL_COMMANDS]
     "terminal",
     "editor",
     "browser",
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
     "audio"
 #else
     "audio",
@@ -169,14 +88,14 @@ static const char *Rl_tooltips[RL_COMMANDS]
 
 static const char *Rl_commands[RL_COMMANDS][RL_BUTTONS]
 = {
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
     RL_TERM_COMMANDS, RL_EDIT_COMMANDS, RL_WEB_COMMANDS, RL_AUDIO_COMMANDS
 #else
     RL_TERM_COMMANDS, RL_EDIT_COMMANDS, RL_WEB_COMMANDS, RL_AUDIO_COMMANDS, RL_VIDEO_COMMANDS, RL_GRAPHICS_COMMANDS, RL_RESTART_COMMANDS, RL_EXIT_COMMANDS
 #endif
 };
 
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
 static const char *Rl_imagenames[RL_SUBWINDOWS][RL_BUTTON_STATES]
 = {
     {
@@ -256,7 +175,7 @@ static const char *Rl_imagenames[RL_SUBWINDOWS][RL_BUTTON_STATES]
 };
 #endif
 
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
 //Region clipreg;
 //GC     clipgc;
 Pixmap shapebitmap;
@@ -425,14 +344,14 @@ Rl_init(struct R_app *app,
     }
     imlib_set_cache_size(8 * 1024 * 1024);
     XSynchronize(app->display, True);
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
     if (XShapeQueryExtension(app->display,
                              &dummyi, &dummyi)) {
         hasshape = 1;
     }
 #endif
     Rl_init_windows(app);
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
     if (hasshape) {
         shapebitmap = XCreatePixmap(app->display,
                                     app->window->id,
@@ -717,7 +636,7 @@ Rl_init_windows(struct R_app *app)
                               RL_BUTTON_WIDTH,
                               RL_BUTTON_HEIGHT,
                               0);
-#if (OLDE_THEME)
+#if (RL_OLDE_THEME)
         if (hasshape && (buttonimgs[i].normal->tmask)) {
             XShapeCombineMask(app->display,
                               parent->id,
@@ -753,7 +672,7 @@ Rl_init_windows(struct R_app *app)
         curwindow = button;
     }
     button->chain = NULL;
-#if 0 && (OLDE_THEME)
+#if 0 && (RL_OLDE_THEME)
     if (hasshape) {
         XShapeCombineMask(app->display,
                           parent->id,

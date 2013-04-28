@@ -719,7 +719,11 @@ Rwm_init_frame(struct R_window *frame)
     frame->y = max2(client->y, RWM_MENU_ITEM_HEIGHT);
 #endif
     frame->x = attr.x;
+#if (RWM_EXEC_RL)
+    frame->y = max2(attr.y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#else
     frame->y = max2(attr.y, RWM_MENU_ITEM_HEIGHT);
+#endif
     frame->w = frame->left + client->w + frame->right;
     frame->h = frame->top + client->h + frame->bottom;
     Rwm_move_resize_window(frame,

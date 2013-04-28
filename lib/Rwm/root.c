@@ -322,7 +322,11 @@ Rwm_root_configurerequest_handler(void *arg,
     }
     request = &event->xconfigurerequest;
     winx = max2(0, request->x);
+#if (RWM_EXEC_RL)
+    winy = max2(request->y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#else
     winy = max2(request->y, RWM_MENU_ITEM_HEIGHT);
+#endif
     winw = request->width;
     winh = request->height;
     Rwm_move_resize_window(window,

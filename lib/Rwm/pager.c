@@ -8,8 +8,6 @@
 #include <Resurrection/Resurrection.h>
 
 #define RWM_NO_MENU 0
-#define RL_BUTTON_WIDTH  20
-#define RL_BUTTON_HEIGHT 20
 
 #define RWM_MINIATURE_PAGER 1
 #if (RWM_MINIATURE_PAGER)
@@ -164,12 +162,18 @@ Rwm_create_pager_windows(struct R_app *app)
     }
 #if (USE_NEW_MENU)
     Rwm_move_resize_window(pager,
-#if (RWM_NO_MENU)
+#if (RWM_EXEC_RL)
+                           0,
+#elif (RWM_NO_MENU)
                            RL_BUTTON_WIDTH,
 #else
                            RWM_MENU_ITEM_WIDTH + 2 * RWM_MENU_RULER_WIDTH,
 #endif
+#if (RWM_EXEC_RL)
+                           RL_BUTTON_HEIGHT,
+#else
                            0,
+#endif
                            RWM_MENU_ITEM_WIDTH + 2 * RWM_MENU_RULER_WIDTH,
                            RWM_MENU_ITEM_HEIGHT);
 #else

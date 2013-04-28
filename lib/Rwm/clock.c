@@ -81,8 +81,13 @@ Rwm_create_clock_window(struct R_app *app)
     window->font = _menufont;
 #if (USE_NEW_MENU)
     Rwm_move_resize_window(window,
+#if (RWM_EXEC_RL)
+                           RWM_MENU_ITEM_WIDTH,
+                           RL_BUTTON_HEIGHT,
+#else
                            2 * RWM_MENU_ITEM_WIDTH,
                            0,
+#endif
                            RWM_CLOCK_WIDTH,
                            RWM_MENU_ITEM_HEIGHT);
 #else

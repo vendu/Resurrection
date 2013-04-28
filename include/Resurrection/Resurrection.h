@@ -111,10 +111,11 @@
 #include <Resurrection/global.h>
 
 #include <Resurrection/term.h>
+#include <Resurrection/launch.h>
 #include <Resurrection/wm.h>
 #include <Resurrection/conf/term.h>
-#include <Resurrection/conf/wm.h>
 #include <Resurrection/conf/launch.h>
+#include <Resurrection/conf/wm.h>
 
 #endif /* __RESURRECTION_RESURRECTION_H__ */
 

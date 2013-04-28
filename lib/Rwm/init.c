@@ -161,9 +161,7 @@ Rwm_init(struct R_app *app,
     pid_t            pid;
     fd_set           readfds;
 
-#if 0    
-#endif
-#if 0
+#if (RWM_EXEC_RL)
     pid = fork();
     if (!pid) {
         char *arg[2] = { "Rl", NULL };
@@ -276,12 +274,14 @@ Rwm_init(struct R_app *app,
                 
                 return FALSE;
             }
-            
+
+#if (!RWM_EXEC_RL)           
             if (!Rwm_init_menu(newapp)) {
                 
                 return FALSE;
             }
             Rwm_init_menu_events(newapp);
+#endif
             
             if (!Rwm_init_pager(newapp)) {
                 
