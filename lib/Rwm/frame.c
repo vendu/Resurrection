@@ -315,36 +315,16 @@ struct R_binding Rwm_bottom_bindings[RWM_BOTTOM_ACTIONS] = {
         NULL,
         NULL
     },
-    {
-        R_MAKE_BINDING(0,
-                       R_BINDING_BUTTON2_FLAG),
-        Rwm_start_move_func,
-        (void *)2,
-        NULL
-    },
-    {
-        R_MAKE_BINDING(0,
-                       R_BINDING_MOTION_FLAG
-                       | R_BINDING_BUTTON2_FLAG),
-        Rwm_move_func,
-        (void *)2,
-        NULL
-    },
-    {
-        R_MAKE_BINDING(0,
-                       R_BINDING_RELEASE_FLAG
-                       | R_BINDING_BUTTON2_FLAG),
-        Rwm_finish_move_func,
-        (void *)2,
-        NULL
-    }
 };
 
 /* left */
-#define RWM_LEFT_START_MOVE  0
-#define RWM_LEFT_MOVE        1
-#define RWM_LEFT_FINISH_MOVE 2
-#define RWM_LEFT_ACTIONS     3
+#define RWM_LEFT_START_MOVE   0
+#define RWM_LEFT_MOVE         1
+#define RWM_LEFT_FINISH_MOVE  2
+#define RWM_BOTTOM_START_MOVE 3
+#define RWM_BOTTOM_MOVE       4
+#define RWM_BOTTOM_FINISH_MOVE5
+#define RWM_LEFT_ACTIONS      6
 struct R_binding Rwm_left_bindings[RWM_LEFT_ACTIONS] = {
     {
         R_MAKE_BINDING(0,
@@ -367,6 +347,29 @@ struct R_binding Rwm_left_bindings[RWM_LEFT_ACTIONS] = {
                        | R_BINDING_BUTTON1_FLAG),
         Rwm_finish_move_func,
         NULL,
+        NULL
+    },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_BUTTON2_FLAG),
+        Rwm_start_move_func,
+        (void *)2,
+        NULL
+    },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_MOTION_FLAG
+                       | R_BINDING_BUTTON2_FLAG),
+        Rwm_move_func,
+        (void *)2,
+        NULL
+    },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_RELEASE_FLAG
+                       | R_BINDING_BUTTON2_FLAG),
+        Rwm_finish_move_func,
+        (void *)2,
         NULL
     }
 };
