@@ -265,7 +265,11 @@ Rwm_root_createnotify_handler(void *arg,
         window->border = 0;
         border = window->border;
         window->x = create->x;
+#if (RWM_EXEC_RL)
+        window->y = max(create->y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#else
         window->y = create->y;
+#endif
         window->w = create->width;
         window->h = create->height;
         window->typeflags = R_WINDOW_TOPLEVEL_FLAG;

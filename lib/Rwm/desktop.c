@@ -22,7 +22,7 @@ const char *Rwm_desktop_image_names[RWM_DESKTOPS]
     RESURRECTION_IMAGE_SEARCH_PATH "background/sword.png",
     RESURRECTION_IMAGE_SEARCH_PATH "background/background.jpg",
     RESURRECTION_IMAGE_SEARCH_PATH "background/cavefire.jpg",
-    RESURRECTION_IMAGE_SEARCH_PATH "background/redmetal.png"
+    RESURRECTION_IMAGE_SEARCH_PATH "background/redmetal.jpg"
 };
 
 const int Rwm_desktop_image_flags[RWM_DESKTOPS]
