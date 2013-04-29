@@ -14,7 +14,7 @@ void alien_expose(void *arg, XEvent *event);
 void alien_exit(void *arg, XEvent *event);
 void alien_dummy(void);
 
-//static struct R_saver *Rsaver;
+static struct R_saver *Rsaver;
 
 static const char *hex2ascii[] = {
     "00",
@@ -630,8 +630,6 @@ hexdump_dummy(void)
     return;
 }
 
-#if 0
-
 #define ALIEN_HAS_GLYPH(c) \
     (((c) >= '0' && c <= '9') \
      || ((c) >= 'A' && c <= 'Z') \
@@ -697,7 +695,7 @@ alien_main(int argc, char *argv[])
     }
 
     while (TRUE) {
-	R_handle_events(app);
+	R_handle_events(&app);
 	if (Rsaver->candraw) {
 	    alien_draw(Rsaver);
 	}
@@ -713,8 +711,8 @@ alien_init(struct R_saver *saver)
     struct R_app *app;
     XFontStruct *fontinfo;
 
-    app = saver->app;
-    if (app_init(app, "Rsaver", 0, NULL) < 0) {
+    app = R_global.app;
+    if (R_init(app, "Rsaver", 0, NULL) < 0) {
 	
 	return -1;
     }
@@ -724,7 +722,7 @@ alien_init(struct R_saver *saver)
 	return -1;
     }
 #if 0
-    fontinfo = app_load_font(app, "fixed");
+    fontinfo = R_load_font(app, "fixed");
     if (fontinfo == NULL) {
 	
 	return -1;
@@ -754,7 +752,7 @@ alien_init(struct R_saver *saver)
 	return -1;
     }
     alien_set_event_handlers(saver);
-    window_map(app->window);
+    R_map_window(app->window);
     Rsaver = saver;
     
     return 0;
@@ -795,20 +793,22 @@ alien_init_font(struct R_saver *saver)
     struct R_image image;
 
     memset(&image, 0, sizeof(image));
-    if (image_load_imlib2(&image,
-			  RESURRECTION_IMAGE_SEARCH_PATH "misc/japanese.png")
+    if (R_load_image_imlib2(R_global.app,
+                            RESURRECTION_IMAGE_SEARCH_PATH "misc/japanese.png",
+                            &image)
 	< 0) {
 
 	return -1;
     }
-    image_render_imlib2(saver->app->window->id,
-			&image,
-			ALIEN_FONT_WIDTH,
-			ALIEN_FONT_HEIGHT);
+    R_render_image_imlib2(&image,
+                          R_global.app->window,
+                          ALIEN_FONT_WIDTH,
+                          ALIEN_FONT_HEIGHT,
+                          0);
     saver->fontpixmap = image.pixmap;
     fprintf(stderr, "saver->fontpixmap == %lu\n", saver->fontpixmap);
     image.pixmap = None;
-    image_destroy_imlib2(&image);
+    R_destroy_image_imlib2(&image);
 
     return 0;
 }
@@ -816,9 +816,9 @@ alien_init_font(struct R_saver *saver)
 void
 alien_init_windows(struct R_saver *saver)
 {
-    window_resize(saver->app->window,
-		  ALIEN_WIDTH(saver),
-		  ALIEN_HEIGHT(saver));
+    R_resize_window(R_global.app->window,
+                    ALIEN_WIDTH(saver),
+                    ALIEN_HEIGHT(saver));
 
     return;
 }
@@ -832,7 +832,7 @@ alien_init_gcs(struct R_saver *saver)
 
     memset(&gcvalues, 0, sizeof(gcvalues));
     gcvalues.function = GXcopy;
-    newgc = XCreateGC(saver->app->display,
+    newgc = XCreateGC(R_global.app->display,
 		      saver->app->window->id,
 		      GCFunction,
 		      &gcvalues);
@@ -994,6 +994,7 @@ alien_clear_buffer(struct R_saver *saver)
     return;
 }
 
+#if 0
 void
 alien_draw_buffer(struct R_saver *saver)
 {
@@ -1038,8 +1039,8 @@ alien_draw_buffer(struct R_saver *saver)
 
     return;
 }
+#endif
 
-#if 0
 void
 alien_draw_buffer(struct R_saver *saver)
 {
@@ -1064,7 +1065,6 @@ alien_draw_buffer(struct R_saver *saver)
 
     return;
 }
-#endif
 
 void
 alien_sync(struct R_saver *saver)
@@ -1116,5 +1116,4 @@ alien_dummy(void)
     return;
 }
 
-#endif /* 0 */
 

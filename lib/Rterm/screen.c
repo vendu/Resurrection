@@ -179,7 +179,6 @@ Rterm_alloc_screen(void)
     return (calloc(1, sizeof(struct R_termscreen)));
 }
 
-#if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
 int
 Rterm_load_screen_draw_image(struct R_termscreen *screen)
 {
@@ -198,7 +197,18 @@ Rterm_load_screen_draw_image(struct R_termscreen *screen)
                             RESURRECTION_IMAGE_SEARCH_PATH "background/darkstone.png",
                             &screen->drawimage);
     }
-    
+    if (!(term->flags & RTERM_DOUBLE_BUFFER)) {
+        if (R_render_image_imlib2(&screen->drawimage,
+                                  screen->window,
+                                  R_TILE_IMAGE,
+                                  R_TILE_IMAGE,
+                                  R_IMAGE_STATIC_FLAG) < 0) {                                          
+            retval = -1;
+        } else {
+            
+            retval = 0;
+        }
+    }
     if (screen->drawimage.orig) {
 
         retval = 0;
@@ -206,6 +216,8 @@ Rterm_load_screen_draw_image(struct R_termscreen *screen)
     
     return retval;
 }
+
+#if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
 
 void
 Rterm_create_screen_draw_pixmap(struct R_termscreen *screen)
@@ -219,11 +231,11 @@ Rterm_create_screen_draw_pixmap(struct R_termscreen *screen)
                                           screen->window,
                                           R_TILE_IMAGE,
                                           R_TILE_IMAGE,
-                                          R_IMAGE_STRETCH_FLAG
-                                          | R_IMAGE_STATIC_FLAG) < 0) {                                          
+                                          R_IMAGE_STATIC_FLAG) < 0) {                                          
                     
                     screen->drawpixmap = None;
                 } else {
+                    fprintf(stderr, "SET SCREEN PIXMAPS (%s)\n", term->bgname);
                     screen->drawpixmap = screen->drawimage.pixmap;
                 }
             } else {
@@ -542,9 +554,9 @@ Rterm_init_screen(struct R_termscreen *screen, struct R_termscreen *copyfrom)
     }
 
     R_resize_window(screen->window, Rterm_screen_width(screen), Rterm_screen_height(screen));
+    Rterm_load_screen_draw_image(screen);
 #if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
     if (term->flags & RTERM_DOUBLE_BUFFER) {
-        Rterm_load_screen_draw_image(screen);
         Rterm_alloc_screen_draw_buffer(screen);
     }
 #endif
@@ -1785,9 +1797,9 @@ Rterm_new_screen(struct R_term *term, int id)
     R_resize_window(screen->window,
                     Rterm_screen_width(screen),
                     Rterm_screen_height(screen));
+    Rterm_load_screen_draw_image(screen);
 #if (SUPPORT_RTERM_SCREEN_DOUBLE_BUFFER)
     if (term->flags & RTERM_DOUBLE_BUFFER) {
-        Rterm_load_screen_draw_image(screen);
         Rterm_alloc_screen_draw_buffer(screen);
     }
 #endif

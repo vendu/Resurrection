@@ -323,7 +323,9 @@ Rl_init(struct R_app *app,
     pid = fork();
     if (!pid) {
         char geomstr[32];
-        char *arg[6] = { "Rterm", "-B", "-E", "-g", geomstr, NULL };
+        char *arg[9] = { "Rterm", "-B", "-E", "-X", "-b",
+                         RESURRECTION_IMAGE_SEARCH_PATH "background/redmetal.jpg",
+                         "-g", geomstr, NULL };
 
         snprintf(geomstr, 32, "80x3+%d+0", RL_BUTTON_WIDTH);
 

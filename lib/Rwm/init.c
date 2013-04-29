@@ -19,6 +19,7 @@ void sig_alrm(int sig);
 
 void Rwm_load_title_font(struct R_app *app);
 
+pid_t      _Rwmlaunchpid;
 Imlib_Font _titlefont;
 Imlib_Font _menufont;
 
@@ -44,7 +45,12 @@ Rwm_exit(void)
     int   stat;
     
     errno = 0;
-    /* wait for per-desktop children */
+#if 0
+    if (_Rwmlaunchpid) {
+        kill(_Rwmlaunchpid, SIGTERM);
+    }
+#endif
+    /* wait for children */
     do {
         pid = wait(&stat);
         if (pid < 0) {
@@ -167,6 +173,10 @@ Rwm_init(struct R_app *app,
         char *arg[2] = { "Rl", NULL };
 
         execvp("Rl", arg);
+#if 0
+    } else {
+        _Rwmlaunchpid = pid;
+#endif
     }
 #endif
     app->wintree = calloc(256, sizeof(void *));
@@ -386,7 +396,11 @@ Rwm_take_windows(struct R_app *app)
                                      win,
                                      &attr);
                 x = attr.x;
-                y = attr.y;
+#if (RWM_EXEC_RL)
+                y = max(attr.y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#else
+                y = max(attr.y, RWM_MENU_ITEM_HEIGHT);
+#endif
                 w = attr.width;
                 h = attr.height;
                 window = R_find_window(win);

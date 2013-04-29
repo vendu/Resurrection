@@ -315,6 +315,29 @@ struct R_binding Rwm_bottom_bindings[RWM_BOTTOM_ACTIONS] = {
         NULL,
         NULL
     },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_BUTTON2_FLAG),
+        Rwm_start_move_func,
+        (void *)2,
+        NULL
+    },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_MOTION_FLAG
+                       | R_BINDING_BUTTON2_FLAG),
+        Rwm_move_func,
+        (void *)2,
+        NULL
+    },
+    {
+        R_MAKE_BINDING(0,
+                       R_BINDING_RELEASE_FLAG
+                       | R_BINDING_BUTTON2_FLAG),
+        Rwm_finish_move_func,
+        (void *)2,
+        NULL
+    }
 };
 
 /* left */

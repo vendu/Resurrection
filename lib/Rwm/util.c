@@ -529,6 +529,9 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
         } else {
             y = client->y;
         }
+#if (RWM_EXEC_RL)
+        y = max(y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#endif
         if (flags & CWWidth) {
             w = configure->width;
         } else {

@@ -9,7 +9,8 @@
 
 #define DEBUG_ATOM 0
 #define KLUDGE     0
-#define RWMKLUDGES 1
+#define RWMKLUDGES 0
+#define NEWKLUDGES 1
 
 void Rwm_client_configurerequest_handler(void *arg,
                                          XEvent *event);
