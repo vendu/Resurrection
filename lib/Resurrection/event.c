@@ -695,6 +695,9 @@ R_handle_next_event(struct R_app *app)
 
     memset(&event, 0, sizeof(event));
     XNextEvent(app->display, &event);
+    _ignbadwindow = 0;
+    _ignbadmatch = 0;
+    _ignbadatom = 0;
     retval = event.type;
 //    fprintf(stderr, "EVENT: %s\n", eventnames[retval]);
     if (XFilterEvent(&event, None)) {

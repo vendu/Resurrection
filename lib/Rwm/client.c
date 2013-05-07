@@ -7,10 +7,11 @@
 
 #include <Resurrection/Resurrection.h>
 
-#define DEBUG_ATOM 0
-#define KLUDGE     0
-#define RWMKLUDGES 0
-#define NEWKLUDGES 1
+#define RWMLAZYSYNC 1
+#define DEBUG_ATOM  0
+#define KLUDGE      0
+#define RWMKLUDGES  0
+#define NEWKLUDGES  1
 
 void Rwm_client_configurerequest_handler(void *arg,
                                          XEvent *event);
@@ -103,10 +104,6 @@ Rwm_init_client_events(struct R_window *window)
     R_add_window_events(window,
                         PropertyChangeMask
                         | EnterWindowMask);
-#ifdef KLUDGE
-    XSync(window->app->display, False);
-    _ignbadwindow = 0;
-#endif
 
     return;
 }
@@ -196,8 +193,10 @@ Rwm_resize_client(struct R_window *client,
             w = (int)(inc * (float)(winc));
             h = (int)(inc * (float)(hinc));
         }
+#if (!RWMLAZYSYNC)
         XSync(client->app->display, False);
         _ignbadwindow = 0;
+#endif
         if (frame) {
             if (w == wm->desktop->w) {
                 frame->x = 0;
@@ -450,10 +449,12 @@ Rwm_client_configurerequest_handler(void *arg,
                          client,
                          CWDontPropagate,
                          &attr);
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
     _ignbadwindow = 0;
     _ignbadmatch = 0;
+#endif
 #endif
 #if 0
     client->w = min2(client->w, wm->desktop->w - client->x);
@@ -529,8 +530,6 @@ Rwm_client_resizerequest_handler(void *arg,
     return;
 }
 
-#define FIXPOS 1
-
 void
 Rwm_client_maprequest_handler(void *arg,
                               XEvent *event)
@@ -564,14 +563,19 @@ Rwm_client_maprequest_handler(void *arg,
     XGetWindowAttributes(client->app->display,
                          client->id,
                          &attr);
-#if 0
-    y = max2(RWM_MENU_ITEM_HEIGHT, attr.y);
     R_move_window(client, attr.x, attr.y);
-#endif
     if (attr.override_redirect) {
         client->typeflags = R_WINDOW_OVERRIDE_FLAG;
+        client->x = attr.x;
+        client->y = attr.y;
     } else {
-        Rwm_move_window(client, attr.x, attr.y);
+#if (RWM_EXEC_RL)
+        y = max2(RL_BUTTON_WIDTH + RWM_MENU_ITEM_HEIGHT, attr.y);
+#else
+        y = max2(RWM_MENU_ITEM_HEIGHT, attr.y);
+#endif
+//        Rwm_move_window(client, attr.x, attr.y);
+        Rwm_move_window(client, attr.x, y);
         if (XGetTransientForHint(client->app->display,
                                  client->id,
                                  &win)) {
@@ -616,9 +620,11 @@ Rwm_client_maprequest_handler(void *arg,
 #if (RWMKLUDGES)
     Rwm_send_configure(window);
 #endif
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
     _ignbadwindow = 0;
+#endif
     
     return;
 }
@@ -642,8 +648,10 @@ Rwm_client_mapnotify_handler(void *arg,
     }
 #endif
     R_raise_window(client);
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
+#endif
 //    _ignbadwindow = 0;
 
     return;
@@ -664,12 +672,12 @@ Rwm_client_unmapnotify_handler(void *arg,
     frame = client->parent;
     if (frame) {
         R_unmap_window(frame);
-    } else {
-        R_remove_save_window(client);
     }
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
     _ignbadwindow = 0;
+#endif
 
     return;
 }
@@ -702,9 +710,11 @@ Rwm_client_destroynotify_handler(void *arg,
         client->str = NULL;
         R_free_window(client);
     }
+#if (!RWMLAZYSYNC)
     XSync(display,
           False);
     _ignbadwindow = 0;
+#endif
 #if 0
     if (wm->optflags & (RWM_DESKTOP_CLOCK_FLAG | RWM_FOCUS_CLOCK_FLAG)) {
 //        Rwm_update_clock(&_clock);
@@ -729,8 +739,10 @@ Rwm_client_buttonpress_handler(void *arg,
             _ignbadwindow = 1;
             R_set_input_focus(client, event->xbutton.time);
             R_raise_window(client);
+#if (!RWMLAZYSYNC)
             XSync(client->app->display, False);
             _ignbadwindow = 0;
+#endif
         }
     }
 }
@@ -791,9 +803,11 @@ Rwm_client_focusin_handler(void *arg,
         }
     }
     _ignbadwindow = 1;
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
     _ignbadwindow = 0;
+#endif
 
     return;
 }
@@ -893,8 +907,10 @@ Rwm_client_focusout_handler(void *arg,
     }
 #endif
 #endif
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
+#endif
 //    R_global.synch = 1;
 
     return;
@@ -915,9 +931,11 @@ Rwm_client_reparentnotify_handler(void *arg,
         _ignbadwindow = 1;
         R_set_window_events(client,
                             NoEventMask);
+#if (!RWMLAZYSYNC)
         XSync(client->app->display,
               False);
         _ignbadwindow = 0;
+#endif
         R_free_window(client);
     } else if (!(client->typeflags & (R_WINDOW_TOPLEVEL_FLAG | R_WINDOW_TRANSIENT_FLAG | R_WINDOW_FRAME_FLAG))) {
         R_set_window_events(client,
@@ -1033,8 +1051,10 @@ Rwm_client_propertynotify_handler(void *arg,
 
         }
     }
+#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
+#endif
 
     return;
 }

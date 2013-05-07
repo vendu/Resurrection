@@ -524,14 +524,16 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
         }
         if (flags & CWY) {
             y = configure->y;
+#if (RWM_EXEC_RL)
+            if (!(client->typeflags & R_WINDOW_OVERRIDE_FLAG)) {
+                y = max(y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+            }
+#endif
         } else if (frame) {
             y = frame->y;
         } else {
             y = client->y;
         }
-#if (RWM_EXEC_RL)
-        y = max(y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
-#endif
         if (flags & CWWidth) {
             w = configure->width;
         } else {
@@ -613,7 +615,7 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
     client->w = w;
     client->h = h;
 
-    Rwm_send_configure(client);
+//    Rwm_send_configure(client);
 
     return;
 }

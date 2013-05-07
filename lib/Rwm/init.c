@@ -396,11 +396,13 @@ Rwm_take_windows(struct R_app *app)
                                      win,
                                      &attr);
                 x = attr.x;
+                if (!attr.override_redirect) {
 #if (RWM_EXEC_RL)
-                y = max(attr.y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+                    y = max(attr.y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
 #else
-                y = max(attr.y, RWM_MENU_ITEM_HEIGHT);
+                    y = max(attr.y, RWM_MENU_ITEM_HEIGHT);
 #endif
+                }
                 w = attr.width;
                 h = attr.height;
                 window = R_find_window(win);

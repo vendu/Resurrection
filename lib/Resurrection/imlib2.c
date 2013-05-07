@@ -91,24 +91,6 @@ R_free_image_imlib2(struct R_image *image)
             imlib_free_image();
             image->img = NULL;
         }
-        if (image->pixmap) {
-#if (USE_XSHM)
-            if (image->hasshm) {
-                shmseg = &image->shmseg;
-                XShmDetach(image->app->display, shmseg);
-                shmdt(shmseg->shmaddr);
-                shmctl(shmseg->shmid, IPC_RMID, NULL);
-                shmseg->shmid = -1;
-                shmseg->shmaddr = NULL;
-                image->hasshm = 0;
-            } else {
-                imlib_free_pixmap_and_mask(image->pixmap);
-            }
-#else
-            imlib_free_pixmap_and_mask(image->pixmap);
-#endif
-            image->pixmap = image->mask = None;
-        }
     }
     if (image->img) {
         imlib_context_set_image(image->img);
@@ -142,6 +124,24 @@ void
 R_destroy_image_imlib2(struct R_image *image)
 {
     if (image->orig) {
+        if (image->pixmap) {
+#if (USE_XSHM)
+            if (image->hasshm) {
+                shmseg = &image->shmseg;
+                XShmDetach(image->app->display, shmseg);
+                shmdt(shmseg->shmaddr);
+                shmctl(shmseg->shmid, IPC_RMID, NULL);
+                shmseg->shmid = -1;
+                shmseg->shmaddr = NULL;
+                image->hasshm = 0;
+            } else {
+                imlib_free_pixmap_and_mask(image->pixmap);
+            }
+#else
+            imlib_free_pixmap_and_mask(image->pixmap);
+#endif
+            image->pixmap = image->mask = None;
+        }
         imlib_context_set_image(image->orig);
         imlib_free_image();
         image->orig = NULL;
@@ -398,11 +398,9 @@ R_render_image_imlib2(struct R_image *image,
             
             return -1;
         }
-//        fprintf(stderr, "XOFS = %d, YOFS = %d, WINW = %d, WINH = %d, RENDW = %d, RENDH = %d\n", xofs, yofs, winw, winh, rendw, rendh);
         for (x = xofs ; x < winw ; x += rendw) {
-            rendw = MIN(rendw, winw - x);
             for (y = yofs ; y < winh ; y += rendh) {
-                rendh = MIN(rendh, winh - y);
+//                fprintf(stderr, "XOFS = %d, YOFS = %d, WINW = %d, WINH = %d, RENDW = %d, RENDH = %d\n", xofs, yofs, winw, winh, rendw, rendh);
                 XCopyArea(image->app->display,
                           image->pixmap,
                           pixmap,

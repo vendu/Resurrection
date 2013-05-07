@@ -189,6 +189,11 @@ Rwm_root_createnotify_handler(void *arg,
         window->y = create->y;
 #endif
         if (!create->override_redirect) {
+#if (RWM_EXEC_RL)
+            window->y = max2(window->y, RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT);
+#else
+            window->y = max2(window->y, RWM_MENU_ITEM_HEIGHT);
+#endif
             window->w = min2(create->width + 2 * border, wm->desktop->w);
             window->h = min2(create->height + 2 * border, wm->desktop->h);
             window->h = max2(window->h, wm->desktop->h - RWM_MENU_ITEM_HEIGHT);
