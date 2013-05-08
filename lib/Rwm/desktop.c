@@ -17,6 +17,8 @@ void Rwm_set_desktop_backgrounds(struct R_app *app);
 void Rwm_fade_desktop_in(void *arg, XEvent *event);
 #endif
 
+extern pid_t *Rwmdeskpids;
+
 const char *Rwm_desktop_image_names[RWM_DESKTOPS]
 = {
     RESURRECTION_IMAGE_SEARCH_PATH "background/sword.png",
@@ -200,7 +202,8 @@ Rwm_create_desktop_window(struct R_app *app)
 
     root = app->window;
     desktop = R_create_window(app,
-                              root,
+//                              root,
+                              NULL,
                               R_WINDOW_OVERRIDE_REDIRECT_FLAG);
     if (desktop == NULL) {
         
@@ -326,6 +329,7 @@ Rwm_map_desktop(struct R_app *app,
 }
 #endif
 
+#if 0
 void
 Rwm_switch_desktop(struct R_app *app,
                    struct R_window *desktop)
@@ -351,6 +355,36 @@ Rwm_switch_desktop(struct R_app *app,
                         0);
 //    R_map_subwindows(desktop);
     R_map_window_raised(desktop);
+
+    return;
+}
+#endif
+
+void
+Rwm_switch_desktop(struct R_app *app,
+                   struct R_window *desktop)
+{
+    struct R_wm *wm;
+
+    wm = app->client;
+    wm->desktop = desktop;
+    Rwm_reparent_window(wm->menu,
+                        wm->desktop,
+                        0,
+                        0);
+    Rwm_resize_window(wm->pager,
+                      RWM_MENU_ITEM_WIDTH + 2 * RWM_MENU_RULER_WIDTH,
+                      RWM_MENU_ITEM_HEIGHT);
+    Rwm_reparent_window(wm->pager,
+                        wm->desktop,
+                        RWM_MENU_ITEM_WIDTH + 2 * RWM_MENU_RULER_WIDTH,
+                        0);
+    Rwm_reparent_window(wm->clock,
+                        wm->desktop,
+                        2 * RWM_MENU_ITEM_WIDTH + 4 * RWM_MENU_RULER_WIDTH,
+                        0);
+//    R_map_subwindows(desktop);
+    R_map_window_raised(wm->desktop);
 
     return;
 }

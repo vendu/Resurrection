@@ -8,7 +8,7 @@
 #ifndef __RESURRECTION_WM_H__
 #define __RESURRECTION_WM_H__
 
-#define RWM_EXEC_RL               1
+#define RWM_EXEC_RL               0
 
 #include <Resurrection/conf/wm.h>
 

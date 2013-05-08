@@ -69,9 +69,12 @@ Rwm_switch_desktop_func(void *arg,
     wm = app->client;
     bindingarg = bindarg;
     id = bindingarg->val;
+#if 0
     desktop = wm->desktops[id];
     Rwm_switch_desktop(app,
                        desktop);
+#endif
+    Rwm_switch_desktop(app, window);
 
     return;
 }

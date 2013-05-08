@@ -19,9 +19,11 @@ void sig_alrm(int sig);
 
 void Rwm_load_title_font(struct R_app *app);
 
-pid_t      _Rwmlaunchpid;
-Imlib_Font _titlefont;
-Imlib_Font _menufont;
+pid_t           *Rwmdeskpids;
+struct R_window *Rwmdesktopwin;
+pid_t            _Rwmlaunchpid;
+Imlib_Font       _titlefont;
+Imlib_Font       _menufont;
 
 const char *_wmatomstrs[] = {
     "WM_PROTOCOLS",
@@ -92,6 +94,13 @@ sig_alrm(int sig)
 #endif
 
 void
+Rwm_usr1_handler(int sig)
+{
+    fprintf(stderr, "USR1: %lx\n", (long)Rwmdesktopwin);
+    R_map_window_raised(Rwmdesktopwin);
+}
+
+void
 Rwm_init_optflags(struct R_wm *wm)
 {
     wm->optflags
@@ -156,7 +165,7 @@ Rwm_init(struct R_app *app,
          int argc,
          char **argv)
 {
-    struct R_app    *newapp;
+    struct R_app    *newapp = NULL;
     struct R_window *root;
     struct R_wm     *wm;
     int              loop = 1;
@@ -193,12 +202,15 @@ Rwm_init(struct R_app *app,
                 return FALSE;
     }
     XCloseDisplay(app->display);
-//    fprintf(stderr, "%d screens\n", nscreen);
+    fprintf(stderr, "%d screens\n", nscreen);
     defscreen = DefaultScreen(app->display);
     R_global.app = app;
     for (i = 0 ; i < nscreen ; i++) {
         pid = fork();
-        if (!pid) {
+        if (pid) {
+//            Rwmdeskpids[i] = pid;
+            fprintf(stderr, "SCRPID: %d\n", (int)pid);
+        } else {
             newapp = calloc(1, sizeof(struct R_app));
             newapp->wintree = app->wintree;
             if (!newapp->wintree) {
@@ -262,6 +274,8 @@ Rwm_init(struct R_app *app,
                 return FALSE;
             }
             wm->desktop = wm->desktops[0];
+            Rwmdesktopwin = wm->desktop;
+            SIGNAL(SIGUSR1, Rwm_usr1_handler);
             
             gettimeofday(&Rwm_action_info.tv, NULL);
             Rwm_init_frame_event_handlers(newapp);
