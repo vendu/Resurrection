@@ -81,8 +81,8 @@ RWM
 
 - it's good practice to run a terminal as last command in your
   .xinitrc/.xsession and then launch Rwm by hand from it. This way, a crashing
-  window manager will not take all your accounts down (when it runs as a session
-  manager, whose termination ends the X session)
+  window manager will not take all your appliactions down (when it runs as a
+  session manager, whose termination ends the X session)
 - XMMS playlist window doesn't work correctly; something to do with at least
   ConfigureRequest events
 - window border button bindings are as follows; TODO: FIX THOSE THAT DON'T WORK
