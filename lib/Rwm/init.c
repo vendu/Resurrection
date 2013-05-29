@@ -217,6 +217,7 @@ Rwm_init(struct R_app *app,
                 
                 return FALSE;
             }
+            fprintf(stderr, "initialising screen %d - ", i);
             if (!R_init_screen(newapp,
                                argc,
                                argv,
@@ -224,6 +225,7 @@ Rwm_init(struct R_app *app,
                 
                 return FALSE;
             }
+            fprintf(stderr, "DONE\n");
 //
             wm = calloc(1, sizeof(struct R_wm));
             newapp->client = wm;
@@ -263,16 +265,17 @@ Rwm_init(struct R_app *app,
             Rwm_load_title_font(newapp);
 #endif
             newapp->screen = i;
-//            fprintf(stderr, "initialising screen %d\n", i);
             if (!Rwm_set_root_window(newapp)) {
                 
                 return FALSE;
             }
             
+            fprintf(stderr, "initializing desktops - ");
             if (!Rwm_init_desktops(newapp)) {
                 
                 return FALSE;
             }
+            fprintf(stderr, "DONE\n");
             wm->desktop = wm->desktops[0];
             Rwmdesktopwin = wm->desktop;
             SIGNAL(SIGUSR1, Rwm_usr1_handler);
@@ -287,10 +290,12 @@ Rwm_init(struct R_app *app,
 #endif
             
 #if (!R_DEBUG_WM)
+            fprintf(stderr, "taking windows over - ");
             if (!Rwm_take_windows(newapp)) {
                 
                 return FALSE;
             }
+            fprintf(stderr, "DONE\n");
 #endif
             
             Rwm_init_root_events(newapp);
@@ -299,18 +304,22 @@ Rwm_init(struct R_app *app,
                 return FALSE;
             }
 
-#if (!RWM_EXEC_RL)           
+#if (!RWM_EXEC_RL)
+            fprintf(stderr, "initializing menu - ");
             if (!Rwm_init_menu(newapp)) {
                 
                 return FALSE;
             }
+            fprintf(stderr, "DONE\n");
             Rwm_init_menu_events(newapp);
 #endif
             
+            fprintf(stderr, "initializing pager - ");
             if (!Rwm_init_pager(newapp)) {
                 
                 return FALSE;
             }
+            fprintf(stderr, "DONE\n");
             Rwm_init_pager_events(newapp);
             if (!Rwm_init_frame_cursors(newapp)) {
                 
