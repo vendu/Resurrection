@@ -41,8 +41,8 @@ R_parse_display_screen(struct R_app *app, int screen)
         str = strchr(dispname, ':');
         if (str) {
             str++;
-            i += '0';
-            *str = (char)screen;
+            i = screen + '0';
+            *str = (char)i;
         }
     }
     
