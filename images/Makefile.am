@@ -31,6 +31,9 @@ dist_miscimage_DATA = \
 	misc/vbar_silver.png
 
 dist_wmimage_DATA = \
+	wm/vbar.png \
+	wm/hbar1.png \
+	wm/hbar2.png \
 	wm/apps.png \
 	wm/audio.png \
 	wm/bordergold_horiz.png \

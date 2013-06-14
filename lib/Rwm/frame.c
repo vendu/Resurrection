@@ -7,6 +7,12 @@
 
 #include <Resurrection/Resurrection.h>
 
+#if 0
+#define RWM_2K13_THEME 0
+#define RWM_NEW_THEME  1
+#define RWM_ORIGINAL_THEME 0
+#endif
+
 #define RWM_NEW_FRAME_BINDINGS 1
 
 #define RWM_STATIC_FRAME_PIXMAPS 0
@@ -47,7 +53,38 @@ struct Rwm_border {
     int right;
 };
 
-#if (RWM_OLDE_THEME)
+#if (RWM_2K13_THEME)
+static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar1.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar1.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar1.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar2.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar2.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/hbar2.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        NULL,
+        NULL
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "wm/vbar.png",
+        NULL,
+        NULL
+    },
+};
+#elif (RWM_OLDE_THEME)
 static char *Rwm_frame_image_names[RWM_FRAME_SUBWINDOWS][R_WINDOW_STATES] = {
     {
         RESURRECTION_IMAGE_SEARCH_PATH "widget/menu.png",
@@ -184,7 +221,14 @@ static struct Rwm_dim Rwm_frame_dims[RWM_FRAME_SUBWINDOWS] = {
     { 4, R_FIT_IMAGE }
 };
 
-#if (RWM_ORIGINAL_THEME)
+#if (RWM_2K13_THEME)
+static struct Rwm_border Rwm_frame_borders[RWM_FRAME_SUBWINDOWS] = {
+    { 0, 0, 0, 0 },
+    { 0, 0, 0, 0 },
+    { 0, 0, 0, 0 },
+    { 0, 0, 0, 0 }
+};
+#elif (RWM_ORIGINAL_THEME)
 static struct Rwm_border Rwm_frame_borders[RWM_FRAME_SUBWINDOWS] = {
     { 2, 2, 2, 2 },
     { 2, 2, 2, 2 },
