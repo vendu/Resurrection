@@ -201,7 +201,7 @@ Rwm_init(struct R_app *app,
         
                 return FALSE;
     }
-    XCloseDisplay(app->display);
+//    XCloseDisplay(app->display);
     fprintf(stderr, "%d screens\n", nscreen);
     defscreen = DefaultScreen(app->display);
     R_global.app = app;
