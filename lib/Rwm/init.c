@@ -9,6 +9,8 @@
 
 #include <signal.h>
 
+#define RWMLAZYSYNC 1
+
 #if (_BYTE_ORDER == _LITTLE_ENDIAN)
 extern struct R_color _wmcolorconfs[];
 #endif
@@ -408,10 +410,16 @@ Rwm_take_windows(struct R_app *app)
                    &win,
                    &children,
                    &nchildren)) {
+#if (RWMLAZYSYNC)
+        _ignbadwindow = 1;
+        _ignbadmatch = 1;
+#endif
         if (nchildren) {
             ui = 0;
+#if (!RWMLAZYSYNC)
             _ignbadwindow = 1;
             _ignbadmatch = 1;
+#endif
             while (ui < nchildren) {
                 win = children[ui];
                 memset(&attr, 0, sizeof(attr));
@@ -484,11 +492,17 @@ Rwm_take_windows(struct R_app *app)
                             R_free_window(window);
                         }
                     }
+#if (!RWMLAZYSYNC)
                     XSync(app->display,
                           False);
+#endif
                 }
                 ui++;
             }
+#if (RWMLAZYSYNC)
+            XSync(app->display,
+                  False);
+#endif
             _ignbadwindow = 0;
             _ignbadmatch = 0;
             XFree(children);

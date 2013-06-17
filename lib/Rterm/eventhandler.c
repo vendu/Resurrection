@@ -1249,7 +1249,7 @@ Rterm_keypress(void *arg, XEvent *event)
     screen = term->screens[term->curscreen];
     screen->viewrow = screen->savelines;
 
-    Rterm_clear_screen_cursor(screen);
+//    Rterm_clear_screen_cursor(screen);
 
     if (numlock) {
 	term->privmodes &= ~RTERM_PRIVMODE_APPLICATION_KEYPAD;
