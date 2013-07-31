@@ -211,6 +211,7 @@ Rwm_init(struct R_app *app,
         pid = fork();
         if (pid) {
 //            Rwmdeskpids[i] = pid;
+            SIGNAL(SIGCHLD, SIG_IGN);
             fprintf(stderr, "SCRPID: %d\n", (int)pid);
         } else {
             newapp = calloc(1, sizeof(struct R_app));
