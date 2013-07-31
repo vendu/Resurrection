@@ -9,8 +9,8 @@
 #ifndef _RESURRECTION_PATHS_H
 #define _RESURRECTION_PATHS_H
 
-#define RESURRECTION_IMAGE_SEARCH_PATH "/usr/local/share/Resurrection/images/"
-#define RESURRECTION_FONT_SEARCH_PATH  "/usr/local/share/Resurrection/fonts/"
+#define RESURRECTION_IMAGE_SEARCH_PATH "/usr/local/share/resurrection/images/"
+#define RESURRECTION_FONT_SEARCH_PATH  "/usr/local/share/resurrection/fonts/"
 
 #endif /* _RESURRECTION_PATHS_H */
 

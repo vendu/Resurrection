@@ -177,6 +177,9 @@ Rwm_init(struct R_app *app,
     int              xfd;
     pid_t            pid;
     fd_set           readfds;
+    int              pipefds[2] = { -1, -1 };
+    char             rbuf[1] = { '\0' };
+    char             wbuf[1] = { '\033' };
 
 #if (RWM_EXEC_RL)
     pid = fork();
@@ -208,11 +211,25 @@ Rwm_init(struct R_app *app,
     defscreen = DefaultScreen(app->display);
     R_global.app = app;
     for (i = 0 ; i < nscreen ; i++) {
+        if (pipe(pipefds) < 0) {
+            fprintf(stderr, "failed to open synchronisation pipe\n");
+
+            exit(1);
+        }
         pid = fork();
         if (pid) {
 //            Rwmdeskpids[i] = pid;
             SIGNAL(SIGCHLD, SIG_IGN);
             fprintf(stderr, "SCRPID: %d\n", (int)pid);
+            while (read(pipefds[0], rbuf, 1) <= 0 && rbuf[0] != '\033') {
+                if (errno == EINTR) {
+
+                    continue;
+                } else {
+
+                    exit(1);
+                }
+            }
         } else {
             newapp = calloc(1, sizeof(struct R_app));
             newapp->wintree = app->wintree;
@@ -243,7 +260,7 @@ Rwm_init(struct R_app *app,
             alarm(15);
 #endif
             newapp->flags = RWM_DEFAULT_FLAGS;
-            atexit(Rwm_exit);
+//            atexit(Rwm_exit);
             
             SIGNAL(SIGINT, Rwm_exit_handler);
             SIGNAL(SIGTERM, Rwm_exit_handler);
@@ -339,6 +356,15 @@ Rwm_init(struct R_app *app,
 #if (R_DEBUG_WM)
             Rwm_init_test(newapp);
 #endif
+            while (write(pipefds[1], wbuf, 1) <= 0) {
+                if (errno == EINTR) {
+
+                    continue;
+                } else {
+
+                    exit(1);
+                }
+            }
             xfd = XConnectionNumber(newapp->display);
             FD_SET(xfd, &readfds);
             while (TRUE) {
