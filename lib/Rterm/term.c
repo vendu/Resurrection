@@ -417,7 +417,7 @@ Rterm_start(struct R_term *term)
     }
 #endif
 
-#if 0    
+#if (RTERM_SUPPORT_SCROLLBAR)
     if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
 	if (Rterm_init_scrollbar(term) < 0) {
             

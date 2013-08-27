@@ -7,7 +7,7 @@
 
 #include <Resurrection/Resurrection.h>
 
-#if 0
+#if (RTERM_SUPPORT_SCROLLBAR)
 
 struct R_termscrollbar *
 Rterm_alloc_scrollbar(void)
@@ -97,11 +97,11 @@ Rterm_set_scrollbar_event_handlers(struct R_termscrollbar *scrollbar)
     }
 
     R_set_window_event_handler(scrollbar->window, ButtonPress,
-			     Rterm_scrollbar_buttonpress);
+                               Rterm_scrollbar_buttonpress);
     R_set_window_event_handler(scrollbar->window, ButtonRelease,
-			     Rterm_scrollbar_buttonrelease);
+                               Rterm_scrollbar_buttonrelease);
     R_set_window_event_handler(scrollbar->window, LeaveNotify,
-			     Rterm_scrollbar_leavenotify);
+                               Rterm_scrollbar_leavenotify);
 
     R_add_window_events(scrollbar->window,
                         ButtonPressMask
@@ -185,17 +185,18 @@ Rterm_init_scrollbar_windows(struct R_term *term)
 		 &dummyui, &dummyui);
 #endif
 
-    w = Rterm_screen_width(term->screen) + RTERM_SCROLLBAR_DEFAULT_WIDTH;
-    h = Rterm_screen_height(term->screen);
+    w = Rterm_screen_width(term->screens[term->curscreen]) + RTERM_SCROLLBAR_DEFAULT_WIDTH;
+    h = Rterm_screen_height(term->screens[term->curscreen]);
     if ((scrollbar->window = R_create_window(app,
                                              term->window,
                                              0))
-         == NULL) {
+        == NULL) {
                                              
         fprintf(stderr, "#1\n");
 
 	return -1;
     }
+    R_add_window(scrollbar->window);
 
     if ((scrollbar->anchor = R_create_window(app,
                                              scrollbar->window,
@@ -205,6 +206,7 @@ Rterm_init_scrollbar_windows(struct R_term *term)
 	
 	return -1;
     }
+    R_add_window(scrollbar->anchor);
 
     /* FIXME: only do save unders when there's no trough. */
 #if 0    
@@ -219,6 +221,7 @@ Rterm_init_scrollbar_windows(struct R_term *term)
 	
 	return -1;
     }
+    R_add_window(scrollbar->up);
     
     if ((scrollbar->down = R_create_window(app,
                                            scrollbar->window,
@@ -228,9 +231,10 @@ Rterm_init_scrollbar_windows(struct R_term *term)
 	
 	return -1;
     }
+    R_add_window(scrollbar->down);
 
 #if 0
-    scrollbar_set_screen(scrollbar, term->screen);
+    scrollbar_set_screen(scrollbar, term->screens[term->curscreen]);
 #endif
     
     R_move_resize_window(scrollbar->window,
@@ -365,14 +369,14 @@ Rterm_update_scrollbar(struct R_termscrollbar *scrollbar)
     Window dummywin;
     void (*refresh)(struct R_termscreen *, int);
 
-    if (scrollbar == NULL || !scrollbar->window->id) {
+    if (scrollbar == NULL || !scrollbar->window->id || !scrollbar->anchor) {
 
 	return;
     }
 
     app = R_global.app;
     term = app->client;
-    screen = term->screen;
+    screen = term->screens[term->curscreen];
     refresh = screen->funcs.refresh;
     if (refresh == NULL) {
 
@@ -545,7 +549,7 @@ Rterm_show_scrollbar(struct R_term *term)
 	return;
     }
 
-    screen = term->screen;
+    screen = term->screens[term->curscreen];
 
     if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
 	Rterm_init_scrollbar(term);
@@ -558,18 +562,18 @@ Rterm_show_scrollbar(struct R_term *term)
 	y = (term->privmodes & RTERM_PRIVMODE_MENUBAR)
 	    ? RTERM_MENU_DEFAULT_HEIGHT
 	    : 0;
-	R_move_window(term->screen->window, x, y);
-	term->screen->window->x = x;
-	term->screen->window->y = y;
+	R_move_window(term->screens[term->curscreen]->window, x, y);
+	term->screens[term->curscreen]->window->x = x;
+	term->screens[term->curscreen]->window->y = y;
 	Rterm_resize(term, screen->rows, screen->columns);
     } else {
 	R_unmap_window(term->scrollbar->window);
 	
-	R_move_window(term->screen->window,
-		    0,
-		    ((term->privmodes & RTERM_PRIVMODE_MENUBAR)
-		     ? RTERM_MENU_DEFAULT_HEIGHT
-		     : 0));
+	R_move_window(term->screens[term->curscreen]->window,
+                      0,
+                      ((term->privmodes & RTERM_PRIVMODE_MENUBAR)
+                       ? RTERM_MENU_DEFAULT_HEIGHT
+                       : 0));
 	
 	Rterm_resize(term, screen->rows, screen->columns);
     }
@@ -577,6 +581,7 @@ Rterm_show_scrollbar(struct R_term *term)
     return;
 }
 
+#if 0
 void
 term_move_scrollbar(struct R_term *term)
 {
@@ -592,14 +597,13 @@ term_move_scrollbar(struct R_term *term)
 		     &dummyui, &dummyui);
     }
 
-    R_move_window(term->screen->window,
-		((term->flags & RTERM_SCROLLBAR_RIGHT)
-		 ? 0
-		 : RTERM_SCROLLBAR_DEFAULT_WIDTH),
-		((term->privmodes & RTERM_PRIVMODE_MENUBAR)
-		 ? RTERM_MENU_DEFAULT_HEIGHT
-		 : 0));
-
+    R_move_window(term->screens[term->curscreen]->window,
+                  ((term->flags & RTERM_SCROLLBAR_RIGHT)
+                   ? 0
+                   : RTERM_SCROLLBAR_DEFAULT_WIDTH),
+                  ((term->privmodes & RTERM_PRIVMODE_MENUBAR)
+                   ? RTERM_MENU_DEFAULT_HEIGHT
+                   : 0));
     Rterm_move_scrollbar(term->scrollbar,
                          ((term->flags & RTERM_SCROLLBAR_RIGHT)
                           ? winw - RTERM_SCROLLBAR_DEFAULT_WIDTH
@@ -610,14 +614,15 @@ term_move_scrollbar(struct R_term *term)
 
     return;
 }
+#endif
 
 #if 0
 void
 term_resize_scrollbar(struct R_term *term)
 {
     Rterm_resize_scrollbar(term->scrollbar,
-		     RTERM_SCROLLBAR_DEFAULT_WIDTH,
-		     Rterm_screen_height(term->screen));
+                           RTERM_SCROLLBAR_DEFAULT_WIDTH,
+                           Rterm_screen_height(term->screens[term->curscreen]));
 
     return;
 }
@@ -637,4 +642,5 @@ term_floating_scrollbar(struct R_term *term)
     return;
 }
 
-#endif /* 0 */
+#endif /* RTERM_SUPPORT_SCROLLBAR */
+

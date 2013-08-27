@@ -572,7 +572,7 @@ Rwm_init_frame_events(struct R_window *frame)
     mask = R_add_window_events(window,
                                ButtonPressMask
                                | ButtonReleaseMask
-                               | OwnerGrabButtonMask
+//                               | OwnerGrabButtonMask
                                | Button1MotionMask
                                | Button3MotionMask
                                | PointerMotionMask);

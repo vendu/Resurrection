@@ -138,7 +138,7 @@ Rterm_alloc_screen_textbuffers(struct R_termscreen *screen)
         
     if ((screen->drawbuf.rowcols =
          calloc(screen->drawbuf.nrows, sizeof(unsigned int)))
-            == NULL) {
+        == NULL) {
 //	destroy_buffers(screen);
         
         return -1;
@@ -433,9 +433,9 @@ Rterm_resize_screen_textbuffers(struct R_termscreen *screen,
                 return -1;
             }
         } else if ((screen->textbuf.data
-	     = realloc(screen->textbuf.data,
-		       newrows * sizeof(R_text_t *)))
-	    == NULL) {
+                    = realloc(screen->textbuf.data,
+                              newrows * sizeof(R_text_t *)))
+                   == NULL) {
 	    
 	    return -1;
 	}
@@ -483,9 +483,9 @@ Rterm_resize_screen_textbuffers(struct R_termscreen *screen,
                 return -1;
             }
         } else if ((screen->drawbuf.data
-	     = realloc(screen->drawbuf.data,
-		       rows * sizeof(R_text_t *)))
-	    == NULL) {
+                    = realloc(screen->drawbuf.data,
+                              rows * sizeof(R_text_t *)))
+                   == NULL) {
 	    
 	    return -1;
 	}
@@ -565,9 +565,9 @@ Rterm_resize_screen_textbuffers(struct R_termscreen *screen,
                         return -1;
                     }
 		} else if ((screen->drawbuf.data[drawrow] =
-                     realloc(screen->drawbuf.data[drawrow],
-                             columns * sizeof(R_text_t)))
-		    == NULL) {
+                            realloc(screen->drawbuf.data[drawrow],
+                                    columns * sizeof(R_text_t)))
+                           == NULL) {
 
 		    return -1;
 		}
@@ -735,9 +735,9 @@ Rterm_resize_screen_textbuffers(struct R_termscreen *screen,
                     return -1;
                 }
             } else if ((screen->drawbuf.data[row]
-		 = realloc(screen->drawbuf.data[row],
-			   columns * sizeof(R_text_t)))
-		== NULL) {
+                        = realloc(screen->drawbuf.data[row],
+                                  columns * sizeof(R_text_t)))
+                       == NULL) {
 
 		return -1;
 	    }
@@ -1801,8 +1801,8 @@ Rterm_refresh_screen(struct R_termscreen *screen, int mode)
                 }
 #else
                 Rterm_draw_screen_string_8bit(screen, row, 0, textptr, textflagsptr, len,
-                                         RTERM_SCREEN_DRAW_ALL,
-                                         TRUE);
+                                              RTERM_SCREEN_DRAW_ALL,
+                                              TRUE);
 #endif
 	    }
 
@@ -1937,7 +1937,9 @@ Rterm_read_char(struct R_term *term)
 	refresh(curscreen, RTERM_SCREEN_DRAW_ALL);
 	curscreen->refreshcnt = 0;
 	curscreen->refreshed = TRUE;
-//        Rterm_update_scrollbar(term);
+#if (RTERM_SUPPORT_SCROLLBAR)
+        Rterm_update_scrollbar(term);
+#endif
     }
     
     if (curscreen->inptr < curscreen->inend) {
@@ -1994,7 +1996,9 @@ Rterm_read_char(struct R_term *term)
 //                return 0;
 #endif
 //                refresh(screen, RTERM_SCREEN_DRAW_ALL);
-//        Rterm_update_scrollbar(term);
+#if (RTERM_SUPPORT_SCROLLBAR)
+                Rterm_update_scrollbar(term);
+#endif
             }
             if (curscreen->pty.masterfd >= 0) {
                 if (curscreen->inptr < curscreen->inend) {
@@ -2008,7 +2012,7 @@ Rterm_read_char(struct R_term *term)
             }
         }
 
-#if 0
+#if (RTERM_SUPPORT_SCROLLBAR)
         if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
 	    if ((term->scrollbar->flags & RTERM_SCROLLBAR_UP_ARROW_PRESSED)
 		|| (term->scrollbar->flags
@@ -2045,7 +2049,7 @@ Rterm_read_char(struct R_term *term)
         FD_SET(curscreen->pty.masterfd, &readfds);
 #endif
 
-#if 0
+#if (RTERM_SUPPORT_SCROLLBAR)
         if ((term->privmodes & RTERM_PRIVMODE_SCROLLBAR)
 	    && ((term->scrollbar->flags & RTERM_SCROLLBAR_UP_ARROW_PRESSED)
 		|| (term->scrollbar->flags
@@ -2062,29 +2066,29 @@ Rterm_read_char(struct R_term *term)
 	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
 	} else
 #endif
-        if (!curscreen->refreshed) {
-	    timeval.tv_sec = 0;
-	    timeval.tv_usec = RTERM_SELECT_TIMEOUT_USEC;
+            if (!curscreen->refreshed) {
+                timeval.tv_sec = 0;
+                timeval.tv_usec = RTERM_SELECT_TIMEOUT_USEC;
 	    
-	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
-	}
+                nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+            }
 #if (SUPPORT_RTERM_BLINKING_CURSOR) || (SUPPORT_RTERM_BLINKING_CHARS)
-	else if ((term->window->stateflags & R_WINDOW_FOCUSED_FLAG)
-                 && (curscreen->flags & RTERM_SCREEN_HAS_BLINKING_CURSOR
-                     || (curscreen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS))) {
-	    timeval.tv_sec = 0;
-	    timeval.tv_usec = RTERM_SELECT_BLINK_TIMEOUT_USEC;
+            else if ((term->window->stateflags & R_WINDOW_FOCUSED_FLAG)
+                     && (curscreen->flags & RTERM_SCREEN_HAS_BLINKING_CURSOR
+                         || (curscreen->flags & RTERM_SCREEN_HAS_BLINKING_CHARS))) {
+                timeval.tv_sec = 0;
+                timeval.tv_usec = RTERM_SELECT_BLINK_TIMEOUT_USEC;
 	    
-	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
-	}
+                nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, &timeval);
+            }
 #endif
-        else {
-	    nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, NULL);
-	}
+            else {
+                nfdsready = Rselect(term->nfds, &readfds, NULL, NULL, NULL);
+            }
 
         if (nfdsready == -1 && errno != EINTR) {
 
-                return -1;
+            return -1;
         }
 
         if (nfdsready) {
@@ -2142,7 +2146,7 @@ Rterm_read_char(struct R_term *term)
             }
         } else {
             curscreen->refreshcnt = -1;
-#if 0
+#if (RTERM_SUPPORT_SCROLLBAR)
             if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
                 if (term->scrollbar->flags
                     & RTERM_SCROLLBAR_UP_ARROW_PRESSED) {
@@ -2151,7 +2155,7 @@ Rterm_read_char(struct R_term *term)
                            & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED) {
                     Rterm_scroll_screen(curscreen, 1);
                 } else if (term->scrollbar->flags
-                       & RTERM_SCROLLBAR_PRESSED) {
+                           & RTERM_SCROLLBAR_PRESSED) {
                     XQueryPointer(app->display,
                                   term->scrollbar->window->id,
                                   &dummywin, &dummywin,
@@ -2165,41 +2169,48 @@ Rterm_read_char(struct R_term *term)
                         Rterm_scroll_screen(curscreen, curscreen->rows - 1);
                     }
                 }
-#endif
                 
-//        Rterm_update_scrollbar(term);
+#if (RTERM_SUPPORT_SCROLLBAR)
+                Rterm_update_scrollbar(term);
+#endif
             }
+#endif
             
             return 0;
         }
 
-    if (!curscreen->refreshed) {
-	curscreen->refreshcnt = 0;
-	curscreen->refreshed = TRUE;
-        if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
-            if (term->scrollbar->flags
-                & RTERM_SCROLLBAR_UP_ARROW_PRESSED) {
-                Rterm_scroll_screen(curscreen, -1);
-            } else if (term->scrollbar->flags
-                       & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED) {
-                Rterm_scroll_screen(curscreen, 1);
-            } else if (term->scrollbar->flags
-                       & RTERM_SCROLLBAR_PRESSED) {
-                XQueryPointer(app->display,
-                              term->scrollbar->window->id,
-                              &dummywin, &dummywin,
-                              &dummyi, &dummyi,
-                              &dummyui, &scrollbary,
-                              &dummyui);
-                if (scrollbary < term->scrollbar->anchortop) {
-                    Rterm_scroll_screen(curscreen, -(curscreen->rows - 1));
-                } else if (scrollbary
-                           > term->scrollbar->anchorbottom) {
-                    Rterm_scroll_screen(curscreen, curscreen->rows - 1);
+        if (!curscreen->refreshed) {
+            curscreen->refreshcnt = 0;
+            curscreen->refreshed = TRUE;
+#if (RTERM_SUPPORT_SCROLLBAR)
+            if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+                if (term->scrollbar->flags
+                    & RTERM_SCROLLBAR_UP_ARROW_PRESSED) {
+                    Rterm_scroll_screen(curscreen, -1);
+                } else if (term->scrollbar->flags
+                           & RTERM_SCROLLBAR_DOWN_ARROW_PRESSED) {
+                    Rterm_scroll_screen(curscreen, 1);
+                } else if (term->scrollbar->flags
+                           & RTERM_SCROLLBAR_PRESSED) {
+                    XQueryPointer(app->display,
+                                  term->scrollbar->window->id,
+                                  &dummywin, &dummywin,
+                                  &dummyi, &dummyi,
+                                  &dummyui, &scrollbary,
+                                  &dummyui);
+                    if (scrollbary < term->scrollbar->anchortop) {
+                        Rterm_scroll_screen(curscreen, -(curscreen->rows - 1));
+                    } else if (scrollbary
+                               > term->scrollbar->anchorbottom) {
+                        Rterm_scroll_screen(curscreen, curscreen->rows - 1);
+                    }
                 }
-            }
-//            Rterm_update_scrollbar(term);
+#if (RTERM_SUPPORT_SCROLLBAR)
+                Rterm_update_scrollbar(term);
+#endif
 //        Rterm_update_scrollbar(term);
+            }
+#endif
         }
     }
     
@@ -2220,9 +2231,9 @@ Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
 #endif
 
     if (term == NULL
-	|| screen == NULL) {
+        || screen == NULL) {
 
-	return;
+        return;
     }
     add_text = screen->funcs.add_text;
 
@@ -2255,10 +2266,10 @@ Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
 #endif
 
     if (cval >= ' ' || cval == '\t' || cval == '\n' || cval == '\r') {
-	rows = 0;
-	/* read string from input buffer. */
+        rows = 0;
+        /* read string from input buffer. */
 	
-	while (screen->inptr < screen->inend) {
+        while (screen->inptr < screen->inend) {
 #if (SUPPORT_RTERM_UTF8_CHARS)
             if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
                 cval = Rterm_decode_char_utf8(screen->inptr, &len);
@@ -2267,19 +2278,19 @@ Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
                 cval = *screen->inptr++;
             }
 #else
-	    cval = *screen->inptr++;
+            cval = *screen->inptr++;
 #endif
 	    
-	    if (cval >= ' ' || cval == '\t' || cval == '\r') {
+            if (cval >= ' ' || cval == '\t' || cval == '\r') {
                 
                 continue;
-	    } else if (cval == '\n') {
-		rows++;
+            } else if (cval == '\n') {
+                rows++;
                 screen->refreshed = FALSE;
                 
                 break;
-	    } else {
-		/* unprintable. */
+            } else {
+                /* unprintable. */
 
 #if (SUPPORT_RTERM_UTF8_CHARS)
                 if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
@@ -2288,64 +2299,64 @@ Rterm_add_text(struct R_term *term, struct R_termscreen *screen)
                     screen->inptr--;
                 }
 #else                
-		screen->inptr--;
+                screen->inptr--;
 #endif
 
-		break;
-	    }
-	}
+                break;
+            }
+        }
 	
-	add_text(screen, inputstr, screen->inptr - inputstr,
-		 rows);
+        add_text(screen, inputstr, screen->inptr - inputstr,
+                 rows);
     } else if (cval) {
-	switch (cval) {
-	    case R_ENQ_CHAR:
+        switch (cval) {
+            case R_ENQ_CHAR:
 #if (USE_VT100_ANSWER)
                 RTERM_WRITE_PTY(term,
                                 screen->pty.masterfd, RTERM_VT100_ANSWER,
                                 sizeof(RTERM_VT100_ANSWER) - 1);
 #endif
 		
-		break;
-	    case R_BEL_CHAR:
-		/* FIXME: write screen_bell()? */
-		XBell(app->display, 50);
+                break;
+            case R_BEL_CHAR:
+                /* FIXME: write screen_bell()? */
+                XBell(app->display, 50);
 		
-		break;
-	    case R_BACKSPACE_CHAR:
-		Rterm_screen_backspace(screen);
+                break;
+            case R_BACKSPACE_CHAR:
+                Rterm_screen_backspace(screen);
 		
-		break;
-	    case R_VERTICAL_TAB_CHAR:
-	    case R_FORM_FEED_CHAR:
-		/* scroll one line up. */
+                break;
+            case R_VERTICAL_TAB_CHAR:
+            case R_FORM_FEED_CHAR:
+                /* scroll one line up. */
 		
-		Rterm_scroll_screen(screen, 1);
+                Rterm_scroll_screen(screen, 1);
 
-#if 0		
-		if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
-		    Rterm_update_scrollbar(term);
-		}
+#if (RTERM_SUPPORT_SCROLLBAR)
+                if (term->privmodes & RTERM_PRIVMODE_SCROLLBAR) {
+                    Rterm_update_scrollbar(term);
+                }
 #endif
 		
-		break;
-		/* TODO: make sure the charsets are right. */
-	    case R_SO_CHAR:
-		Rterm_choose_charset(term, RTERM_CHARSET_G1);
+                break;
+                /* TODO: make sure the charsets are right. */
+            case R_SO_CHAR:
+                Rterm_choose_charset(term, RTERM_CHARSET_G1);
 		
-		break;
-	    case R_SI_CHAR:
-		Rterm_choose_charset(term, RTERM_CHARSET_G0);
+                break;
+            case R_SI_CHAR:
+                Rterm_choose_charset(term, RTERM_CHARSET_G0);
 		
-		break;
-	    case R_ESC_CHAR:
-		Rterm_process_escape_sequence(term, screen);
+                break;
+            case R_ESC_CHAR:
+                Rterm_process_escape_sequence(term, screen);
 		
-		break;
-	    default:
+                break;
+            default:
 		
-		break;
-	}
+                break;
+        }
     }
 
     return;
@@ -2358,25 +2369,25 @@ Rterm_queue_input(struct R_term *term, const char *str, int len)
     struct R_termscreen *screen;
 
     if (term == NULL
-	|| str == NULL
-	|| len <= 0) {
+        || str == NULL
+        || len <= 0) {
 
-	return -1;
+        return -1;
     }
 
     screen = term->screens[term->curscreen];
 
     len = MIN(len,
-	      screen->inbuf
-	      + sizeof(screen->inbuf)
-	      - screen->inend);
+              screen->inbuf
+              + sizeof(screen->inbuf)
+              - screen->inend);
 
     if (len > 0) {
-	dest = screen->inend;
-	screen->inend += len;
-	while (len--) {
-	    *dest++ = *str++;
-	}
+        dest = screen->inend;
+        screen->inend += len;
+        while (len--) {
+            *dest++ = *str++;
+        }
     }
 
     return len;
@@ -2390,10 +2401,10 @@ Rterm_queue_output(struct R_term *term, const char *str, int len)
     struct R_termscreen *screen;
 
     if (term == NULL
-	|| str == NULL
-	|| len <= 0) {
+        || str == NULL
+        || len <= 0) {
 
-	return -1;
+        return -1;
     }
 
     len = MAX(len, strlen(str));
@@ -2401,9 +2412,9 @@ Rterm_queue_output(struct R_term *term, const char *str, int len)
     screen = term->screens[term->curscreen];
 
     if (len > 0) {
-	datalen = screen->outend - screen->outbuf;
+        datalen = screen->outend - screen->outbuf;
 	
-	if (len > screen->outsize - datalen) {
+        if (len > screen->outsize - datalen) {
 #if 0 && (SUPPORT_RTERM_UTF8_CHARS)
             if (term->privmodes & RTERM_PRIVMODE_UTF8_CHARS) {
                 if ((screen->utf8buf = realloc(screen->utf8buf,
@@ -2413,21 +2424,21 @@ Rterm_queue_output(struct R_term *term, const char *str, int len)
                 }
             }
 #endif
-	    if ((screen->outbuf = realloc(screen->outbuf,
+            if ((screen->outbuf = realloc(screen->outbuf,
                                           datalen + len)) == NULL) {
 		
-		return -1;
-	    }
+                return -1;
+            }
 
-	    screen->outend = screen->outbuf + datalen;
-	    screen->outsize = datalen + len;
-	}
+            screen->outend = screen->outbuf + datalen;
+            screen->outsize = datalen + len;
+        }
 	
-	dest = screen->outend;
-	screen->outend += len;
-	while (len--) {
-	    *dest++ = *str++;
-	}
+        dest = screen->outend;
+        screen->outend += len;
+        while (len--) {
+            *dest++ = *str++;
+        }
     }
 
     return len;

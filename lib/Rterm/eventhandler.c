@@ -851,6 +851,7 @@ Rterm_screen_expose(void *arg, XEvent *event)
     return;
 }
 
+#if (RTERM_SUPPORT_SCROLLBAR)
 void
 Rterm_scrollbar_buttonpress(void *arg, XEvent *event)
 {
@@ -860,6 +861,8 @@ Rterm_scrollbar_buttonpress(void *arg, XEvent *event)
 
     window = arg;
     term = R_global.app->client;
+
+    fprintf(stderr, "CLICK\n");
     if (event->xbutton.button == Button1) {
 	XGrabPointer(window->app->display,
 		     window->id,
@@ -878,8 +881,7 @@ Rterm_scrollbar_buttonpress(void *arg, XEvent *event)
 	} else if (event->xbutton.y > term->scrollbar->anchorbottom) {
 	    Rterm_scroll_screen(screen, screen->rows - 1);
 	}
-
-//	Rterm_update_scrollbar(term->scrollbar);
+	Rterm_update_scrollbar(term->scrollbar);
     }
 
     return;
@@ -1042,6 +1044,7 @@ Rterm_scrollbar_up_buttonpress(void *arg, XEvent *event)
     struct R_window *window;
     struct R_term *term;
 
+    fprintf(stderr, "UPCLICK\n");
     window = arg;
     term = R_global.app->client;
     if (event->xbutton.button == Button1) {
@@ -1127,6 +1130,7 @@ Rterm_scrollbar_down_buttonpress(void *arg, XEvent *event)
     struct R_window *window;
     struct R_term *term;
 
+    fprintf(stderr, "DOWNCLICK\n");
     window = arg;
     term = R_global.app->client;
     if (event->xbutton.button == Button1) {
@@ -1205,6 +1209,7 @@ Rterm_scrollbar_down_leavenotify(void *arg, XEvent *event)
 
     return;
 }
+#endif /* RTERM_SUPPORT_SCROLLBAR */
 
 /* FIXME: allow private mode for application keypad and finish this. */
 
