@@ -673,11 +673,11 @@ Rwm_client_unmapnotify_handler(void *arg,
     if (frame) {
         R_unmap_window(frame);
     }
-#if (!RWMLAZYSYNC)
+//#if (!RWMLAZYSYNC)
     XSync(client->app->display,
           False);
+//#endif
     _ignbadwindow = 0;
-#endif
 
     return;
 }
