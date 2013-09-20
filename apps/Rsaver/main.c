@@ -14,10 +14,10 @@ extern long __textsize;
 int
 main(int argc, char *argv[])
 {
-#if 0
     hexdump_main(argc, argv);
-#endif
+#if 0
     alien_main(argc, argv);
+#endif
 
     /* NOTREACHED */
     return 0;

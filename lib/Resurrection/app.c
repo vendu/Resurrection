@@ -62,14 +62,21 @@ R_parse_display(struct R_app *app)
     
     argc = app->argc;
     argv = app->argv;
+    fprintf(stderr, "PARSE: %d, %p\n", argc, argv);
     disparg = dispname = NULL;
-    for (i = 1 ; i < argc; i++) {
-        if (!strcmp(argv[i],
-                    "-D")) {
-            disparg = argv[i + 1];
+    if ((argc) && (argv)) {
+        for (i = 1 ; i < argc; i++) {
+            if (!strcmp(argv[i],
+                        "-D")) {
+                if (i < argc - 2) {
+                    disparg = argv[i + 1];
+                }
         } else if (!strcmp(argv[i],
                            "--display")) {
-            disparg = argv[i + 1];
+                if (i < argc - 2) {
+                    disparg = argv[i + 1];
+            }
+            }
         }
     }
     if (disparg) {
@@ -107,6 +114,7 @@ R_init_display_screen(struct R_app *app,
         return FALSE;
     }
     app->display = disp;
+    app->screen = DefaultScreen(app->display);
     retval = ScreenCount(disp);
 
     return retval;
@@ -132,6 +140,7 @@ R_init_display(struct R_app *app,
         return FALSE;
     }
     app->display = disp;
+    app->screen = DefaultScreen(app->display);
     retval = ScreenCount(disp);
 
     return retval;
@@ -153,18 +162,18 @@ R_init_screen(struct R_app *app,
 
         return FALSE;
     }
-    disp = app->display;
+//    disp = app->display;
 #if (R_DEBUG_X_ERRORS)
     XSynchronize(app->display, True);
 #endif
     XSetErrorHandler(R_handle_x_error);
     XSetIOErrorHandler(R_handle_x_io_error);
     app->screen = screen;
-    app->depth = DefaultDepth(disp,
+    app->depth = DefaultDepth(app->display,
                               screen);
-    app->visual = DefaultVisual(disp,
+    app->visual = DefaultVisual(app->display,
                                 screen);
-    app->colormap = DefaultColormap(disp,
+    app->colormap = DefaultColormap(app->display,
                                     screen);
 #if (USE_IMLIB2)
     R_init_imlib2(app);
@@ -197,16 +206,16 @@ R_init(struct R_app *app,
     }
     disp = app->display;
 #if (R_DEBUG_X_ERRORS)
-    XSynchronize(app->display, True);
+    XSynchronize(disp, True);
 #endif
     XSetErrorHandler(R_handle_x_error);
     XSetIOErrorHandler(R_handle_x_io_error);
     app->screen = DefaultScreen(app->display);
-    app->depth = DefaultDepth(disp,
+    app->depth = DefaultDepth(app->display,
                               screen);
-    app->visual = DefaultVisual(disp,
+    app->visual = DefaultVisual(app->display,
                                 screen);
-    app->colormap = DefaultColormap(disp,
+    app->colormap = DefaultColormap(app->display,
                                     screen);
 #if (USE_IMLIB2)
     R_init_imlib2(app);

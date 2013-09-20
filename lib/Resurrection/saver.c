@@ -7,12 +7,20 @@
 
 #include <Resurrection/Resurrection.h>
 
+#define NBUFINT 1024
+
+extern void _start(void);
+extern char _etext;
+
+struct R_app * hexdump_init(struct R_saver *saver);
 void hexdump_expose(void *arg, XEvent *event);
 void hexdump_exit(void *arg, XEvent *event);
-void hexdump_dummy(void);
+struct R_app * alien_init(struct R_saver *saver);
 void alien_expose(void *arg, XEvent *event);
 void alien_exit(void *arg, XEvent *event);
 void alien_dummy(void);
+
+static long hexdump_dummy;
 
 static struct R_saver *Rsaver;
 
@@ -318,51 +326,62 @@ hexdump_alloc(void)
 int
 hexdump_main(int argc, char *argv[])
 {
-    struct R_app app;
+    struct R_app *app;
     struct R_saver *saver;
 
+#if 0
     if (!R_init(&app, argc, argv)) {
 
         return -1;
     }
+    app.window = R_create_window(&app, NULL, R_WINDOW_OVERRIDE_FLAG);
+#endif
 
     saver = hexdump_alloc();
     if (saver == NULL) {
 
 	return -1;
     }
-    app.client = saver;
-    if (hexdump_init(&app) < 0) {
+    Rsaver = saver;
+    app = hexdump_init(Rsaver);
+    if (!app) {
 
 	return -1;
     }
     while (TRUE) {
-	R_handle_events(&app);
+	R_handle_events(app);
 	if (saver->candraw) {
-	    hexdump_draw(&app);
+	    hexdump_draw(saver);
 	}
-	usleep(40000);
+	usleep(100000);
     }
 
     return 0;
 }
 
-int
-hexdump_init(struct R_app *app)
+struct R_app *
+hexdump_init(struct R_saver *saver)
 {
+    struct R_app *app = calloc(1, sizeof(struct R_app));
     XFontStruct *fontinfo;
-    struct R_saver *saver;
 
-    saver = app->client;
-    if (hexdump_init_data(app) < 0) {
+    if (R_init(app, "Rsaver", 1, NULL) < 0) {
 
-	return -1;
+        return NULL;
+    }
+    app->window = R_create_window(app, NULL, 0);
+    R_add_window(app->window);
+    saver->app = app;
+    Rsaver = saver;
+    if (hexdump_init_data(saver) < 0) {
+
+	return NULL;
     }
 
     fontinfo = R_load_font(app, "fixed");
     if (fontinfo == NULL) {
 	
-	return -1;
+	return NULL;
     }
     saver->fontinfo = fontinfo;
     saver->charasc = fontinfo->ascent;
@@ -370,33 +389,44 @@ hexdump_init(struct R_app *app)
     saver->charw = X_FONT_WIDTH(fontinfo);
     saver->charh = X_FONT_HEIGHT(fontinfo) - saver->chardesc;
     
-    hexdump_init_windows(app);
-    if (hexdump_init_gcs(app) < 0) {
+    hexdump_init_windows(saver);
+    if (hexdump_init_gcs(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
-    if (hexdump_init_buffer(app) < 0) {
+    if (hexdump_init_buffer(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
-    hexdump_set_event_handlers(app);
+    hexdump_set_event_handlers(saver);
     R_map_window(app->window);
     
-    return 0;
+    return app;
 }
 
 int
-hexdump_init_data(struct R_app *app)
+hexdump_init_data(struct R_saver *saver)
 {
     uint8_t *hexdata;
     size_t hexsize;
-    struct R_saver *saver;
+    int *buf = malloc(NBUFINT * sizeof(int));
+    int i;
 
-    saver = app->client;
+    srand(1);
+    for (i = 0 ; i < NBUFINT ; i++) {
+        buf[i] = rand();
+    }
+    hexdata = hexdump_convert(buf, NBUFINT * sizeof(int), &hexsize);
+#if 0
     hexdata = hexdump_convert(&hexdump_main,
 			      (size_t)((unsigned long)&hexdump_dummy
 				       - (unsigned long)&hexdump_main),
 			      &hexsize);
+    hexdata = hexdump_convert(&hexdump_dummy,
+                              (char *)&hexdump_exit - (char *)&hexdump_dummy,
+                              &hexsize);
+#endif
+
     if (hexdata == NULL) {
 
 	return -1;
@@ -408,16 +438,10 @@ hexdump_init_data(struct R_app *app)
 }
 
 void
-hexdump_init_windows(struct R_app *app)
+hexdump_init_windows(struct R_saver *saver)
 {
-    struct R_saver *saver;
-
-    saver = app->client;
-    app->window = R_create_window(app,
-                                  NULL,
-                                  0);
-    R_add_window(app->window);
-    R_resize_window(app->window,
+    R_add_window(saver->app->window);
+    R_resize_window(saver->app->window,
                     HEXDUMP_WIDTH(saver),
                     HEXDUMP_HEIGHT(saver));
 
@@ -425,15 +449,13 @@ hexdump_init_windows(struct R_app *app)
 }
 
 int
-hexdump_init_gcs(struct R_app *app)
+hexdump_init_gcs(struct R_saver *saver)
 {
+    struct R_app *app = saver->app;
     GC newgc;
     XGCValues gcvalues;
     XColor newcolor;
-    struct R_saver *saver;
 
-
-    saver = app->client;
     memset(&gcvalues, 0, sizeof(gcvalues));
     if (!XParseColor(app->display,
 		     app->colormap,
@@ -476,12 +498,11 @@ hexdump_init_gcs(struct R_app *app)
 }
 
 int
-hexdump_init_buffer(struct R_app *app)
+hexdump_init_buffer(struct R_saver *saver)
 {
+    struct R_app *app = saver->app;
     Pixmap pixmap;
-    struct R_saver *saver;
 
-    saver = app->client;
     pixmap = XCreatePixmap(app->display,
 			   app->window->id,
 			   HEXDUMP_WIDTH(saver),
@@ -511,24 +532,20 @@ hexdump_init_buffer(struct R_app *app)
 }
 
 void
-hexdump_draw(struct R_app *app)
+hexdump_draw(struct R_saver *saver)
 {
-    struct R_saver *saver;
-
-    saver = app->client;
-    hexdump_clear_buffer(app);
-    hexdump_draw_buffer(app);
-    hexdump_sync(app);
+    hexdump_clear_buffer(saver);
+    hexdump_draw_buffer(saver);
+    hexdump_sync(saver);
 
     return;
 }
 
 void
-hexdump_clear_buffer(struct R_app *app)
+hexdump_clear_buffer(struct R_saver *saver)
 {
-    struct R_saver *saver;
+    struct R_app *app = saver->app;
 
-    saver = app->client;
     XFillRectangle(app->display,
 		   saver->drawbuffer,
 		   saver->bggc,
@@ -540,13 +557,12 @@ hexdump_clear_buffer(struct R_app *app)
 }
 
 void
-hexdump_draw_buffer(struct R_app *app)
+hexdump_draw_buffer(struct R_saver *saver)
 {
+    struct R_app *app = saver->app;
     int i, row, nrows;
     int len;
-    struct R_saver *saver;
 
-    saver = app->client;
     row = saver->row;
     nrows = saver->nrows;
     for (i = 0 ; i < HEXDUMP_ROWS ; i++) {
@@ -573,11 +589,10 @@ hexdump_draw_buffer(struct R_app *app)
 }
 
 void
-hexdump_sync(struct R_app *app)
+hexdump_sync(struct R_saver *saver)
 {
-    struct R_saver *saver;
+    struct R_app *app = saver->app;
 
-    saver = app->client;
     XSetWindowBackgroundPixmap(app->display,
 			       app->window->id,
 			       saver->drawbuffer);
@@ -589,8 +604,10 @@ hexdump_sync(struct R_app *app)
 }
 
 void
-hexdump_set_event_handlers(struct R_app *app)
+hexdump_set_event_handlers(struct R_saver *saver)
 {
+    struct R_app *app = saver->app;
+
     R_set_window_event_handler(app->window, Expose,
                                hexdump_expose);
     R_set_window_event_handler(app->window, KeyPress,
@@ -608,12 +625,10 @@ hexdump_set_event_handlers(struct R_app *app)
 void
 hexdump_expose(void *arg, XEvent *event)
 {
-    struct R_saver *saver;
 
     fprintf(stderr, "EXPOSE\n");
 
-    saver = R_global.app->client;
-    saver->candraw = 1;
+    Rsaver->candraw = 1;
 
     return;
 }
@@ -624,11 +639,13 @@ hexdump_exit(void *arg, XEvent *event)
     exit(0);
 }
 
+#if 0
 void
 hexdump_dummy(void)
 {
     return;
 }
+#endif
 
 #define ALIEN_HAS_GLYPH(c) \
     (((c) >= '0' && c <= '9') \
@@ -677,25 +694,27 @@ alien_alloc(void)
 int
 alien_main(int argc, char *argv[])
 {
-    struct R_app app;
-
+    struct R_app *app;
+#if 0
     if (!R_init(&app, argc, argv)) {
 
         return -1;
     }
+#endif
     Rsaver = alien_alloc();
     if (Rsaver == NULL) {
 
 	return -1;
     }
 
-    if (alien_init(Rsaver) < 0) {
+    app = alien_init(Rsaver);
+    if (!app) {
 
 	return -1;
     }
-
+    R_global.app = app;
     while (TRUE) {
-	R_handle_events(&app);
+	R_handle_events(app);
 	if (Rsaver->candraw) {
 	    alien_draw(Rsaver);
 	}
@@ -705,27 +724,29 @@ alien_main(int argc, char *argv[])
     return 0;
 }
 
-int
+struct R_app *
 alien_init(struct R_saver *saver)
 {
-    struct R_app *app;
+    struct R_app *app = calloc(1, sizeof(struct R_app));
     XFontStruct *fontinfo;
 
-    app = R_global.app;
-    if (R_init(app, "Rsaver", 0, NULL) < 0) {
+    if (R_init(app, "Rsaver", 1, NULL) < 0) {
 	
-	return -1;
+        return NULL;
     }
+    saver->app = app;
+    app->window = R_create_window(app, NULL, 0);
+    R_add_window(app->window);
     
     if (alien_init_data(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
 #if 0
     fontinfo = R_load_font(app, "fixed");
     if (fontinfo == NULL) {
 	
-	return -1;
+	return NULL;
     }
     saver->fontinfo = fontinfo;
     saver->charasc = fontinfo->ascent;
@@ -735,40 +756,49 @@ alien_init(struct R_saver *saver)
 #endif
     if (alien_init_font(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
     
     alien_init_windows(saver);
     if (alien_init_gcs(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
     if (alien_init_colors(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
     if (alien_init_buffer(saver) < 0) {
 
-	return -1;
+	return NULL;
     }
     alien_set_event_handlers(saver);
-    R_map_window(app->window);
     Rsaver = saver;
+    R_map_window(app->window);
     
-    return 0;
+    return app;
 }
 
 int
 alien_init_data(struct R_saver *saver)
 {
     int row;
+    int i;
     uint8_t *aliendata, *screendata;
     size_t datasize;
+    int *buf = malloc(NBUFINT * sizeof(int));
 
+    srand(1);
+    for (i = 0 ; i < NBUFINT ; i++) {
+        buf[i] = rand();
+    }
+    aliendata = alien_convert(buf, NBUFINT * sizeof(int), &datasize);
+#if 0
     aliendata = alien_convert(&alien_main,
-			      (size_t)((unsigned long)&alien_dummy
+			      (size_t)((unsigned long)&alien_exit
 				       - (unsigned long)&alien_main),
 			      &datasize);
+#endif
     if (aliendata == NULL) {
 
 	return -1;
@@ -994,7 +1024,6 @@ alien_clear_buffer(struct R_saver *saver)
     return;
 }
 
-#if 0
 void
 alien_draw_buffer(struct R_saver *saver)
 {
@@ -1039,8 +1068,8 @@ alien_draw_buffer(struct R_saver *saver)
 
     return;
 }
-#endif
 
+#if 0
 void
 alien_draw_buffer(struct R_saver *saver)
 {
@@ -1065,6 +1094,7 @@ alien_draw_buffer(struct R_saver *saver)
 
     return;
 }
+#endif
 
 void
 alien_sync(struct R_saver *saver)
