@@ -423,12 +423,6 @@ Rterm_start(struct R_term *term)
             
 	    return NULL;
 	}
-        
-#if 0
-	if (term->flags & RTERM_TRANSPARENT) {
-	    term->scrollbar->window->images[R_WINDOW_BACKGROUND_IMAGE]->flags |= IMAGE_TRANSPARENT;
-        }
-#endif
     }
 #endif
     
@@ -588,7 +582,7 @@ Rterm_loop(struct R_term *term)
                 screen->refreshed = TRUE;
 //                Rterm_touch_screen(screen);
                 refresh(screen, RTERM_SCREEN_DRAW_ALL);
-//        Rterm_update_scrollbar(term);
+                Rterm_update_scrollbar(term);
                 if (!term->blink) {
                     Rterm_draw_screen_cursor(screen);
 #if 0

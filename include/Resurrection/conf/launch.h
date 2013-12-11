@@ -4,7 +4,6 @@
 #define OLDE_THEME       0
 #define RL_TOOLTIPS      1
 
-#define RL_RESTART_COMMAND    "Rwm"
 #define RL_TERM_COMMAND_1     "Rterm"
 #define RL_TERM_COMMAND_2     "urxvt"
 #define RL_TERM_COMMAND_3     "xterm"

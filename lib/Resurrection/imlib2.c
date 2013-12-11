@@ -107,6 +107,10 @@ R_free_image_imlib2(struct R_image *image)
         imlib_free_image();
         image->timg = NULL;
     }
+    if (image->pixmap) {
+        imlib_free_pixmap_and_mask(image->pixmap);
+        image->pixmap = image->mask = None;
+    }
     if (image->tpixmap) {
         imlib_free_pixmap_and_mask(image->tpixmap);
         image->tpixmap = image->tmask = None;
@@ -559,7 +563,7 @@ R_set_background_imlib2(struct R_image *image,
 
     if (!image->orig) {
 
-        return;
+        return retval;
     }
     pixmap = image->pixmap;
     if (!pixmap) {

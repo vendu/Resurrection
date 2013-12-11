@@ -351,7 +351,7 @@ hexdump_main(int argc, char *argv[])
     while (TRUE) {
 	R_handle_events(app);
 	if (saver->candraw) {
-	    hexdump_draw(saver);
+            hexdump_draw(saver);
 	}
 	usleep(100000);
     }
@@ -373,6 +373,12 @@ hexdump_init(struct R_saver *saver)
     R_add_window(app->window);
     saver->app = app;
     Rsaver = saver;
+    if (alien_init_data(saver) < 0) {
+
+	return NULL;
+    }
+
+#if 0
     if (hexdump_init_data(saver) < 0) {
 
 	return NULL;
@@ -388,8 +394,9 @@ hexdump_init(struct R_saver *saver)
     saver->chardesc = fontinfo->descent;
     saver->charw = X_FONT_WIDTH(fontinfo);
     saver->charh = X_FONT_HEIGHT(fontinfo) - saver->chardesc;
-    
+
     hexdump_init_windows(saver);
+
     if (hexdump_init_gcs(saver) < 0) {
 
 	return NULL;
@@ -398,7 +405,27 @@ hexdump_init(struct R_saver *saver)
 
 	return NULL;
     }
+#endif
+    
+    if (alien_init_font(saver) < 0) {
+
+	return NULL;
+    }
+
+    alien_init_windows(saver);
+
+    if (alien_init_gcs(saver) < 0) {
+
+	return NULL;
+    }
+    if (alien_init_buffer(saver) < 0) {
+
+	return NULL;
+    }
     hexdump_set_event_handlers(saver);
+#if 0
+    alien_set_event_handlers(saver);
+#endif
     R_map_window(app->window);
     
     return app;
@@ -534,9 +561,14 @@ hexdump_init_buffer(struct R_saver *saver)
 void
 hexdump_draw(struct R_saver *saver)
 {
-    hexdump_clear_buffer(saver);
+    alien_clear_buffer(saver);
     hexdump_draw_buffer(saver);
-    hexdump_sync(saver);
+    alien_sync(saver);
+#if 0
+    alien_clear_buffer(saver);
+    alien_draw_buffer(saver);
+    alien_sync(saver);
+#endif
 
     return;
 }
@@ -556,6 +588,52 @@ hexdump_clear_buffer(struct R_saver *saver)
     return;
 }
 
+void
+hexdump_draw_buffer(struct R_saver *saver)
+{
+    unsigned long *pixels;
+    int c;
+    int row, column, nrows;
+    int glyph;
+
+    row = saver->row;
+    nrows = saver->nrows;
+    for (row = 0 ; row < nrows ; row++) {
+	for (column = 0 ; column < ALIEN_COLUMNS ; column++) {
+	    c = saver->screendata[row * ALIEN_COLUMNS + column];
+	    if (c == ' ') {
+
+		continue;
+	    }
+	    glyph = 0;
+	    if (c >= '0' && c <= '9') {
+		glyph = c - '0';
+	    } else if (c >= 'a' && c <= 'z') {
+		glyph = 10 + c - 'a';
+	    } else if (c >= 'A' && c <= 'Z') {
+		glyph = 10 + 'z' - 'a' + 1 + c - 'A';
+	    }
+	    if ((glyph * ALIEN_GLYPH_WIDTH > ALIEN_GLYPHS * ALIEN_GLYPH_WIDTH - ALIEN_GLYPH_WIDTH)
+		|| row * ALIEN_GLYPH_HEIGHT > ALIEN_GLYPHS * ALIEN_GLYPH_HEIGHT - ALIEN_GLYPH_HEIGHT) {
+		fprintf(stderr, "BAH!\n");
+	    }
+	    XCopyArea(saver->app->display,
+		      saver->fontpixmap,
+		      saver->drawbuffer,
+		      saver->fggc,
+		      glyph * ALIEN_GLYPH_WIDTH,
+		      (ALIEN_ROWS - 1) * ALIEN_GLYPH_HEIGHT,
+		      ALIEN_GLYPH_WIDTH,
+		      ALIEN_GLYPH_HEIGHT,
+		      column * ALIEN_GLYPH_WIDTH,
+		      row * ALIEN_GLYPH_HEIGHT);
+	}
+    }
+
+    return;
+}
+
+#if 0
 void
 hexdump_draw_buffer(struct R_saver *saver)
 {
@@ -587,6 +665,7 @@ hexdump_draw_buffer(struct R_saver *saver)
 
     return;
 }
+#endif
 
 void
 hexdump_sync(struct R_saver *saver)
@@ -809,7 +888,9 @@ alien_init_data(struct R_saver *saver)
 	return -1;
     }
     memcpy(screendata, aliendata, ALIEN_COLUMNS);
+#if 0
     memset(screendata + ALIEN_COLUMNS, ' ', (ALIEN_ROWS - 1) * ALIEN_COLUMNS);
+#endif
     saver->aliendata = aliendata;
     saver->screendata = screendata;
     saver->datasize = datasize;
@@ -932,6 +1013,7 @@ alien_init_buffer(struct R_saver *saver)
 	return -1;
     }
     saver->background = pixmap;
+#if 0
     pixmap = XCreatePixmap(saver->app->display,
 			   saver->app->window->id,
 			   ALIEN_WIDTH(saver),
@@ -941,6 +1023,7 @@ alien_init_buffer(struct R_saver *saver)
 
 	return -1;
     }
+#endif
     saver->drawbuffer = pixmap;
     saver->nrows = ALIEN_ROWS;
     saver->nextchar = saver->aliendata + ALIEN_COLUMNS;

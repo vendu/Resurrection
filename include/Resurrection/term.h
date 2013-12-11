@@ -12,7 +12,7 @@
 
 #define RTERM_USE_XSHM 0
 #define RTERM_CURSOR_HACKS 1
-#define RTERM_SUPPORT_SCROLLBAR 0
+#define RTERM_SUPPORT_SCROLLBAR 1
 
 #include <Resurrection/conf/term.h>
 

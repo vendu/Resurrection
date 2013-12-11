@@ -192,8 +192,6 @@ Rterm_init_scrollbar_windows(struct R_term *term)
                                              0))
         == NULL) {
                                              
-        fprintf(stderr, "#1\n");
-
 	return -1;
     }
     R_add_window(scrollbar->window);
@@ -202,7 +200,6 @@ Rterm_init_scrollbar_windows(struct R_term *term)
                                              scrollbar->window,
                                              0))
         == NULL) {
-        fprintf(stderr, "#2\n");
 	
 	return -1;
     }
