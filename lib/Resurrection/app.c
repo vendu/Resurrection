@@ -9,7 +9,8 @@
 
 #define R_DEBUG_X_ERRORS 0
 
-int R_handle_x_io_error(Display *display, XErrorEvent *event);
+//int R_handle_x_io_error(Display *display, XErrorEvent *event);
+int R_handle_x_io_error(Display *display);
 
 char *
 R_parse_display_screen(struct R_app *app, int screen)
@@ -196,7 +197,7 @@ R_init(struct R_app *app,
         
         return FALSE;
     }
-    fprintf(stderr, "WINTREE: %x\n", (long)app->wintree);
+    fprintf(stderr, "WINTREE: %lx\n", (long)app->wintree);
     if (!app->display
         && !R_init_display(app,
                            argc,

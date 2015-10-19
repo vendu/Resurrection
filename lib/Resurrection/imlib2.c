@@ -189,8 +189,8 @@ R_render_image_imlib2(struct R_image *image,
 {
     unsigned int rendw = 0;
     unsigned int rendh = 0;
-    int winw = 0;
-    int winh = 0;
+    unsigned int winw = 0;
+    unsigned int winh = 0;
     int copyx = 0;
     int copyy = 0;
     int copyw;

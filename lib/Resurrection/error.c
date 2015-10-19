@@ -163,7 +163,8 @@ const char *xerrornames[] =
 };
 
 int
-R_handle_x_io_error(Display *display, XErrorEvent *event)
+//R_handle_x_io_error(Display *display, XErrorEvent *event)
+R_handle_x_io_error(Display *display)
 {
     abort();
 }

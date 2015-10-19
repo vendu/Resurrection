@@ -29,7 +29,8 @@
 
 #define _GNU_SOURCE       1
 
-#define _BSD_SOURCE       1
+//#define _BSD_SOURCE       1
+#define _DEFAULT_SOURCE   1
 
 #define _REENTRANT        1
 #define _THREAD_SAFE      1

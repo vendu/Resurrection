@@ -14,7 +14,7 @@
 #define RL_BAR        0 /* all buttons visible */
 #define RL_HORIZONTAL 0 /* otherwise vertical menu/bar */
 #undef RL_TOOLTIPS
-#define RL_TOOLTIPS   1
+//#define RL_TOOLTIPS   1
 #define NEW_TOOLTIPS  1
 #define RL_BUTTONS    3
 

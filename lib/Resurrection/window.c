@@ -132,13 +132,13 @@ R_add_window(struct R_window *window)
         win2 = (struct R_window **)win1[k2];
         if (!win2) {
             win2 = calloc(256, sizeof(void *));
-            win1[k2] = win2;
+            win1[k2] = (void *)win2;
         }
         if (win2) {
             win1 = (struct R_window **)win2[k3];
             if (!win1) {
                 win1 = calloc(256, sizeof(void *));
-                win2[k3] = win1;
+                win2[k3] = (void *)win1;
             }
             if (win1) {
                 win1[k4] = window;
@@ -204,7 +204,7 @@ R_find_window(Window id)
         if (win) {
             win = (struct R_window **)win[k3];
             if (win) {
-                ret = (struct R_window **)win[k4];
+                ret = ((struct R_window **)win)[k4];
             }
         }
     }
@@ -400,7 +400,7 @@ R_init_window(struct R_app *app,
     if (!parent) {
         parentwin = RootWindow(app->display,
                                screen);
-        fprintf(stderr, "PARENT: %lx (%lx)\n", (long)parentwin, screen);
+        fprintf(stderr, "PARENT: %lx (%x)\n", (long)parentwin, screen);
     }
     win = XCreateWindow(app->display,
                         parentwin,

@@ -11,7 +11,9 @@
 
 #define R_DEBUG_EVENT(e) (UINT64_C(1) << (e))
 
+#if (R_DEBUG_EVENTS)
 static uint64_t _debugmask = R_DEBUG_EVENT(MapNotify) | R_DEBUG_EVENT(MapRequest | R_DEBUG_EVENT(KeyPress));
+#endif
 
 typedef void R_eventdebugfunc(struct R_window *, XEvent *);
 
@@ -184,10 +186,10 @@ event_debug_enternotify(struct R_window *window, XEvent *event)
     struct R_window *sub;
 
     event_debug_common(window, event);
-    fprintf(stderr, "%ld(%lx)\n", event->xcrossing.detail, event->xcrossing.subwindow);
+    fprintf(stderr, "%d(%lx)\n", event->xcrossing.detail, event->xcrossing.subwindow);
     sub = R_find_window(event->xcrossing.subwindow);
     if (sub) {
-        fprintf(stderr, "SUBWIN: type == %x\n", sub->typeflags);
+        fprintf(stderr, "SUBWIN: type == %lx\n", sub->typeflags);
     } else {
         fprintf(stderr, "SUBWIN not found\n");
     }
@@ -201,17 +203,17 @@ event_debug_leavenotify(struct R_window *window, XEvent *event)
     event_debug_common(window, event);
     sub = R_find_window(event->xcrossing.window);
     if (sub) {
-        fprintf(stderr, "WIN: type == %x\n", sub->typeflags);
+        fprintf(stderr, "WIN: type == %lx\n", sub->typeflags);
     } else {
         fprintf(stderr, "WIN not found\n");
     }
     sub = R_find_window(event->xcrossing.subwindow);
     if (sub) {
-        fprintf(stderr, "SUBWIN: type == %x\n", sub->typeflags);
+        fprintf(stderr, "SUBWIN: type == %lx\n", sub->typeflags);
     } else {
         fprintf(stderr, "SUBWIN not found\n");
     }
-    fprintf(stderr, "%ld\n", event->xcrossing.detail);
+    fprintf(stderr, "%d\n", event->xcrossing.detail);
 }
 
 void
@@ -260,7 +262,7 @@ void
 event_debug_createnotify(struct R_window *window, XEvent *event)
 {
     event_debug_common(window, event);
-    fprintf(stderr, "\tparent: 0x%x\n", event->xcreatewindow.parent);
+    fprintf(stderr, "\tparent: 0x%lx\n", event->xcreatewindow.parent);
     fprintf(stderr, "\tx: %d\n", event->xcreatewindow.x);
     fprintf(stderr, "\ty: %d\n", event->xcreatewindow.y);
     fprintf(stderr, "\twidth: %d\n", event->xcreatewindow.width);
@@ -568,6 +570,7 @@ event_mapping_dest(XEvent *event)
     return (event->xmapping.window);
 }
 
+#if (R_DEBUG_EVENTS)
 static R_eventdebugfunc *debugfuncs[LASTEvent] =
 {
     NULL,
@@ -606,6 +609,7 @@ static R_eventdebugfunc *debugfuncs[LASTEvent] =
     event_debug_clientmessage,
     event_debug_mappingnotify
 };
+#endif
 
 typedef Drawable eventdrawablefunc(XEvent *);
 static eventdrawablefunc *eventdrawablefuncs[LASTEvent] =
