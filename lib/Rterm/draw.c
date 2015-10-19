@@ -1259,7 +1259,7 @@ Rterm_clear_screen_cursor(struct R_termscreen *screen)
                                       row, column,
                                       &screen->textbuf.data[screen->viewrow + row][column],
                                       &screen->drawbuf.data[screen->viewrow + row][column],
-                                      1,
+                                      &screen->textbuf.renddata[screen->viewrow + row][column],
                                       RTERM_SCREEN_DRAW_ALL,
                                       TRUE);
         screen->drawbuf.renddata[row][column] &= ~RTERM_CHAR_CURSOR;

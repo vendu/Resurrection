@@ -637,6 +637,11 @@ R_set_image_border_imlib2(struct R_image *image,
 {
     Imlib_Border border;
 
+    if (image == NULL
+        || image->orig == NULL) {
+
+        return;
+    }
     border.top = top;
     border.bottom = bottom;
     border.left = left;
