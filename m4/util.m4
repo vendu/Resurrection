@@ -130,6 +130,8 @@ AC_DEFUN([R_SET_PATHS],
     AC_SUBST([wmimagedir])
     widgetimagedir="$imagedir/widget"
     AC_SUBST([widgetimagedir])
+    pulseimagedir="$imagedir/pulse"
+    AC_SUBST([pulseimagedir])
 
     # Font installation directories
     fontdir="$pkgdatadir/fonts"

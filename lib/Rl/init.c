@@ -95,7 +95,63 @@ static const char *Rl_commands[RL_COMMANDS][RL_BUTTONS]
 #endif
 };
 
-#if (RL_OLDE_THEME)
+#if (RL_PULSE_THEME)
+static const char *Rl_imagenames[RL_SUBWINDOWS][RL_BUTTON_STATES]
+= {
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/winh.png",
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/terminal_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/terminal_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/terminal_hover.png",
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/editor_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/editor_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/editor_hover.png",
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/web_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/web_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/web_hover.png",
+    },
+    {
+#if 0
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/music_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/music_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/music_hover.png",
+#endif
+        NULL,
+        NULL,
+        NULL
+    },
+    {
+#if 0
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/imageview_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/imageview_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/imageview_hover.png",
+#endif
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/graphics_inactive.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/graphics_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "pulse/graphics_hover.png",
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_restart_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_restart_hilited.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_restart_clicked.png",
+    },
+    {
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_exit_normal.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_exit_hilited.png",
+        RESURRECTION_IMAGE_SEARCH_PATH "widget/btn_action_exit_clicked.png",
+    }
+};
+#elif (RL_OLDE_THEME)
 static const char *Rl_imagenames[RL_SUBWINDOWS][RL_BUTTON_STATES]
 = {
     {

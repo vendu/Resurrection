@@ -905,9 +905,11 @@ Rterm_init_windows(struct R_term *term)
                             RESURRECTION_IMAGE_SEARCH_PATH "background/tile_caverock.jpg",
                             term->window->images[R_WINDOW_BACKGROUND_IMAGE]);
 #endif
+#endif
+    }
+    if (term->flags & RTERM_SCALE_BACKGROUND_PIXMAP) {
 	term->window->images[R_WINDOW_BACKGROUND_IMAGE]->w = -1;
 	term->window->images[R_WINDOW_BACKGROUND_IMAGE]->h = -1;
-#endif
     }
     
     R_set_window_title(term->window, RTERM_NAME, TRUE);

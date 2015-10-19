@@ -166,6 +166,8 @@ Rwm_resize_client(struct R_window *client,
     float wr;
     float hr;
 
+    fprintf(stderr, "RESIZE: %dx%d\n", w, h);
+
     if (!client->id) {
 
         return;
@@ -198,17 +200,22 @@ Rwm_resize_client(struct R_window *client,
         _ignbadwindow = 0;
 #endif
         if (frame) {
-            if (w == wm->desktop->w) {
-                frame->x = 0;
-                w = wm->desktop->w - frame->left - frame->right;
-            }
-            if (h == wm->desktop->h) {
-#if (RWM_EXEC_RL)
-                frame->y = RL_BUTTON_HEIGHT + RWM_MENU_ITEM_HEIGHT;
-#else
-                frame->y = RWM_MENU_ITEM_HEIGHT;
-#endif
-                h = wm->desktop->h - RWM_MENU_ITEM_HEIGHT - frame->top - frame->bottom;
+            if (w == wm->desktop->w && h == wm->desktop->h) {
+                /* full screen mode */
+                frame->x = -frame->left;
+                frame->y = -frame->top;
+                frame->y = 0;
+                w = wm->desktop->w + frame->left + frame->right;
+                h = wm->desktop->h + frame->top + frame->bottom;
+            } else {
+                if (w == wm->desktop->w) {
+                    frame->x = -frame->left;
+                    w = wm->desktop->w + frame->left + frame->right;
+                }
+                if (h == wm->desktop->h) {
+                    frame->y = -frame->top;
+                    h = wm->desktop->h + frame->top + frame->bottom;
+                }
             }
             framew = w + frame->left + frame->right;
             frameh = h + frame->top + frame->bottom;
@@ -365,6 +372,8 @@ Rwm_move_resize_client(struct R_window *client,
     int winw;
     int winh;
 
+    fprintf(stderr, "MOVERESIZE: (%d, %d) -> %dx%d\n", x, y, w, h);
+
     if (!client->id) {
 
         return;
@@ -381,15 +390,29 @@ Rwm_move_resize_client(struct R_window *client,
     border = client->border;
     winw = w;
     winh = h;
+    if (w == wm->desktop->w) {
+        winw = wm->desktop->w + 2 * border;
+    }
+    if (h == wm->desktop->h) {
+        winh = wm->desktop->h + 2 * border;
+    }
     winw = min2(winw + 2 * border, wm->desktop->w);
-    winh = min2(winh + 2 * border, wm->desktop->h - RWM_MENU_ITEM_HEIGHT);
+    winh = min2(winh + 2 * border, wm->desktop->h);
     if (client->typeflags
         & (R_WINDOW_TOPLEVEL_FLAG | R_WINDOW_TRANSIENT_FLAG)) {
         if (frame) {
             client->x = frame->left;
             client->y = frame->top;
-            frame->x = x;
-            frame->y = y;
+            if (w == wm->desktop->w) {
+                frame->x = -frame->left;
+            } else {
+                frame->x = x;
+            }
+            if (h == wm->desktop->h) {
+                frame->y = -frame->top;
+            } else {
+                frame->y = y;
+            }
         } else {
             client->x = x;
             client->y = y;

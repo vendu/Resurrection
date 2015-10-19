@@ -7,12 +7,6 @@
 
 #include <Resurrection/Resurrection.h>
 
-#if 0
-#define RWM_2K13_THEME 0
-#define RWM_NEW_THEME  1
-#define RWM_ORIGINAL_THEME 0
-#endif
-
 #define RWM_NEW_FRAME_BINDINGS 1
 
 #define RWM_STATIC_FRAME_PIXMAPS 0

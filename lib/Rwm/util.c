@@ -506,6 +506,8 @@ Rwm_configure_client(struct R_window *client, XEvent *event)
 //    int fixedw = 0;
 //    int fixedh = 0;
 
+    fprintf(stderr, "CONFIGURE\n");
+
     if (!client->id) {
 
         return;

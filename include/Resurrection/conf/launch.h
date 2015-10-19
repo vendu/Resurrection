@@ -1,8 +1,9 @@
 #define RL_FONT "VeraMono"
 
 #define RL_SMALL         0
-#define OLDE_THEME       0
-#define RL_TOOLTIPS      1
+#define RL_PULSE_THEME   1
+#define RL_OLDE_THEME    0
+#define RL_TOOLTIPS      0
 
 #define RL_TERM_COMMAND_1     "Rterm"
 #define RL_TERM_COMMAND_2     "urxvt"

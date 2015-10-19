@@ -681,6 +681,7 @@ CFLAGS
 CC
 ttffontdir
 fontdir
+pulseimagedir
 widgetimagedir
 wmimagedir
 miscimagedir
@@ -3195,6 +3196,8 @@ fi
     wmimagedir="$imagedir/wm"
 
     widgetimagedir="$imagedir/widget"
+
+    pulseimagedir="$imagedir/pulse"
 
 
     # Font installation directories

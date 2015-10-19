@@ -1,6 +1,8 @@
 #ifndef __RESURRECTION_LAUNCH_H__
 #define __RESURRECTION_LAUNCH_H__
 
+#include <Resurrection/conf/launch.h>
+
 #define RL_EXEC_RTERM 1
 #define RL_TERM_TABS  0
 #define RL_RTERM_IPC  0
@@ -16,7 +18,9 @@
 #define NEW_TOOLTIPS  1
 #define RL_BUTTONS    3
 
-#if (RL_OLDE_THEME)
+#if (RL_PULSE_THEME)
+#define RL_COMMANDS      8
+#elif (RL_OLDE_THEME)
 #define RL_COMMANDS      4
 #else
 #define RL_PAINT_COMMAND "gimp"
@@ -38,6 +42,8 @@
 #if (RL_SMALL)
 #if (RL_OLDE_THEME)
 #define RL_TOOLTIP_HEIGHT 21
+#elif (RL_PULSE_THEME)
+#define RL_TOOLTIP_HEIGHT 64
 #else
 #define RL_TOOLTIP_HEIGHT 20
 #endif
@@ -47,7 +53,10 @@
 #endif
 #endif
 
-#if (RL_OLDE_THEME)
+#if (RL_PULSE_THEME)
+#define RL_BUTTON_WIDTH  64
+#define RL_BUTTON_HEIGHT 64
+#elif (RL_OLDE_THEME)
 #if (RL_SMALL)
 #define RL_BUTTON_WIDTH  24
 #define RL_BUTTON_HEIGHT 21

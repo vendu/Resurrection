@@ -44,6 +44,7 @@ extern struct Rwm_configure_info Rwm_action_info;
 #define RWM_CLOCK_12_FLAG            0x00000400
 #define RWM_SAVE_UNDER_FLAG          0x00000020
 #define RWM_DEFAULT_FLAGS            (RWM_CLICK_RAISE_FLAG | RWM_FOCUS_CLOCK_FLAG)
+#define RWM_FULL_SCREEN_FLAG         0x80000000
 
 /* wm.optflags */
 #define RWM_SHAPE_EXTENSION_FLAG     0x00000001

@@ -421,3 +421,4 @@ app_render_viewport_pixmap(Rapp_t *app, Rimage_t *image)
 }
 #endif /* !USE_IMLIB2 */
 #endif /* 0 */
+

@@ -123,4 +123,44 @@ dist_widgetimage_DATA = \
         orige/icon_beethoven_2.png \
         orige/icon_beethoven_3.png
 
- 
+dist_pulseimage_DATA = \
+	pulse/editor_hover.xcf \
+	pulse/editor_inactive.png \
+	pulse/editor_inactive.xcf \
+	pulse/editor_normal.png \
+	pulse/editor_normal.xcf \
+	pulse/graphics_hover.png \
+	pulse/graphics_hover.xcf \
+	pulse/graphics_inactive.png \
+	pulse/graphics_inactive.xcf \
+	pulse/graphics_normal.png \
+	pulse/graphics_normal.xcf \
+	pulse/im_hover.png \
+	pulse/im_hover.xcf \
+	pulse/im_inactive.png \
+	pulse/im_inactive.xcf \
+	pulse/im_normal.png \
+	pulse/im_normal.xcf \
+	pulse/mailbox_hover.xcf \
+	pulse/mailbox_inactive.png \
+	pulse/mailbox_inactive.xcf \
+	pulse/mailbox_new_hover.png \
+	pulse/mailbox_new_hover.xcf \
+	pulse/mailbox_new_inactive.png \
+	pulse/mailbox_new_inactive.xcf \
+	pulse/mailbox_new_normal.png \
+	pulse/mailbox_new_normal.xcf \
+	pulse/mailbox_normal.png \
+	pulse/mailbox_normal.xcf \
+	pulse/terminal_hover.png \
+	pulse/terminal_hover.xcf \
+	pulse/terminal_inactive.png \
+	pulse/terminal_inactive.xcf \
+	pulse/terminal_normal.png \
+	pulse/terminal_normal.xcf \
+	pulse/web_hover.png \
+	pulse/web_hover.xcf \
+	pulse/web_inactive.png \
+	pulse/web_inactive.xcf \
+	pulse/web_normal.png \
+	pulse/web_normal.xcf
