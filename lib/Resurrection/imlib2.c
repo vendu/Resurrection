@@ -212,12 +212,11 @@ R_render_image_imlib2(struct R_image *image,
     int xofs = 0;
     int yofs = 0;
 
-#if 0
-    if (!image || !image->orig || !window->id) {
 
+    if (!image || !image->orig || !window->id) {
         return -1;
     }
-#endif
+
     R_free_image_imlib2(image);
     if (image->flags & R_IMAGE_STATIC_FLAG) {
         if (image->pixmap) {
@@ -635,6 +634,9 @@ R_set_image_border_imlib2(struct R_image *image,
                           int left,
                           int right)
 {
+  if(image == NULL) { return; }
+  if(image->orig == NULL) { return; }
+
     Imlib_Border border;
 
     border.top = top;

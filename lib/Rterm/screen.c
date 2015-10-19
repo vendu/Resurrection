@@ -193,6 +193,7 @@ Rterm_load_screen_draw_image(struct R_termscreen *screen)
                             &screen->drawimage);
                             
     } else {
+        
         R_load_image_imlib2(app,
                             RESURRECTION_IMAGE_SEARCH_PATH "background/darkstone.png",
                             &screen->drawimage);
