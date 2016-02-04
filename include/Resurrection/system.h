@@ -161,7 +161,7 @@
  * System information.
  */
 #if defined(linux)
-#   include <linux/version.h>
+//#   include <linux/version.h>
 //#   include <asm/page.h>
 //#   include <asm/pgtable.h>
 #endif
